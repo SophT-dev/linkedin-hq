@@ -119,11 +119,29 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    -webkit-tap-highlight-color: transparent;
   }
   body {
     @apply bg-background text-foreground;
+    overscroll-behavior: none;
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
   }
 }
+
+/* Mobile safe area padding */
+.pb-nav {
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: oklch(0.3 0 0); border-radius: 2px; }
+
+/* Funnel badges */
+.badge-tofu { background: oklch(0.488 0.243 264.376 / 20%); color: oklch(0.7 0.15 264); border: 1px solid oklch(0.488 0.243 264.376 / 30%); }
+.badge-mofu { background: oklch(0.75 0.18 85 / 20%); color: oklch(0.85 0.15 85); border: 1px solid oklch(0.75 0.18 85 / 30%); }
+.badge-bofu { background: oklch(0.65 0.2 145 / 20%); color: oklch(0.75 0.2 145); border: 1px solid oklch(0.65 0.2 145 / 30%); }
