@@ -23,6 +23,8 @@ const MORE_ITEMS = [
   { href: "/lead-magnets", icon: Layers, label: "Leads" },
 ];
 
+const ACTIVE_COLOR = "oklch(0.65 0.22 25)";
+
 export default function BottomNav() {
   const pathname = usePathname();
 
@@ -33,9 +35,9 @@ export default function BottomNav() {
     <nav
       className="fixed bottom-0 left-0 right-0 z-50 border-t"
       style={{
-        background: "oklch(0.145 0 0 / 95%)",
+        background: "oklch(0.10 0.015 25 / 95%)",
         backdropFilter: "blur(12px)",
-        borderColor: "oklch(1 0 0 / 8%)",
+        borderColor: "oklch(0.60 0.22 25 / 18%)",
         paddingBottom: "env(safe-area-inset-bottom)",
       }}
     >
@@ -44,11 +46,8 @@ export default function BottomNav() {
           <Link
             key={href}
             href={href}
-            className={`flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all ${
-              isActive(href)
-                ? "text-indigo-400"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+            className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all text-muted-foreground hover:text-foreground"
+            style={isActive(href) ? { color: ACTIVE_COLOR } : undefined}
           >
             <Icon size={22} strokeWidth={isActive(href) ? 2.5 : 1.8} />
             <span className="text-[10px] font-medium">{label}</span>
@@ -74,9 +73,8 @@ function MoreMenu({
   return (
     <div className="relative group">
       <button
-        className={`flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all ${
-          isAnyActive ? "text-indigo-400" : "text-muted-foreground hover:text-foreground"
-        }`}
+        className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all text-muted-foreground hover:text-foreground"
+        style={isAnyActive ? { color: ACTIVE_COLOR } : undefined}
       >
         <BarChart2 size={22} strokeWidth={isAnyActive ? 2.5 : 1.8} />
         <span className="text-[10px] font-medium">More</span>
@@ -86,8 +84,8 @@ function MoreMenu({
       <div
         className="absolute bottom-full right-0 mb-2 w-40 rounded-xl border overflow-hidden opacity-0 invisible group-focus-within:opacity-100 group-focus-within:visible transition-all"
         style={{
-          background: "oklch(0.205 0 0)",
-          borderColor: "oklch(1 0 0 / 10%)",
+          background: "oklch(0.14 0.015 25)",
+          borderColor: "oklch(0.60 0.22 25 / 20%)",
           boxShadow: "0 -4px 24px oklch(0 0 0 / 50%)",
         }}
       >
@@ -95,9 +93,8 @@ function MoreMenu({
           <Link
             key={href}
             href={href}
-            className={`flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-white/5 ${
-              pathname.startsWith(href) ? "text-indigo-400" : "text-foreground"
-            }`}
+            className="flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-white/5 text-foreground"
+            style={pathname.startsWith(href) ? { color: ACTIVE_COLOR } : undefined}
           >
             <Icon size={16} />
             {label}

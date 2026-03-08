@@ -142,15 +142,18 @@ export default function Dashboard() {
   return (
     <div className="max-w-lg mx-auto px-4 py-6 space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">LinkedIn HQ</p>
-          <h1 className="text-xl font-bold">
-            {new Date().toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}
+          <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium mb-0.5">LinkedIn HQ</p>
+          <h1 className="text-2xl font-bold leading-tight">
+            Welcome back, Sophiya
           </h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            {new Date().toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}
+          </p>
         </div>
         <div
-          className="flex items-center gap-2 px-3 py-1.5 rounded-xl"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-xl mt-1"
           style={{ background: "oklch(0.75 0.18 85 / 15%)" }}
         >
           <Flame size={18} className="text-amber-400" />
@@ -163,24 +166,24 @@ export default function Dashboard() {
         <Link
           href="/reddit"
           className="flex items-center gap-3 px-4 py-3 rounded-xl border transition-all hover:brightness-110"
-          style={{ background: "oklch(0.488 0.243 264.376 / 10%)", borderColor: "oklch(0.488 0.243 264.376 / 30%)" }}
+          style={{ background: "oklch(0.60 0.22 25 / 10%)", borderColor: "oklch(0.60 0.22 25 / 30%)" }}
         >
-          <AlertCircle size={18} className="text-indigo-400 flex-shrink-0" />
-          <span className="text-sm text-indigo-300">
+          <AlertCircle size={18} style={{ color: "oklch(0.70 0.20 25)" }} className="flex-shrink-0" />
+          <span className="text-sm" style={{ color: "oklch(0.75 0.15 25)" }}>
             <strong>{redditCount} new Reddit thread{redditCount > 1 ? "s" : ""}</strong> waiting for your reply
           </span>
-          <ExternalLink size={14} className="text-indigo-400 ml-auto" />
+          <ExternalLink size={14} style={{ color: "oklch(0.70 0.20 25)" }} className="ml-auto" />
         </Link>
       )}
 
       {/* Morning Brief */}
       <div
         className="rounded-2xl p-4 space-y-3 border"
-        style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}
+        style={{ background: "oklch(0.14 0.015 25)", borderColor: "oklch(0.60 0.22 25 / 18%)" }}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Zap size={16} className="text-indigo-400" />
+            <Zap size={16} style={{ color: "oklch(0.65 0.22 25)" }} />
             <span className="text-sm font-semibold">Morning Brief</span>
           </div>
           <button
@@ -197,7 +200,7 @@ export default function Dashboard() {
               <div
                 key={i}
                 className="h-3 rounded-full animate-pulse"
-                style={{ width: `${w}%`, background: "oklch(0.3 0 0)" }}
+                style={{ width: `${w}%`, background: "oklch(0.22 0.02 25)" }}
               />
             ))}
           </div>
@@ -209,7 +212,7 @@ export default function Dashboard() {
       {/* Checklist */}
       <div
         className="rounded-2xl p-4 border"
-        style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}
+        style={{ background: "oklch(0.14 0.015 25)", borderColor: "oklch(0.60 0.22 25 / 18%)" }}
       >
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm font-semibold">Today&apos;s Checklist</span>
@@ -219,12 +222,12 @@ export default function Dashboard() {
         </div>
 
         {/* Progress bar */}
-        <div className="w-full h-1.5 rounded-full mb-4" style={{ background: "oklch(0.269 0 0)" }}>
+        <div className="w-full h-1.5 rounded-full mb-4" style={{ background: "oklch(0.22 0.02 25)" }}>
           <div
             className="h-full rounded-full transition-all duration-500"
             style={{
               width: `${pct}%`,
-              background: pct === 100 ? "oklch(0.65 0.2 145)" : "oklch(0.488 0.243 264.376)",
+              background: pct === 100 ? "oklch(0.65 0.2 145)" : "oklch(0.60 0.22 25)",
             }}
           />
         </div>
@@ -250,7 +253,8 @@ export default function Dashboard() {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className="text-indigo-400 p-1"
+                  style={{ color: "oklch(0.65 0.22 25)" }}
+                  className="p-1"
                 >
                   <ExternalLink size={14} />
                 </a>
@@ -263,7 +267,7 @@ export default function Dashboard() {
       {/* 30-day streak chart */}
       <div
         className="rounded-2xl p-4 border"
-        style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}
+        style={{ background: "oklch(0.14 0.015 25)", borderColor: "oklch(0.60 0.22 25 / 18%)" }}
       >
         <p className="text-sm font-semibold mb-4">30-Day Consistency</p>
         <StreakChart history={history} />
@@ -272,14 +276,14 @@ export default function Dashboard() {
       {/* Creator quick-links */}
       <div
         className="rounded-2xl p-4 border"
-        style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}
+        style={{ background: "oklch(0.14 0.015 25)", borderColor: "oklch(0.60 0.22 25 / 18%)" }}
       >
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Users size={16} className="text-indigo-400" />
+            <Users size={16} style={{ color: "oklch(0.65 0.22 25)" }} />
             <span className="text-sm font-semibold">Check Competitors</span>
           </div>
-          <Link href="/creators" className="text-xs text-indigo-400 hover:underline">
+          <Link href="/creators" className="text-xs hover:underline" style={{ color: "oklch(0.65 0.22 25)" }}>
             Manage →
           </Link>
         </div>
@@ -293,7 +297,7 @@ export default function Dashboard() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm border transition-all hover:brightness-125"
-                style={{ background: "oklch(0.269 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}
+                style={{ background: "oklch(0.22 0.02 25)", borderColor: "oklch(0.60 0.22 25 / 18%)" }}
               >
                 {c.name}
                 <ExternalLink size={12} className="text-muted-foreground" />
@@ -304,7 +308,7 @@ export default function Dashboard() {
           <Link
             href="/creators"
             className="flex items-center gap-3 px-3 py-3 rounded-xl border border-dashed text-muted-foreground hover:text-foreground transition-colors"
-            style={{ borderColor: "oklch(1 0 0 / 15%)" }}
+            style={{ borderColor: "oklch(0.60 0.22 25 / 25%)" }}
           >
             <Users size={18} />
             <span className="text-sm">Add your first competitor profile</span>
