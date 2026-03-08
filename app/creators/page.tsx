@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Plus, ExternalLink, X, Users, Activity } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Plus, ExternalLink, X, Users, Activity, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface Creator {
@@ -15,12 +15,18 @@ interface Creator {
   row: number;
 }
 
+const CARD_BG = "oklch(0.14 0.015 25)";
+const CARD_BORDER = "oklch(0.60 0.22 25 / 18%)";
+const ACCENT = "oklch(0.65 0.22 25)";
+
 export default function Creators() {
   const [creators, setCreators] = useState<Creator[]>([]);
   const [adding, setAdding] = useState(false);
   const [selected, setSelected] = useState<Creator | null>(null);
   const [form, setForm] = useState({ name: "", linkedin_url: "", niche: "", post_frequency: "", primary_format: "Text", notes: "" });
   const [saving, setSaving] = useState(false);
+  const [autofilling, setAutofilling] = useState(false);
+  const urlRef = useRef<HTMLInputElement>(null);
 
   const load = async () => {
     const res = await fetch("/api/sheets?tab=Creators&range=A:H");
@@ -37,6 +43,41 @@ export default function Creators() {
 
   useEffect(() => { load(); }, []);
 
+  // Auto-fill when a LinkedIn URL is pasted
+  const handleUrlChange = async (url: string) => {
+    setForm((f) => ({ ...f, linkedin_url: url }));
+    if (!url.includes("linkedin.com/in/")) return;
+
+    setAutofilling(true);
+    try {
+      const res = await fetch("/api/ai/creator", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ linkedin_url: url }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setForm((f) => ({
+          linkedin_url: url,
+          name: data.name || f.name,
+          niche: data.niche || f.niche,
+          post_frequency: data.post_frequency || f.post_frequency,
+          primary_format: data.primary_format || f.primary_format,
+          notes: data.notes || f.notes,
+        }));
+      }
+    } catch {
+      // silently fail — user can fill manually
+    }
+    setAutofilling(false);
+  };
+
+  const resetForm = () => {
+    setForm({ name: "", linkedin_url: "", niche: "", post_frequency: "", primary_format: "Text", notes: "" });
+    setAdding(false);
+    setAutofilling(false);
+  };
+
   const save = async () => {
     if (!form.name.trim()) return;
     setSaving(true);
@@ -49,8 +90,7 @@ export default function Creators() {
       }),
     });
     setSaving(false);
-    setAdding(false);
-    setForm({ name: "", linkedin_url: "", niche: "", post_frequency: "", primary_format: "Text", notes: "" });
+    resetForm();
     await load();
   };
 
@@ -63,7 +103,6 @@ export default function Creators() {
   return (
     <div className="max-w-lg mx-auto px-4 py-6 space-y-5">
       {selected ? (
-        // Detail view
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <button onClick={() => setSelected(null)} className="text-muted-foreground hover:text-foreground">
@@ -71,13 +110,13 @@ export default function Creators() {
             </button>
             <h2 className="text-lg font-bold">{selected.name}</h2>
           </div>
-          <div className="rounded-2xl p-4 border space-y-3" style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}>
-            {selected.niche && <div><span className="text-xs text-muted-foreground">Niche</span><p className="text-sm">{selected.niche}</p></div>}
-            {selected.post_frequency && <div><span className="text-xs text-muted-foreground">Posting Frequency</span><p className="text-sm">{selected.post_frequency}</p></div>}
-            {selected.primary_format && <div><span className="text-xs text-muted-foreground">Primary Format</span><p className="text-sm">{selected.primary_format}</p></div>}
+          <div className="rounded-2xl p-4 border space-y-3" style={{ background: CARD_BG, borderColor: CARD_BORDER }}>
+            {selected.niche && <div><span className="text-xs text-muted-foreground">Niche</span><p className="text-sm mt-0.5">{selected.niche}</p></div>}
+            {selected.post_frequency && <div><span className="text-xs text-muted-foreground">Posting Frequency</span><p className="text-sm mt-0.5">{selected.post_frequency}</p></div>}
+            {selected.primary_format && <div><span className="text-xs text-muted-foreground">Primary Format</span><p className="text-sm mt-0.5">{selected.primary_format}</p></div>}
             {selected.notes && <div><span className="text-xs text-muted-foreground">Study Notes</span><p className="text-sm whitespace-pre-line mt-1">{selected.notes}</p></div>}
             {selected.linkedin_url && (
-              <a href={selected.linkedin_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-indigo-400 hover:underline">
+              <a href={selected.linkedin_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm hover:underline" style={{ color: ACCENT }}>
                 <ExternalLink size={14} /> Open LinkedIn Profile
               </a>
             )}
@@ -89,39 +128,88 @@ export default function Creators() {
             <div>
               <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Competitors</p>
               <h1 className="text-xl font-bold flex items-center gap-2">
-                <Users size={20} className="text-indigo-400" /> Creators ({creators.length})
+                <Users size={20} style={{ color: ACCENT }} /> Creators ({creators.length})
               </h1>
             </div>
-            <Button size="sm" onClick={() => setAdding(true)}><Plus size={16} className="mr-1" /> Add</Button>
+            <Button size="sm" onClick={() => { setAdding(true); setTimeout(() => urlRef.current?.focus(), 50); }}>
+              <Plus size={16} className="mr-1" /> Add
+            </Button>
           </div>
 
           {adding && (
-            <div className="rounded-2xl p-4 border space-y-3" style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}>
+            <div className="rounded-2xl p-4 border space-y-3" style={{ background: CARD_BG, borderColor: CARD_BORDER }}>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold">Add Creator</span>
-                <button onClick={() => setAdding(false)} className="text-muted-foreground"><X size={18} /></button>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold">Add Creator</span>
+                  {autofilling && (
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Loader2 size={11} className="animate-spin" />
+                      AI filling in details...
+                    </span>
+                  )}
+                </div>
+                <button onClick={resetForm} className="text-muted-foreground"><X size={18} /></button>
               </div>
-              {[
-                { key: "name", placeholder: "Creator name *" },
-                { key: "linkedin_url", placeholder: "LinkedIn URL" },
-                { key: "niche", placeholder: "Niche / focus area" },
-                { key: "post_frequency", placeholder: "Posting frequency (e.g. daily, 3x/week)" },
-              ].map(({ key, placeholder }) => (
+
+              {/* URL first — triggers auto-fill */}
+              <div className="relative">
                 <input
-                  key={key}
-                  value={form[key as keyof typeof form]}
-                  onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                  placeholder={placeholder}
-                  className="w-full px-3 py-2.5 rounded-xl text-sm bg-black/20 border border-white/10 text-foreground placeholder:text-muted-foreground outline-none"
+                  ref={urlRef}
+                  value={form.linkedin_url}
+                  onChange={(e) => handleUrlChange(e.target.value)}
+                  onPaste={(e) => {
+                    const pasted = e.clipboardData.getData("text");
+                    setTimeout(() => handleUrlChange(pasted), 0);
+                  }}
+                  placeholder="Paste LinkedIn URL — we'll fill the rest"
+                  className="w-full px-3 py-2.5 rounded-xl text-sm border text-foreground placeholder:text-muted-foreground outline-none"
+                  style={{ background: "oklch(0.09 0.015 25)", borderColor: autofilling ? ACCENT : CARD_BORDER }}
                 />
-              ))}
+                {autofilling && (
+                  <Sparkles size={14} className="absolute right-3 top-3 animate-pulse" style={{ color: ACCENT }} />
+                )}
+              </div>
+
+              {/* Rest of the fields — shown after URL entered, pre-filled by AI */}
+              <input
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                placeholder="Name *"
+                className="w-full px-3 py-2.5 rounded-xl text-sm border text-foreground placeholder:text-muted-foreground outline-none"
+                style={{ background: "oklch(0.09 0.015 25)", borderColor: CARD_BORDER }}
+              />
+              <input
+                value={form.niche}
+                onChange={(e) => setForm({ ...form, niche: e.target.value })}
+                placeholder="Niche / focus area"
+                className="w-full px-3 py-2.5 rounded-xl text-sm border text-foreground placeholder:text-muted-foreground outline-none"
+                style={{ background: "oklch(0.09 0.015 25)", borderColor: CARD_BORDER }}
+              />
+              <input
+                value={form.post_frequency}
+                onChange={(e) => setForm({ ...form, post_frequency: e.target.value })}
+                placeholder="Posting frequency (e.g. daily, 3x/week)"
+                className="w-full px-3 py-2.5 rounded-xl text-sm border text-foreground placeholder:text-muted-foreground outline-none"
+                style={{ background: "oklch(0.09 0.015 25)", borderColor: CARD_BORDER }}
+              />
+              <select
+                value={form.primary_format}
+                onChange={(e) => setForm({ ...form, primary_format: e.target.value })}
+                className="w-full px-3 py-2.5 rounded-xl text-sm border text-foreground outline-none"
+                style={{ background: "oklch(0.09 0.015 25)", borderColor: CARD_BORDER }}
+              >
+                {["Text", "Carousel", "Video", "Mixed", "Images"].map((f) => (
+                  <option key={f} value={f}>{f}</option>
+                ))}
+              </select>
               <textarea
                 value={form.notes}
                 onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                placeholder="Study notes — what's working for them, what formats they use, hooks that landed..."
-                className="w-full px-3 py-2.5 rounded-xl text-sm bg-black/20 border border-white/10 text-foreground placeholder:text-muted-foreground outline-none min-h-[80px] resize-none"
+                placeholder="Study notes..."
+                className="w-full px-3 py-2.5 rounded-xl text-sm border text-foreground placeholder:text-muted-foreground outline-none min-h-[80px] resize-none"
+                style={{ background: "oklch(0.09 0.015 25)", borderColor: CARD_BORDER }}
               />
-              <Button onClick={save} disabled={!form.name.trim() || saving} className="w-full">
+              <Button onClick={save} disabled={!form.name.trim() || saving || autofilling} className="w-full">
                 {saving ? "Saving..." : "Save Creator"}
               </Button>
             </div>
@@ -135,7 +223,7 @@ export default function Creators() {
                   key={c.row}
                   onClick={() => setSelected(c)}
                   className="w-full rounded-2xl p-4 border text-left transition-all hover:brightness-110 space-y-2"
-                  style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}
+                  style={{ background: CARD_BG, borderColor: CARD_BORDER }}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -147,7 +235,7 @@ export default function Creators() {
                       )}
                     </div>
                     {c.linkedin_url && (
-                      <a href={c.linkedin_url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-indigo-400 p-1">
+                      <a href={c.linkedin_url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{ color: ACCENT }} className="p-1">
                         <ExternalLink size={16} />
                       </a>
                     )}
@@ -165,7 +253,8 @@ export default function Creators() {
             {creators.length === 0 && !adding && (
               <div className="text-center py-12 text-muted-foreground">
                 <Users size={40} className="mx-auto mb-3 opacity-30" />
-                <p className="text-sm">No creators tracked yet. Add your first one!</p>
+                <p className="text-sm">No creators tracked yet.</p>
+                <p className="text-xs mt-1">Paste a LinkedIn URL and AI fills the rest.</p>
               </div>
             )}
           </div>
