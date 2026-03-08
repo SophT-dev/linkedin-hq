@@ -249,7 +249,7 @@ export default function Dashboard() {
               </span>
               {key === "knowledge_base" && (
                 <a
-                  href="https://docs.google.com"
+                  href="https://docs.google.com/document/d/1VfkrdVm9HKd088_HbOH7RxxGtOhxBJQ1pwKq2_7cXsg/edit?tab=t.a9t163aiqlzy"
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
