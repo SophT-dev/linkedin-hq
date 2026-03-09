@@ -4,8 +4,8 @@
   "description": "Your personal LinkedIn domination system",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a0a0f",
-  "theme_color": "#6366f1",
+  "background_color": "#0a0606",
+  "theme_color": "#5a0f0f",
   "orientation": "portrait",
   "icons": [
     {
