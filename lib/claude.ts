@@ -136,18 +136,16 @@ export async function generateMorningBrief(
   config: Record<string, string>
 ): Promise<string> {
   return ask(
-    `Generate a short, punchy morning brief for Taha's LinkedIn day.
+    `Write a morning brief for Taha. Max 4 lines total. No fluff.
 
-CREATORS TAHA TRACKS: ${creators.join(", ") || "cold email experts"}
-RECENT CAPTURES/IDEAS: ${recentCaptures.slice(0, 5).join(" | ") || "none yet"}
-TODAY'S FOCUS FROM CONFIG: ${config["daily_focus"] || "build authority and engage"}
+CONTEXT: ${config["daily_focus"] || "build authority, engage, post"} | Tracks: ${creators.slice(0, 3).join(", ") || "cold email experts"}
 
-Write 2-3 short paragraphs (5-6 lines total max):
-1. One sharp insight or reminder about the current opportunity in cold email/LinkedIn
-2. One specific action tip for today (comment strategy, post angle, etc.)
-3. One mindset note to keep momentum going
+3 lines only:
+1. One sharp, specific insight about cold email or LinkedIn right now (real stat, trend, or pattern — not generic advice)
+2. One concrete action for today with a specific angle (e.g. "Comment on X's post about Y, add your take on Z")
+3. One ruthlessly practical reminder
 
-Keep it energetic, direct, and specific to Taha's niche. Sound like a smart coach, not a motivational poster.`,
+No headers. No bullet points. Just 3 punchy lines separated by line breaks.`,
     TAHA_SYSTEM_PROMPT
   );
 }
