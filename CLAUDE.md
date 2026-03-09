@@ -81,6 +81,26 @@ One spreadsheet with 11 tabs. Run `setup-sheets.gs` in Google Apps Script on the
 - `POST /api/reddit` — receives Reddit threads from n8n, deduplicates, saves to RedditFlagged sheet
 - `POST /api/ai/creator` — given a LinkedIn URL, AI guesses name/niche/format/notes (auto-fills creator form)
 
+## Theming
+All colors use CSS variables — never hardcode oklch values in components again.
+- Light mode: warm maroon/dusty-rose surfaces, deep maroon accents, dark text
+- Dark mode: near-black surfaces, red accents, light text
+- Toggle: `components/ThemeToggle.tsx` (fixed top-right), persists via localStorage
+- Anti-flash script in `layout.tsx` reads localStorage before render
+
+### CSS variables (defined in globals.css `:root` and `.dark`)
+| Variable | Purpose |
+|----------|---------|
+| `--surface-1` | Main card backgrounds |
+| `--surface-2` | Elevated panels (AI studio etc) |
+| `--surface-3` | Input backgrounds |
+| `--surface-4` | Secondary/muted backgrounds |
+| `--surface-pulse` | Skeleton loading animation |
+| `--nav-bg` | Bottom nav background |
+| `--border-subtle` | Subtle borders |
+| `--border-accent` | Red/maroon-tinted borders |
+| `--color-accent` | Primary accent color (red dark / maroon light) |
+
 ## What still needs to be done
 - [ ] Add `GOOGLE_SHEETS_ID` to `.env.local` for local dev
 - [ ] Set up n8n Reddit Monitor workflow (see below — needs Reddit OAuth credential)
