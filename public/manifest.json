@@ -4,19 +4,21 @@
   "description": "Your personal LinkedIn domination system",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a0606",
-  "theme_color": "#5a0f0f",
+  "background_color": "#641212",
+  "theme_color": "#641212",
   "orientation": "portrait",
   "icons": [
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable any"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable any"
     }
   ]
 }
