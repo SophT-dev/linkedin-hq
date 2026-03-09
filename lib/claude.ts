@@ -1,19 +1,15 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from "groq-sdk";
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY!);
-const MODEL = "gemini-2.0-flash";
-
-function getModel(systemPrompt?: string) {
-  return genAI.getGenerativeModel({
-    model: MODEL,
-    systemInstruction: systemPrompt,
-  });
-}
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const MODEL = "llama-3.3-70b-versatile";
 
 async function ask(prompt: string, systemPrompt?: string): Promise<string> {
-  const model = getModel(systemPrompt);
-  const result = await model.generateContent(prompt);
-  return result.response.text();
+  const messages: Groq.Chat.ChatCompletionMessageParam[] = [];
+  if (systemPrompt) messages.push({ role: "system", content: systemPrompt });
+  messages.push({ role: "user", content: prompt });
+
+  const res = await groq.chat.completions.create({ model: MODEL, messages, max_tokens: 1024 });
+  return res.choices[0]?.message?.content || "";
 }
 
 export const TAHA_SYSTEM_PROMPT = `You are Taha Anwar's LinkedIn and Reddit content AI assistant.
@@ -162,15 +158,12 @@ export async function strategyChat(
 ): Promise<string> {
   const contextNote = config["strategy_context"] || "";
   const systemPrompt = TAHA_SYSTEM_PROMPT + (contextNote ? `\n\nCURRENT CONTEXT: ${contextNote}` : "");
-  const model = getModel(systemPrompt);
 
-  const history = messages.slice(0, -1).map((m) => ({
-    role: m.role === "assistant" ? "model" : "user",
-    parts: [{ text: m.content }],
-  }));
+  const groqMessages: Groq.Chat.ChatCompletionMessageParam[] = [
+    { role: "system", content: systemPrompt },
+    ...messages.map((m) => ({ role: m.role as "user" | "assistant", content: m.content })),
+  ];
 
-  const chat = model.startChat({ history });
-  const lastMessage = messages[messages.length - 1].content;
-  const result = await chat.sendMessage(lastMessage);
-  return result.response.text();
+  const res = await groq.chat.completions.create({ model: MODEL, messages: groqMessages, max_tokens: 1024 });
+  return res.choices[0]?.message?.content || "";
 }

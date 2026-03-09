@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from "groq-sdk";
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY!);
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 function nameFromUrl(url: string): string {
   try {
@@ -23,9 +23,13 @@ export async function POST(req: NextRequest) {
   const name = nameFromUrl(linkedin_url);
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-    const result = await model.generateContent(
-      `I'm adding a LinkedIn creator/competitor to track. Their LinkedIn URL is: ${linkedin_url}
+    const res = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      max_tokens: 512,
+      messages: [
+        {
+          role: "user",
+          content: `I'm adding a LinkedIn creator/competitor to track. Their LinkedIn URL is: ${linkedin_url}
 Their name appears to be: ${name || "unknown"}
 
 Based on the name and URL, give me your best guess at their profile details. If you recognize them as a public figure, use what you know. If not, make reasonable guesses.
@@ -37,13 +41,14 @@ Reply with ONLY valid JSON, no markdown, no explanation:
   "post_frequency": "e.g. Daily, 3x/week, Weekly — your best guess",
   "primary_format": "Text / Carousel / Video / Mixed — your best guess",
   "notes": "2-3 sentences on what likely works for them or what to watch for"
-}`
-    );
+}`,
+        },
+      ],
+    });
 
-    const text = result.response.text().trim();
+    const text = (res.choices[0]?.message?.content || "").trim();
     const clean = text.replace(/```json\n?|\n?```/g, "").trim();
-    const json = JSON.parse(clean);
-    return NextResponse.json(json);
+    return NextResponse.json(JSON.parse(clean));
   } catch (err) {
     console.error(err);
     return NextResponse.json({ name, niche: "", post_frequency: "", primary_format: "Text", notes: "" });

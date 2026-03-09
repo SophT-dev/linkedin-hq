@@ -1,23 +1,22 @@
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from "groq-sdk";
 
 export async function GET() {
   const results: Record<string, string> = {};
 
-  results.google_ai_key = process.env.GOOGLE_AI_KEY ? "SET" : "MISSING";
+  results.groq_key = process.env.GROQ_API_KEY ? "SET" : "MISSING";
   results.sheets_id = process.env.GOOGLE_SHEETS_ID && process.env.GOOGLE_SHEETS_ID !== "your_google_sheet_id_here" ? "SET" : "MISSING or placeholder";
 
-  const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY!);
-
-  for (const modelName of ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-pro", "gemini-1.0-pro"]) {
-    try {
-      const model = genAI.getGenerativeModel({ model: modelName });
-      const result = await model.generateContent("Say OK");
-      results[modelName] = "OK — " + result.response.text().trim().slice(0, 30);
-      break; // stop at first working model
-    } catch (err) {
-      results[modelName] = "FAILED: " + String(err).slice(0, 120);
-    }
+  try {
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+    const res = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      max_tokens: 20,
+      messages: [{ role: "user", content: "Say OK" }],
+    });
+    results.groq = "OK — " + (res.choices[0]?.message?.content || "").trim();
+  } catch (err) {
+    results.groq = "FAILED: " + String(err).slice(0, 150);
   }
 
   try {
@@ -25,7 +24,7 @@ export async function GET() {
     await readSheet("Config", "A:B");
     results.sheets = "OK";
   } catch (err) {
-    results.sheets = "FAILED: " + String(err).slice(0, 120);
+    results.sheets = "FAILED: " + String(err).slice(0, 150);
   }
 
   return NextResponse.json(results, { headers: { "Cache-Control": "no-store" } });
