@@ -9,7 +9,7 @@ export async function GET() {
 
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY!);
 
-  for (const modelName of ["gemini-1.5-flash-latest", "gemini-1.5-flash", "gemini-pro", "gemini-1.0-pro"]) {
+  for (const modelName of ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-pro", "gemini-1.0-pro"]) {
     try {
       const model = genAI.getGenerativeModel({ model: modelName });
       const result = await model.generateContent("Say OK");

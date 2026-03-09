@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY!);
-const MODEL = "gemini-1.5-flash-latest";
+const MODEL = "gemini-2.0-flash";
 
 function getModel(systemPrompt?: string) {
   return genAI.getGenerativeModel({
