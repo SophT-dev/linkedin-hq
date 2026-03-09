@@ -1,22 +1,23 @@
 import { NextResponse } from "next/server";
-import Groq from "groq-sdk";
+import Anthropic from "@anthropic-ai/sdk";
 
 export async function GET() {
   const results: Record<string, string> = {};
 
-  results.groq_key = process.env.GROQ_API_KEY ? "SET" : "MISSING";
+  results.anthropic_key = process.env.ANTHROPIC_API_KEY ? "SET" : "MISSING";
   results.sheets_id = process.env.GOOGLE_SHEETS_ID && process.env.GOOGLE_SHEETS_ID !== "your_google_sheet_id_here" ? "SET" : "MISSING or placeholder";
 
   try {
-    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-    const res = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    const res = await client.messages.create({
+      model: "claude-sonnet-4-6",
       max_tokens: 20,
       messages: [{ role: "user", content: "Say OK" }],
     });
-    results.groq = "OK — " + (res.choices[0]?.message?.content || "").trim();
+    const text = res.content[0]?.type === "text" ? res.content[0].text : "";
+    results.claude = "OK — " + text.trim();
   } catch (err) {
-    results.groq = "FAILED: " + String(err).slice(0, 150);
+    results.claude = "FAILED: " + String(err).slice(0, 150);
   }
 
   try {

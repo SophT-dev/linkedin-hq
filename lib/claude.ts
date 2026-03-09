@@ -1,15 +1,16 @@
-import Groq from "groq-sdk";
+import Anthropic from "@anthropic-ai/sdk";
 
-const MODEL = "llama-3.3-70b-versatile";
-function getGroq() { return new Groq({ apiKey: process.env.GROQ_API_KEY }); }
+const MODEL = "claude-sonnet-4-6";
+function getClient() { return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }); }
 
 async function ask(prompt: string, systemPrompt?: string): Promise<string> {
-  const messages: Groq.Chat.ChatCompletionMessageParam[] = [];
-  if (systemPrompt) messages.push({ role: "system", content: systemPrompt });
-  messages.push({ role: "user", content: prompt });
-
-  const res = await getGroq().chat.completions.create({ model: MODEL, messages, max_tokens: 1024 });
-  return res.choices[0]?.message?.content || "";
+  const res = await getClient().messages.create({
+    model: MODEL,
+    max_tokens: 1024,
+    ...(systemPrompt ? { system: systemPrompt } : {}),
+    messages: [{ role: "user", content: prompt }],
+  });
+  return res.content[0]?.type === "text" ? res.content[0].text : "";
 }
 
 export const TAHA_SYSTEM_PROMPT = `You are Taha Anwar's LinkedIn and Reddit content AI assistant.
@@ -157,11 +158,11 @@ export async function strategyChat(
   const contextNote = config["strategy_context"] || "";
   const systemPrompt = TAHA_SYSTEM_PROMPT + (contextNote ? `\n\nCURRENT CONTEXT: ${contextNote}` : "");
 
-  const groqMessages: Groq.Chat.ChatCompletionMessageParam[] = [
-    { role: "system", content: systemPrompt },
-    ...messages.map((m) => ({ role: m.role as "user" | "assistant", content: m.content })),
-  ];
-
-  const res = await getGroq().chat.completions.create({ model: MODEL, messages: groqMessages, max_tokens: 1024 });
-  return res.choices[0]?.message?.content || "";
+  const res = await getClient().messages.create({
+    model: MODEL,
+    max_tokens: 1024,
+    system: systemPrompt,
+    messages: messages.map((m) => ({ role: m.role, content: m.content })),
+  });
+  return res.content[0]?.type === "text" ? res.content[0].text : "";
 }

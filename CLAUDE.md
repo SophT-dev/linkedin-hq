@@ -10,7 +10,7 @@ GitHub: https://github.com/SophT-dev/linkedin-hq
 ## Stack
 - Next.js (App Router) + Tailwind + shadcn/ui
 - Google Sheets API (service account) as database
-- **Groq API** (`llama-3.3-70b-versatile`) for all AI features — free tier, env var: `GROQ_API_KEY`
+- **Anthropic Claude API** (`claude-sonnet-4-6`) for all AI features — env var: `ANTHROPIC_API_KEY`
 - Web Speech API for voice capture
 - n8n cloud for automation (Reddit monitor, morning brief, reminders)
 
@@ -63,7 +63,7 @@ One spreadsheet with 11 tabs. Run `setup-sheets.gs` in Google Apps Script on the
 
 ## Key files
 - `lib/sheets.ts` — Google Sheets wrapper (readSheet, appendRow, updateRow, deleteRow, getConfig)
-- `lib/claude.ts` — **Groq SDK wrapper** (NOT Claude/Anthropic) + Taha's full system prompt (TAHA_SYSTEM_PROMPT). Uses lazy `getGroq()` init to avoid build-time env errors.
+- `lib/claude.ts` — Anthropic SDK wrapper + Taha's full system prompt (TAHA_SYSTEM_PROMPT). Uses lazy `getClient()` init to avoid build-time env errors.
 - `components/BottomNav.tsx` — Mobile bottom nav (5 main tabs + More dropdown)
 - `components/QuickCaptureButton.tsx` — Floating + button with voice capture
 - `components/StreakChart.tsx` — 30-day area chart (recharts)
