@@ -81,12 +81,14 @@ One spreadsheet with 11 tabs. Run `setup-sheets.gs` in Google Apps Script on the
 - `POST /api/reddit` — receives Reddit threads from n8n, deduplicates, saves to RedditFlagged sheet
 - `POST /api/ai/creator` — given a LinkedIn URL, AI guesses name/niche/format/notes (auto-fills creator form)
 
-## Theming
-All colors use CSS variables — never hardcode oklch values in components again.
+## Theming — IMPORTANT
+⚠️ **Any UI change must be checked/tested in BOTH light and dark mode.**
+All colors use CSS variables — never hardcode oklch values in components.
 - Light mode: warm maroon/dusty-rose surfaces, deep maroon accents, dark text
 - Dark mode: near-black surfaces, red accents, light text
 - Toggle: `components/ThemeToggle.tsx` (fixed top-right), persists via localStorage
 - Anti-flash script in `layout.tsx` reads localStorage before render
+- When adding new UI: use `var(--surface-1/2/3)`, `var(--border-subtle/accent)`, `var(--color-accent)` — never raw oklch values
 
 ### CSS variables (defined in globals.css `:root` and `.dark`)
 | Variable | Purpose |
