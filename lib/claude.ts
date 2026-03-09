@@ -1,14 +1,14 @@
 import Groq from "groq-sdk";
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const MODEL = "llama-3.3-70b-versatile";
+function getGroq() { return new Groq({ apiKey: process.env.GROQ_API_KEY }); }
 
 async function ask(prompt: string, systemPrompt?: string): Promise<string> {
   const messages: Groq.Chat.ChatCompletionMessageParam[] = [];
   if (systemPrompt) messages.push({ role: "system", content: systemPrompt });
   messages.push({ role: "user", content: prompt });
 
-  const res = await groq.chat.completions.create({ model: MODEL, messages, max_tokens: 1024 });
+  const res = await getGroq().chat.completions.create({ model: MODEL, messages, max_tokens: 1024 });
   return res.choices[0]?.message?.content || "";
 }
 
@@ -164,6 +164,6 @@ export async function strategyChat(
     ...messages.map((m) => ({ role: m.role as "user" | "assistant", content: m.content })),
   ];
 
-  const res = await groq.chat.completions.create({ model: MODEL, messages: groqMessages, max_tokens: 1024 });
+  const res = await getGroq().chat.completions.create({ model: MODEL, messages: groqMessages, max_tokens: 1024 });
   return res.choices[0]?.message?.content || "";
 }

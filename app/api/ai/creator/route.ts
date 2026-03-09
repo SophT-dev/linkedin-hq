@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+function getGroq() { return new Groq({ apiKey: process.env.GROQ_API_KEY }); }
 
 function nameFromUrl(url: string): string {
   try {
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
   const name = nameFromUrl(linkedin_url);
 
   try {
-    const res = await groq.chat.completions.create({
+    const res = await getGroq().chat.completions.create({
       model: "llama-3.3-70b-versatile",
       max_tokens: 512,
       messages: [
