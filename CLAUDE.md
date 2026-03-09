@@ -109,7 +109,7 @@ All colors use CSS variables — never hardcode oklch values in components.
 - [ ] Set up remaining n8n workflows (morning brief, Sunday reminder, Friday reminder, midnight reset)
 - [ ] Add competitor LinkedIn profile URLs in the Creators tab of Google Sheets
 - [ ] Update `knowledge_doc_url` in Config tab to point to actual Google Doc
-- [ ] Create PWA icons (icon-192.png, icon-512.png) in /public for home screen install
+- [x] Create PWA icons (icon-192.png, icon-512.png) in /public for home screen install — done, maskable maroon
 - [ ] Delete `/api/test` route before going to production (exposes env var status)
 
 ## n8n workflows
