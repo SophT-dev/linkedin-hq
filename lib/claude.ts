@@ -1,10 +1,21 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-export const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY!);
+const MODEL = "gemini-1.5-flash";
 
-// Taha's core identity — loaded dynamically from Config sheet when available
+function getModel(systemPrompt?: string) {
+  return genAI.getGenerativeModel({
+    model: MODEL,
+    systemInstruction: systemPrompt,
+  });
+}
+
+async function ask(prompt: string, systemPrompt?: string): Promise<string> {
+  const model = getModel(systemPrompt);
+  const result = await model.generateContent(prompt);
+  return result.response.text();
+}
+
 export const TAHA_SYSTEM_PROMPT = `You are Taha Anwar's LinkedIn and Reddit content AI assistant.
 
 ABOUT TAHA:
@@ -45,14 +56,8 @@ export async function generateComment(
       ? "This is a LinkedIn post. Write professional but casual comments. Short (2-5 lines). Add value or insight."
       : "This is a Reddit thread. Be genuinely helpful, conversational, peer-to-peer. No selling whatsoever.";
 
-  const response = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 1024,
-    system: TAHA_SYSTEM_PROMPT,
-    messages: [
-      {
-        role: "user",
-        content: `Generate 3 distinct comment options for the following ${platform} post.
+  const text = await ask(
+    `Generate 3 distinct comment options for the following ${platform} post.
 
 GOAL: ${goal}
 PLATFORM: ${platformNote}
@@ -66,37 +71,27 @@ ${postText}
 Return exactly 3 comments, separated by ---
 Each comment should feel different (different angle, different length, different hook).
 No labels, no numbering — just the 3 comments separated by ---.`,
-      },
-    ],
-  });
+    TAHA_SYSTEM_PROMPT
+  );
 
-  const text = response.content[0].type === "text" ? response.content[0].text : "";
   return text.split("---").map((c) => c.trim()).filter(Boolean).slice(0, 3);
 }
 
 export async function scoreHook(hook: string): Promise<{ score: number; reasoning: string; improved: string[] }> {
-  const response = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 1024,
-    system: TAHA_SYSTEM_PROMPT,
-    messages: [
-      {
-        role: "user",
-        content: `Score this LinkedIn hook and give brutal, specific feedback.
+  const text = await ask(
+    `Score this LinkedIn hook and give brutal, specific feedback.
 
 HOOK: "${hook}"
 
 Respond in this exact JSON format:
 {
   "score": <number 1-10>,
-  "reasoning": "<2-3 sentences of specific feedback — what works, what doesn't, why someone would or wouldn't stop scrolling>",
+  "reasoning": "<2-3 sentences of specific feedback>",
   "improved": ["<improved version 1>", "<improved version 2>"]
 }`,
-      },
-    ],
-  });
+    TAHA_SYSTEM_PROMPT
+  );
 
-  const text = response.content[0].type === "text" ? response.content[0].text : "{}";
   try {
     const clean = text.replace(/```json\n?|\n?```/g, "").trim();
     return JSON.parse(clean);
@@ -111,14 +106,8 @@ export async function generatePostIdeas(
   seedTopic: string,
   extraContext?: string
 ): Promise<Array<{ hook: string; angle: string; leadMagnet: string; funnelStage: string }>> {
-  const response = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 2048,
-    system: TAHA_SYSTEM_PROMPT,
-    messages: [
-      {
-        role: "user",
-        content: `Generate 5 LinkedIn post ideas for Taha.
+  const text = await ask(
+    `Generate 5 LinkedIn post ideas for Taha.
 
 FUNNEL STAGE: ${funnelStage}
 FORMAT: ${format}
@@ -134,11 +123,9 @@ Respond in this exact JSON format — an array of 5 objects:
     "funnelStage": "${funnelStage}"
   }
 ]`,
-      },
-    ],
-  });
+    TAHA_SYSTEM_PROMPT
+  );
 
-  const text = response.content[0].type === "text" ? response.content[0].text : "[]";
   try {
     const clean = text.replace(/```json\n?|\n?```/g, "").trim();
     return JSON.parse(clean);
@@ -152,14 +139,8 @@ export async function generateMorningBrief(
   recentCaptures: string[],
   config: Record<string, string>
 ): Promise<string> {
-  const response = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 512,
-    system: TAHA_SYSTEM_PROMPT,
-    messages: [
-      {
-        role: "user",
-        content: `Generate a short, punchy morning brief for Taha's LinkedIn day.
+  return ask(
+    `Generate a short, punchy morning brief for Taha's LinkedIn day.
 
 CREATORS TAHA TRACKS: ${creators.join(", ") || "cold email experts"}
 RECENT CAPTURES/IDEAS: ${recentCaptures.slice(0, 5).join(" | ") || "none yet"}
@@ -171,11 +152,8 @@ Write 2-3 short paragraphs (5-6 lines total max):
 3. One mindset note to keep momentum going
 
 Keep it energetic, direct, and specific to Taha's niche. Sound like a smart coach, not a motivational poster.`,
-      },
-    ],
-  });
-
-  return response.content[0].type === "text" ? response.content[0].text : "";
+    TAHA_SYSTEM_PROMPT
+  );
 }
 
 export async function strategyChat(
@@ -183,11 +161,16 @@ export async function strategyChat(
   config: Record<string, string>
 ): Promise<string> {
   const contextNote = config["strategy_context"] || "";
-  const response = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 1024,
-    system: TAHA_SYSTEM_PROMPT + (contextNote ? `\n\nCURRENT CONTEXT: ${contextNote}` : ""),
-    messages,
-  });
-  return response.content[0].type === "text" ? response.content[0].text : "";
+  const systemPrompt = TAHA_SYSTEM_PROMPT + (contextNote ? `\n\nCURRENT CONTEXT: ${contextNote}` : "");
+  const model = getModel(systemPrompt);
+
+  const history = messages.slice(0, -1).map((m) => ({
+    role: m.role === "assistant" ? "model" : "user",
+    parts: [{ text: m.content }],
+  }));
+
+  const chat = model.startChat({ history });
+  const lastMessage = messages[messages.length - 1].content;
+  const result = await chat.sendMessage(lastMessage);
+  return result.response.text();
 }

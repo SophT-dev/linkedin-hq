@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { client } from "@/lib/claude";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY!);
 
 function nameFromUrl(url: string): string {
   try {
     const slug = new URL(url).pathname.replace(/\/$/, "").split("/").pop() || "";
     return slug
       .split("-")
-      .filter((p) => !/^\d+$/.test(p)) // remove trailing numeric IDs
+      .filter((p) => !/^\d+$/.test(p))
       .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
       .join(" ");
   } catch {
@@ -21,16 +23,12 @@ export async function POST(req: NextRequest) {
   const name = nameFromUrl(linkedin_url);
 
   try {
-    const response = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 512,
-      messages: [
-        {
-          role: "user",
-          content: `I'm adding a LinkedIn creator/competitor to track. Their LinkedIn URL is: ${linkedin_url}
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const result = await model.generateContent(
+      `I'm adding a LinkedIn creator/competitor to track. Their LinkedIn URL is: ${linkedin_url}
 Their name appears to be: ${name || "unknown"}
 
-Based on the name and URL, give me your best guess at their profile details. If you recognize them as a public figure, use what you know. If not, make reasonable guesses based on the URL slug.
+Based on the name and URL, give me your best guess at their profile details. If you recognize them as a public figure, use what you know. If not, make reasonable guesses.
 
 Reply with ONLY valid JSON, no markdown, no explanation:
 {
@@ -38,24 +36,16 @@ Reply with ONLY valid JSON, no markdown, no explanation:
   "niche": "1 sentence — what they post about and who their audience is",
   "post_frequency": "e.g. Daily, 3x/week, Weekly — your best guess",
   "primary_format": "Text / Carousel / Video / Mixed — your best guess",
-  "notes": "2-3 sentences on what likely works for them or what to watch for, based on their niche"
-}`,
-        },
-      ],
-    });
+  "notes": "2-3 sentences on what likely works for them or what to watch for"
+}`
+    );
 
-    const text = (response.content[0] as { type: string; text: string }).text.trim();
-    const json = JSON.parse(text);
+    const text = result.response.text().trim();
+    const clean = text.replace(/```json\n?|\n?```/g, "").trim();
+    const json = JSON.parse(clean);
     return NextResponse.json(json);
   } catch (err) {
     console.error(err);
-    // Fallback: just return the extracted name
-    return NextResponse.json({
-      name,
-      niche: "",
-      post_frequency: "",
-      primary_format: "Text",
-      notes: "",
-    });
+    return NextResponse.json({ name, niche: "", post_frequency: "", primary_format: "Text", notes: "" });
   }
 }

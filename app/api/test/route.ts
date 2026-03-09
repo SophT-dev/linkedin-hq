@@ -1,28 +1,23 @@
 import { NextResponse } from "next/server";
-import { client } from "@/lib/claude";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function GET() {
   const results: Record<string, string> = {};
 
-  // Check env vars are present (don't expose values)
-  results.anthropic_key = process.env.ANTHROPIC_API_KEY ? "SET" : "MISSING";
+  results.google_ai_key = process.env.GOOGLE_AI_KEY ? "SET" : "MISSING";
   results.sheets_id = process.env.GOOGLE_SHEETS_ID && process.env.GOOGLE_SHEETS_ID !== "your_google_sheet_id_here" ? "SET" : "MISSING or placeholder";
   results.service_email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL ? "SET" : "MISSING";
   results.private_key = process.env.GOOGLE_PRIVATE_KEY ? "SET" : "MISSING";
 
-  // Test Claude
   try {
-    const res = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 20,
-      messages: [{ role: "user", content: "Say OK" }],
-    });
-    results.claude = "OK — " + (res.content[0] as { text: string }).text;
+    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY!);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const result = await model.generateContent("Say OK");
+    results.gemini = "OK — " + result.response.text().trim();
   } catch (err) {
-    results.claude = "FAILED: " + String(err);
+    results.gemini = "FAILED: " + String(err);
   }
 
-  // Test Sheets
   try {
     const { readSheet } = await import("@/lib/sheets");
     await readSheet("Config", "A:B");
