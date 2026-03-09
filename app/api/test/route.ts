@@ -6,16 +6,18 @@ export async function GET() {
 
   results.google_ai_key = process.env.GOOGLE_AI_KEY ? "SET" : "MISSING";
   results.sheets_id = process.env.GOOGLE_SHEETS_ID && process.env.GOOGLE_SHEETS_ID !== "your_google_sheet_id_here" ? "SET" : "MISSING or placeholder";
-  results.service_email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL ? "SET" : "MISSING";
-  results.private_key = process.env.GOOGLE_PRIVATE_KEY ? "SET" : "MISSING";
 
-  try {
-    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY!);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
-    const result = await model.generateContent("Say OK");
-    results.gemini = "OK — " + result.response.text().trim();
-  } catch (err) {
-    results.gemini = "FAILED: " + String(err);
+  const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY!);
+
+  for (const modelName of ["gemini-1.5-flash-latest", "gemini-1.5-flash", "gemini-pro", "gemini-1.0-pro"]) {
+    try {
+      const model = genAI.getGenerativeModel({ model: modelName });
+      const result = await model.generateContent("Say OK");
+      results[modelName] = "OK — " + result.response.text().trim().slice(0, 30);
+      break; // stop at first working model
+    } catch (err) {
+      results[modelName] = "FAILED: " + String(err).slice(0, 120);
+    }
   }
 
   try {
@@ -23,8 +25,8 @@ export async function GET() {
     await readSheet("Config", "A:B");
     results.sheets = "OK";
   } catch (err) {
-    results.sheets = "FAILED: " + String(err);
+    results.sheets = "FAILED: " + String(err).slice(0, 120);
   }
 
-  return NextResponse.json(results);
+  return NextResponse.json(results, { headers: { "Cache-Control": "no-store" } });
 }
