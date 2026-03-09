@@ -75,7 +75,7 @@ export default function LeadMagnets() {
             { label: "Total Clicks", value: totalClicks },
             { label: "Conversions", value: totalConversions },
           ].map(({ label, value }) => (
-            <div key={label} className="rounded-xl p-3 border text-center" style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}>
+            <div key={label} className="rounded-xl p-3 border text-center" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
               <p className="text-lg font-bold">{value}</p>
               <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
             </div>
@@ -84,7 +84,7 @@ export default function LeadMagnets() {
       )}
 
       {adding && (
-        <div className="rounded-2xl p-4 border space-y-3" style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}>
+        <div className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold">Add Lead Magnet</span>
             <button onClick={() => setAdding(false)} className="text-muted-foreground"><X size={18} /></button>
@@ -106,7 +106,7 @@ export default function LeadMagnets() {
         {magnets.map((m) => {
           const cvr = m.clicks > 0 ? ((m.conversions / m.clicks) * 100).toFixed(1) : "0";
           return (
-            <div key={m.row} className="rounded-xl p-4 border space-y-3" style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}>
+            <div key={m.row} className="rounded-xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold">{m.name}</p>

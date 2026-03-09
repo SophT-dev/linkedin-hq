@@ -104,7 +104,7 @@ export default function IdeasBank() {
       </div>
 
       {adding && (
-        <div className="rounded-2xl p-4 border space-y-3" style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}>
+        <div className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold">Add Idea</span>
             <button onClick={() => setAdding(false)} className="text-muted-foreground"><X size={18} /></button>
@@ -125,7 +125,7 @@ export default function IdeasBank() {
 
       <div className="space-y-3">
         {filtered.map((idea) => (
-          <div key={idea.row} className="rounded-xl p-4 border space-y-2.5" style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}>
+          <div key={idea.row} className="rounded-xl p-4 border space-y-2.5" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
             <div className="flex items-start gap-2 justify-between">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className={`text-xs px-2 py-0.5 rounded-full ${statusColors[idea.status] || statusColors["New"]}`}>{idea.status}</span>

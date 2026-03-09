@@ -77,7 +77,7 @@ export default function Analytics() {
   const chartData = [...stats].reverse().slice(-20).map((s) => ({ name: s.date?.slice(5), impressions: s.impressions, likes: s.likes }));
 
   const tooltipStyle = {
-    contentStyle: { background: "oklch(0.205 0 0)", border: "1px solid oklch(1 0 0 / 10%)", borderRadius: "8px", fontSize: "12px", color: "oklch(0.985 0 0)" },
+    contentStyle: { background: "var(--surface-2)", border: "1px solid var(--border-subtle)", borderRadius: "8px", fontSize: "12px", color: "oklch(0.985 0 0)" },
     labelStyle: { color: "oklch(0.708 0 0)" },
   };
 
@@ -99,7 +99,7 @@ export default function Analytics() {
             { label: "Avg Impressions", value: Math.round(stats.reduce((a, s) => a + s.impressions, 0) / stats.length).toLocaleString() },
             { label: "Avg Engagement", value: `${Math.round(stats.reduce((a, s) => a + (s.likes + s.comments), 0) / stats.length)}` },
           ].map(({ label, value }) => (
-            <div key={label} className="rounded-xl p-3 border text-center" style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}>
+            <div key={label} className="rounded-xl p-3 border text-center" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
               <p className="text-lg font-bold">{value}</p>
               <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
             </div>
@@ -109,7 +109,7 @@ export default function Analytics() {
 
       {/* Add form */}
       {adding && (
-        <div className="rounded-2xl p-4 border space-y-3" style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}>
+        <div className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold">Log Post Stats</span>
             <button onClick={() => setAdding(false)} className="text-muted-foreground"><X size={18} /></button>
@@ -146,7 +146,7 @@ export default function Analytics() {
 
       {/* Impressions chart */}
       {chartData.length > 0 && (
-        <div className="rounded-2xl p-4 border space-y-3" style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}>
+        <div className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
           <p className="text-sm font-semibold">Impressions Over Time</p>
           <div className="h-40">
             <ResponsiveContainer width="100%" height="100%">
@@ -164,7 +164,7 @@ export default function Analytics() {
 
       {/* Best format */}
       {byFormat.length > 0 && (
-        <div className="rounded-2xl p-4 border space-y-3" style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}>
+        <div className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
           <div className="flex items-center gap-2">
             <TrendingUp size={16} className="text-green-400" />
             <p className="text-sm font-semibold">Best Format (avg impressions)</p>
@@ -186,7 +186,7 @@ export default function Analytics() {
 
       {/* Top 5 posts */}
       {top5.length > 0 && (
-        <div className="rounded-2xl p-4 border space-y-3" style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}>
+        <div className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
           <p className="text-sm font-semibold">Top 5 Posts by Impressions</p>
           {top5.map((p, i) => (
             <div key={p.row} className="flex items-start gap-3">

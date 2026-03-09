@@ -115,7 +115,7 @@ export default function CalendarPage() {
 
       {/* Funnel balance */}
       {monthPosts.length > 0 && (
-        <div className="rounded-2xl p-4 border space-y-2" style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}>
+        <div className="rounded-2xl p-4 border space-y-2" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
           <div className="flex items-center justify-between text-xs">
             <span className="font-medium">Funnel Balance ({monthPosts.length} posts)</span>
             {bofuPct < 10 && <span className="text-amber-400">Add more BOFU posts</span>}
@@ -141,8 +141,8 @@ export default function CalendarPage() {
       </div>
 
       {/* Calendar grid */}
-      <div className="rounded-2xl border overflow-hidden" style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}>
-        <div className="grid grid-cols-7 border-b" style={{ borderColor: "oklch(1 0 0 / 8%)" }}>
+      <div className="rounded-2xl border overflow-hidden" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
+        <div className="grid grid-cols-7 border-b" style={{ borderColor: "var(--border-subtle)" }}>
           {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (
             <div key={d} className="text-center py-2 text-xs text-muted-foreground font-medium">{d}</div>
           ))}
@@ -158,7 +158,7 @@ export default function CalendarPage() {
                 key={day.toISOString()}
                 onClick={() => { setSelectedDate(day); setAdding(true); setForm((f) => ({ ...f, date: format(day, "yyyy-MM-dd") })); }}
                 className={`min-h-[60px] p-1.5 border-t border-r text-left transition-colors hover:bg-white/5 ${!inMonth ? "opacity-30" : ""}`}
-                style={{ borderColor: "oklch(1 0 0 / 8%)" }}
+                style={{ borderColor: "var(--border-subtle)" }}
               >
                 <span className={`text-xs font-medium w-6 h-6 flex items-center justify-center rounded-full ${isToday ? "bg-indigo-500 text-white" : "text-foreground"}`}>
                   {format(day, "d")}
@@ -184,7 +184,7 @@ export default function CalendarPage() {
 
       {/* Add form */}
       {adding && (
-        <div className="rounded-2xl p-4 border space-y-3" style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}>
+        <div className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold">Add Post</span>
             <button onClick={() => { setAdding(false); setSelectedDate(null); }} className="text-muted-foreground"><X size={18} /></button>
@@ -206,7 +206,7 @@ export default function CalendarPage() {
       {/* Post detail */}
       {selectedPost && (
         <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: "oklch(0 0 0 / 70%)" }} onClick={() => setSelectedPost(null)}>
-          <div className="w-full max-w-lg rounded-t-2xl p-5 space-y-4" style={{ background: "oklch(0.205 0 0)", border: "1px solid oklch(1 0 0 / 10%)" }} onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-lg rounded-t-2xl p-5 space-y-4" style={{ background: "var(--surface-2)", border: "1px solid var(--border-subtle)" }} onClick={(e) => e.stopPropagation()}>
             <div className="flex items-start justify-between">
               <div>
                 <p className="font-semibold">{selectedPost.title}</p>

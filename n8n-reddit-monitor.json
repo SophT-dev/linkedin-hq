@@ -1,0 +1,115 @@
+{
+  "name": "Reddit Monitor",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "hours", "hoursInterval": 2 }]
+        }
+      },
+      "name": "Every 2 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [240, 300],
+      "id": "schedule"
+    },
+    {
+      "parameters": {
+        "resource": "post",
+        "operation": "getAll",
+        "subreddit": "ColdEmail",
+        "returnAll": false,
+        "limit": 25,
+        "additionalFields": { "sort": "new" }
+      },
+      "name": "r/ColdEmail",
+      "type": "n8n-nodes-base.reddit",
+      "credentials": { "redditOAuth2Api": { "name": "Reddit account" } },
+      "position": [480, 180],
+      "id": "reddit1"
+    },
+    {
+      "parameters": {
+        "resource": "post",
+        "operation": "getAll",
+        "subreddit": "Emailmarketing",
+        "returnAll": false,
+        "limit": 25,
+        "additionalFields": { "sort": "new" }
+      },
+      "name": "r/Emailmarketing",
+      "type": "n8n-nodes-base.reddit",
+      "credentials": { "redditOAuth2Api": { "name": "Reddit account" } },
+      "position": [480, 300],
+      "id": "reddit2"
+    },
+    {
+      "parameters": {
+        "resource": "post",
+        "operation": "getAll",
+        "subreddit": "B2Bsales",
+        "returnAll": false,
+        "limit": 25,
+        "additionalFields": { "sort": "new" }
+      },
+      "name": "r/B2Bsales",
+      "type": "n8n-nodes-base.reddit",
+      "credentials": { "redditOAuth2Api": { "name": "Reddit account" } },
+      "position": [480, 420],
+      "id": "reddit3"
+    },
+    {
+      "parameters": {
+        "jsCode": "const posts = [];\nfor (const item of $input.all()) {\n  const d = item.json;\n  posts.push({\n    json: {\n      title: d.title,\n      link: 'https://reddit.com' + d.permalink,\n      subreddit: d.subreddit,\n      pubDate: new Date(d.created * 1000).toISOString()\n    }\n  });\n}\nreturn posts;"
+      },
+      "name": "Normalise",
+      "type": "n8n-nodes-base.code",
+      "position": [720, 300],
+      "id": "normalise"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            { "value1": "={{ $json.title.toLowerCase() }}", "operation": "contains", "value2": "cold email" },
+            { "value1": "={{ $json.title.toLowerCase() }}", "operation": "contains", "value2": "outreach" },
+            { "value1": "={{ $json.title.toLowerCase() }}", "operation": "contains", "value2": "lead gen" },
+            { "value1": "={{ $json.title.toLowerCase() }}", "operation": "contains", "value2": "deliverability" },
+            { "value1": "={{ $json.title.toLowerCase() }}", "operation": "contains", "value2": "b2b" }
+          ]
+        },
+        "combineOperation": "any"
+      },
+      "name": "Keyword Filter",
+      "type": "n8n-nodes-base.filter",
+      "position": [960, 300],
+      "id": "filter"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://YOUR-VERCEL-URL.vercel.app/api/reddit",
+        "sendBody": true,
+        "bodyContentType": "json",
+        "jsonBody": "={\n  \"title\": \"{{ $json.title }}\",\n  \"url\": \"{{ $json.link }}\",\n  \"subreddit\": \"{{ $json.subreddit }}\",\n  \"published\": \"{{ $json.pubDate }}\"\n}"
+      },
+      "name": "Send to App",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [1200, 300],
+      "id": "http"
+    }
+  ],
+  "connections": {
+    "Every 2 Hours": {
+      "main": [[
+        { "node": "r/ColdEmail", "type": "main", "index": 0 },
+        { "node": "r/Emailmarketing", "type": "main", "index": 0 },
+        { "node": "r/B2Bsales", "type": "main", "index": 0 }
+      ]]
+    },
+    "r/ColdEmail": { "main": [[{ "node": "Normalise", "type": "main", "index": 0 }]] },
+    "r/Emailmarketing": { "main": [[{ "node": "Normalise", "type": "main", "index": 0 }]] },
+    "r/B2Bsales": { "main": [[{ "node": "Normalise", "type": "main", "index": 0 }]] },
+    "Normalise": { "main": [[{ "node": "Keyword Filter", "type": "main", "index": 0 }]] },
+    "Keyword Filter": { "main": [[{ "node": "Send to App", "type": "main", "index": 0 }]] }
+  }
+}

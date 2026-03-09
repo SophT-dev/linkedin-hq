@@ -179,11 +179,11 @@ export default function Dashboard() {
       {/* Morning Brief */}
       <div
         className="rounded-2xl p-4 space-y-3 border"
-        style={{ background: "oklch(0.14 0.015 25)", borderColor: "oklch(0.60 0.22 25 / 18%)" }}
+        style={{ background: "var(--surface-1)", borderColor: "var(--border-accent)" }}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Zap size={16} style={{ color: "oklch(0.65 0.22 25)" }} />
+            <Zap size={16} style={{ color: "var(--color-accent)" }} />
             <span className="text-sm font-semibold">Morning Brief</span>
           </div>
           <button
@@ -200,7 +200,7 @@ export default function Dashboard() {
               <div
                 key={i}
                 className="h-3 rounded-full animate-pulse"
-                style={{ width: `${w}%`, background: "oklch(0.22 0.02 25)" }}
+                style={{ width: `${w}%`, background: "var(--surface-4)" }}
               />
             ))}
           </div>
@@ -212,7 +212,7 @@ export default function Dashboard() {
       {/* Checklist */}
       <div
         className="rounded-2xl p-4 border"
-        style={{ background: "oklch(0.14 0.015 25)", borderColor: "oklch(0.60 0.22 25 / 18%)" }}
+        style={{ background: "var(--surface-1)", borderColor: "var(--border-accent)" }}
       >
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm font-semibold">Today&apos;s Checklist</span>
@@ -222,7 +222,7 @@ export default function Dashboard() {
         </div>
 
         {/* Progress bar */}
-        <div className="w-full h-1.5 rounded-full mb-4" style={{ background: "oklch(0.22 0.02 25)" }}>
+        <div className="w-full h-1.5 rounded-full mb-4" style={{ background: "var(--surface-4)" }}>
           <div
             className="h-full rounded-full transition-all duration-500"
             style={{
@@ -253,7 +253,7 @@ export default function Dashboard() {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  style={{ color: "oklch(0.65 0.22 25)" }}
+                  style={{ color: "var(--color-accent)" }}
                   className="p-1"
                 >
                   <ExternalLink size={14} />
@@ -267,7 +267,7 @@ export default function Dashboard() {
       {/* 30-day streak chart */}
       <div
         className="rounded-2xl p-4 border"
-        style={{ background: "oklch(0.14 0.015 25)", borderColor: "oklch(0.60 0.22 25 / 18%)" }}
+        style={{ background: "var(--surface-1)", borderColor: "var(--border-accent)" }}
       >
         <p className="text-sm font-semibold mb-4">30-Day Consistency</p>
         <StreakChart history={history} />
@@ -276,14 +276,14 @@ export default function Dashboard() {
       {/* Creator quick-links */}
       <div
         className="rounded-2xl p-4 border"
-        style={{ background: "oklch(0.14 0.015 25)", borderColor: "oklch(0.60 0.22 25 / 18%)" }}
+        style={{ background: "var(--surface-1)", borderColor: "var(--border-accent)" }}
       >
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Users size={16} style={{ color: "oklch(0.65 0.22 25)" }} />
+            <Users size={16} style={{ color: "var(--color-accent)" }} />
             <span className="text-sm font-semibold">Check Competitors</span>
           </div>
-          <Link href="/creators" className="text-xs hover:underline" style={{ color: "oklch(0.65 0.22 25)" }}>
+          <Link href="/creators" className="text-xs hover:underline" style={{ color: "var(--color-accent)" }}>
             Manage →
           </Link>
         </div>
@@ -297,7 +297,7 @@ export default function Dashboard() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm border transition-all hover:brightness-125"
-                style={{ background: "oklch(0.22 0.02 25)", borderColor: "oklch(0.60 0.22 25 / 18%)" }}
+                style={{ background: "var(--surface-4)", borderColor: "var(--border-accent)" }}
               >
                 {c.name}
                 <ExternalLink size={12} className="text-muted-foreground" />

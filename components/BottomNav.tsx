@@ -23,7 +23,7 @@ const MORE_ITEMS = [
   { href: "/lead-magnets", icon: Layers, label: "Leads" },
 ];
 
-const ACTIVE_COLOR = "oklch(0.65 0.22 25)";
+const ACTIVE_COLOR = "var(--color-accent)";
 
 export default function BottomNav() {
   const pathname = usePathname();
@@ -35,9 +35,9 @@ export default function BottomNav() {
     <nav
       className="fixed bottom-0 left-0 right-0 z-50 border-t"
       style={{
-        background: "oklch(0.10 0.015 25 / 95%)",
+        background: "var(--nav-bg)",
         backdropFilter: "blur(12px)",
-        borderColor: "oklch(0.60 0.22 25 / 18%)",
+        borderColor: "var(--border-accent)",
         paddingBottom: "env(safe-area-inset-bottom)",
       }}
     >
@@ -84,8 +84,8 @@ function MoreMenu({
       <div
         className="absolute bottom-full right-0 mb-2 w-40 rounded-xl border overflow-hidden opacity-0 invisible group-focus-within:opacity-100 group-focus-within:visible transition-all"
         style={{
-          background: "oklch(0.14 0.015 25)",
-          borderColor: "oklch(0.60 0.22 25 / 20%)",
+          background: "var(--surface-1)",
+          borderColor: "var(--border-accent)",
           boxShadow: "0 -4px 24px oklch(0 0 0 / 50%)",
         }}
       >

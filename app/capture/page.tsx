@@ -128,7 +128,7 @@ export default function QuickCapturePage() {
       {/* Capture form */}
       <div
         className="rounded-2xl p-4 border space-y-3"
-        style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}
+        style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}
       >
         <div className="relative">
           <Textarea
@@ -180,7 +180,7 @@ export default function QuickCapturePage() {
             <div
               key={c.row}
               className="rounded-xl p-3 border flex gap-3"
-              style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}
+              style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}
             >
               <div className="flex-1 min-w-0 space-y-1">
                 <span className={`inline-block text-xs px-2 py-0.5 rounded-full border ${tagColors[c.tag] || tagColors["Random"]}`}>

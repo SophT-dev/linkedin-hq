@@ -23,7 +23,7 @@ export default function AIStudio() {
       {/* Tab switcher */}
       <div
         className="flex rounded-xl p-1 gap-1"
-        style={{ background: "oklch(0.205 0 0)" }}
+        style={{ background: "var(--surface-2)" }}
       >
         {(["comment", "hook", "ideas", "strategy"] as Tab[]).map((t) => (
           <button
@@ -122,7 +122,7 @@ function CommentGenerator() {
       {/* Post input */}
       <div
         className="rounded-2xl p-4 border"
-        style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}
+        style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}
       >
         <p className="text-xs text-muted-foreground mb-2">Paste the {platform} post here</p>
         <Textarea
@@ -140,10 +140,10 @@ function CommentGenerator() {
       {loading && (
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="rounded-2xl p-4 border animate-pulse" style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}>
+            <div key={i} className="rounded-2xl p-4 border animate-pulse" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
               <div className="space-y-2">
-                <div className="h-3 rounded" style={{ width: "90%", background: "oklch(0.3 0 0)" }} />
-                <div className="h-3 rounded" style={{ width: "70%", background: "oklch(0.3 0 0)" }} />
+                <div className="h-3 rounded" style={{ width: "90%", background: "var(--surface-pulse)" }} />
+                <div className="h-3 rounded" style={{ width: "70%", background: "var(--surface-pulse)" }} />
               </div>
             </div>
           ))}
@@ -154,14 +154,14 @@ function CommentGenerator() {
         <div
           key={i}
           className="rounded-2xl p-4 border space-y-3"
-          style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}
+          style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}
         >
           <div className="flex items-start justify-between gap-3">
             <span className="text-xs text-muted-foreground font-medium">Option {i + 1}</span>
             <button
               onClick={() => copy(c, i)}
               className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition-all hover:bg-white/5"
-              style={{ borderColor: "oklch(1 0 0 / 10%)" }}
+              style={{ borderColor: "var(--border-subtle)" }}
             >
               {copied === i ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
               {copied === i ? "Copied!" : "Copy"}
@@ -216,7 +216,7 @@ function HookScorer() {
     <div className="space-y-4">
       <div
         className="rounded-2xl p-4 border space-y-3"
-        style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}
+        style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}
       >
         <p className="text-xs text-muted-foreground">Paste your hook (first line of your LinkedIn post)</p>
         <Textarea
@@ -235,7 +235,7 @@ function HookScorer() {
           {/* Score */}
           <div
             className="rounded-2xl p-5 border text-center"
-            style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}
+            style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}
           >
             <div className={`text-6xl font-black ${scoreColor}`}>{result.score}<span className="text-2xl text-muted-foreground">/10</span></div>
             <p className="text-sm text-muted-foreground mt-3 leading-relaxed">{result.reasoning}</p>
@@ -246,14 +246,14 @@ function HookScorer() {
             <div
               key={i}
               className="rounded-2xl p-4 border"
-              style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}
+              style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}
             >
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs text-indigo-400 font-medium">Improved Version {i + 1}</span>
                 <button
                   onClick={() => copy(v, i)}
                   className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg border hover:bg-white/5"
-                  style={{ borderColor: "oklch(1 0 0 / 10%)" }}
+                  style={{ borderColor: "var(--border-subtle)" }}
                 >
                   {copied === i ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
                   {copied === i ? "Copied!" : "Copy"}
@@ -318,7 +318,7 @@ function IdeasGenerator() {
       {/* Controls */}
       <div
         className="rounded-2xl p-4 border space-y-3"
-        style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}
+        style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}
       >
         <div>
           <p className="text-xs text-muted-foreground mb-2">Funnel Stage</p>
@@ -374,7 +374,7 @@ function IdeasGenerator() {
         <div
           key={i}
           className="rounded-2xl p-4 border space-y-3"
-          style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}
+          style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}
         >
           <div className="flex items-center justify-between">
             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${funnelColors[idea.funnelStage]}`}>
@@ -445,7 +445,7 @@ function StrategyChat() {
                   ? "bg-indigo-500 text-white rounded-br-sm"
                   : "rounded-bl-sm"
               }`}
-              style={m.role === "assistant" ? { background: "oklch(0.205 0 0)", border: "1px solid oklch(1 0 0 / 8%)" } : {}}
+              style={m.role === "assistant" ? { background: "var(--surface-2)", border: "1px solid var(--border-subtle)" } : {}}
             >
               <p className="whitespace-pre-line">{m.content}</p>
             </div>
@@ -455,7 +455,7 @@ function StrategyChat() {
           <div className="flex justify-start">
             <div
               className="rounded-2xl rounded-bl-sm px-4 py-3"
-              style={{ background: "oklch(0.205 0 0)", border: "1px solid oklch(1 0 0 / 8%)" }}
+              style={{ background: "var(--surface-2)", border: "1px solid var(--border-subtle)" }}
             >
               <div className="flex gap-1.5 items-center">
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: "0ms" }} />

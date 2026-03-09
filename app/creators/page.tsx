@@ -15,9 +15,9 @@ interface Creator {
   row: number;
 }
 
-const CARD_BG = "oklch(0.14 0.015 25)";
-const CARD_BORDER = "oklch(0.60 0.22 25 / 18%)";
-const ACCENT = "oklch(0.65 0.22 25)";
+const CARD_BG = "var(--surface-1)";
+const CARD_BORDER = "var(--border-accent)";
+const ACCENT = "var(--color-accent)";
 
 export default function Creators() {
   const [creators, setCreators] = useState<Creator[]>([]);
@@ -163,7 +163,7 @@ export default function Creators() {
                   }}
                   placeholder="Paste LinkedIn URL — we'll fill the rest"
                   className="w-full px-3 py-2.5 rounded-xl text-sm border text-foreground placeholder:text-muted-foreground outline-none"
-                  style={{ background: "oklch(0.09 0.015 25)", borderColor: autofilling ? ACCENT : CARD_BORDER }}
+                  style={{ background: "var(--surface-3)", borderColor: autofilling ? ACCENT : CARD_BORDER }}
                 />
                 {autofilling && (
                   <Sparkles size={14} className="absolute right-3 top-3 animate-pulse" style={{ color: ACCENT }} />
@@ -176,27 +176,27 @@ export default function Creators() {
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="Name *"
                 className="w-full px-3 py-2.5 rounded-xl text-sm border text-foreground placeholder:text-muted-foreground outline-none"
-                style={{ background: "oklch(0.09 0.015 25)", borderColor: CARD_BORDER }}
+                style={{ background: "var(--surface-3)", borderColor: CARD_BORDER }}
               />
               <input
                 value={form.niche}
                 onChange={(e) => setForm({ ...form, niche: e.target.value })}
                 placeholder="Niche / focus area"
                 className="w-full px-3 py-2.5 rounded-xl text-sm border text-foreground placeholder:text-muted-foreground outline-none"
-                style={{ background: "oklch(0.09 0.015 25)", borderColor: CARD_BORDER }}
+                style={{ background: "var(--surface-3)", borderColor: CARD_BORDER }}
               />
               <input
                 value={form.post_frequency}
                 onChange={(e) => setForm({ ...form, post_frequency: e.target.value })}
                 placeholder="Posting frequency (e.g. daily, 3x/week)"
                 className="w-full px-3 py-2.5 rounded-xl text-sm border text-foreground placeholder:text-muted-foreground outline-none"
-                style={{ background: "oklch(0.09 0.015 25)", borderColor: CARD_BORDER }}
+                style={{ background: "var(--surface-3)", borderColor: CARD_BORDER }}
               />
               <select
                 value={form.primary_format}
                 onChange={(e) => setForm({ ...form, primary_format: e.target.value })}
                 className="w-full px-3 py-2.5 rounded-xl text-sm border text-foreground outline-none"
-                style={{ background: "oklch(0.09 0.015 25)", borderColor: CARD_BORDER }}
+                style={{ background: "var(--surface-3)", borderColor: CARD_BORDER }}
               >
                 {["Text", "Carousel", "Video", "Mixed", "Images"].map((f) => (
                   <option key={f} value={f}>{f}</option>
@@ -207,7 +207,7 @@ export default function Creators() {
                 onChange={(e) => setForm({ ...form, notes: e.target.value })}
                 placeholder="Study notes..."
                 className="w-full px-3 py-2.5 rounded-xl text-sm border text-foreground placeholder:text-muted-foreground outline-none min-h-[80px] resize-none"
-                style={{ background: "oklch(0.09 0.015 25)", borderColor: CARD_BORDER }}
+                style={{ background: "var(--surface-3)", borderColor: CARD_BORDER }}
               />
               <Button onClick={save} disabled={!form.name.trim() || saving || autofilling} className="w-full">
                 {saving ? "Saving..." : "Save Creator"}

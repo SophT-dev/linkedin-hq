@@ -40,8 +40,8 @@ export default function StreakChart({ history }: Props) {
           />
           <Tooltip
             contentStyle={{
-              background: "oklch(0.205 0 0)",
-              border: "1px solid oklch(1 0 0 / 10%)",
+              background: "var(--surface-2)",
+              border: "1px solid var(--border-subtle)",
               borderRadius: "8px",
               fontSize: "12px",
               color: "oklch(0.985 0 0)",

@@ -60,7 +60,7 @@ export default function RedditMonitor() {
       </div>
 
       {/* Info banner */}
-      <div className="rounded-xl p-3 border text-sm text-muted-foreground" style={{ borderColor: "oklch(1 0 0 / 8%)", background: "oklch(0.205 0 0)" }}>
+      <div className="rounded-xl p-3 border text-sm text-muted-foreground" style={{ borderColor: "var(--border-subtle)", background: "var(--surface-2)" }}>
         Threads are auto-flagged by n8n every 2 hours from r/ColdEmail, r/Emailmarketing, r/B2Bsales. Tap &ldquo;Generate Reply&rdquo; to go to AI Studio pre-filled.
       </div>
 
@@ -79,7 +79,7 @@ export default function RedditMonitor() {
           <div
             key={t.row}
             className={`rounded-xl p-4 border space-y-3 ${t.replied === "TRUE" ? "opacity-50" : ""}`}
-            style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}
+            style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}
           >
             <div className="space-y-1">
               <div className="flex items-center gap-2">
@@ -124,7 +124,7 @@ export default function RedditMonitor() {
       </div>
 
       {/* Manual add section */}
-      <div className="rounded-xl p-4 border" style={{ background: "oklch(0.205 0 0)", borderColor: "oklch(1 0 0 / 8%)" }}>
+      <div className="rounded-xl p-4 border" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
         <p className="text-xs text-muted-foreground mb-2 font-medium">n8n Setup Note</p>
         <p className="text-xs text-muted-foreground leading-relaxed">
           Set up an n8n workflow to poll Reddit RSS feeds and POST new threads to <code className="text-indigo-300 text-[11px]">/api/sheets</code> with tab=&quot;RedditFlagged&quot;. See the setup guide for workflow details.

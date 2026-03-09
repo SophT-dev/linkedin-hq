@@ -10,9 +10,9 @@ GitHub: https://github.com/SophT-dev/linkedin-hq
 ## Stack
 - Next.js (App Router) + Tailwind + shadcn/ui
 - Google Sheets API (service account) as database
-- Claude API (claude-sonnet-4-6) for all AI features
+- **Groq API** (`llama-3.3-70b-versatile`) for all AI features — free tier, env var: `GROQ_API_KEY`
 - Web Speech API for voice capture
-- n8n for automation (Reddit monitor, morning brief, reminders) — NOT YET SET UP
+- n8n cloud for automation (Reddit monitor, morning brief, reminders)
 
 ## Credentials & Config
 - Google Cloud project: `linkedin-489621`
@@ -63,7 +63,7 @@ One spreadsheet with 11 tabs. Run `setup-sheets.gs` in Google Apps Script on the
 
 ## Key files
 - `lib/sheets.ts` — Google Sheets wrapper (readSheet, appendRow, updateRow, deleteRow, getConfig)
-- `lib/claude.ts` — Claude API wrapper + Taha's full system prompt (TAHA_SYSTEM_PROMPT)
+- `lib/claude.ts` — **Groq SDK wrapper** (NOT Claude/Anthropic) + Taha's full system prompt (TAHA_SYSTEM_PROMPT). Uses lazy `getGroq()` init to avoid build-time env errors.
 - `components/BottomNav.tsx` — Mobile bottom nav (5 main tabs + More dropdown)
 - `components/QuickCaptureButton.tsx` — Floating + button with voice capture
 - `components/StreakChart.tsx` — 30-day area chart (recharts)
@@ -76,21 +76,30 @@ One spreadsheet with 11 tabs. Run `setup-sheets.gs` in Google Apps Script on the
 - `POST /api/ai/comment` — generate 3 comments in Taha's voice
 - `POST /api/ai/hook` — score hook 1-10 + improved versions
 - `POST /api/ai/ideas` — generate 5 post ideas with hooks + lead magnets
-- `GET /api/ai/brief` — generate morning intelligence brief
+- `GET /api/ai/brief` — generate morning intelligence brief (fault-tolerant: works even if Sheets unavailable)
 - `POST /api/ai/strategy` — strategy chat with full context
+- `POST /api/reddit` — receives Reddit threads from n8n, deduplicates, saves to RedditFlagged sheet
+- `POST /api/ai/creator` — given a LinkedIn URL, AI guesses name/niche/format/notes (auto-fills creator form)
 
 ## What still needs to be done
 - [ ] Add `GOOGLE_SHEETS_ID` to `.env.local` for local dev
-- [ ] Set up n8n workflows (Reddit monitor, morning brief trigger, weekly planning reminder, analytics reminder)
+- [ ] Set up n8n Reddit Monitor workflow (see below — needs Reddit OAuth credential)
+- [ ] Set up remaining n8n workflows (morning brief, Sunday reminder, Friday reminder, midnight reset)
 - [ ] Add competitor LinkedIn profile URLs in the Creators tab of Google Sheets
 - [ ] Update `knowledge_doc_url` in Config tab to point to actual Google Doc
-- [ ] Add link to Google Doc knowledge base in the checklist (currently points to docs.google.com)
 - [ ] Create PWA icons (icon-192.png, icon-512.png) in /public for home screen install
-- [ ] Optional: set up LinkedIn RSS monitoring via rss.app for competitor post tracking
+- [ ] Delete `/api/test` route before going to production (exposes env var status)
 
-## n8n workflows to build (not done yet)
-1. **Reddit Monitor** — every 2hrs, poll RSS feeds for r/ColdEmail, r/Emailmarketing, r/B2Bsales → filter by keywords → POST to `/api/sheets` with tab=RedditFlagged
-2. **Morning Brief trigger** — 7am daily → GET `/api/ai/brief` → saves to DailyLog
+## n8n workflows
+### Reddit Monitor (file: `n8n-reddit-monitor.json`) — PARTIALLY DONE
+- Uses n8n's built-in Reddit node (requires Reddit OAuth2 credential)
+- To set up Reddit credential: go to reddit.com/prefs/apps → create "web app" → redirect URI: `https://app.n8n.cloud/rest/oauth2-credential/callback` → paste client ID + secret into n8n Credentials → Reddit OAuth2 API
+- Flow: Schedule (2hr) → Reddit "Get many posts" (3 subreddits) → Normalise (Code node) → Keyword Filter → POST to `/api/reddit`
+- Still need to replace `YOUR-VERCEL-URL` in the JSON before importing
+- Reddit RSS feeds 403 from n8n cloud IPs — must use the native Reddit node with OAuth
+
+### Remaining workflows (not started)
+2. **Morning Brief** — 7am daily → GET `/api/ai/brief`
 3. **Sunday planning reminder** — email/notification with calendar link
 4. **Friday analytics reminder** — prompt to log post stats
 5. **Midnight checklist reset** — archive yesterday, prep today

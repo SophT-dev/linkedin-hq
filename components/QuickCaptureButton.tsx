@@ -106,8 +106,8 @@ export default function QuickCaptureButton() {
           <div
             className="w-full max-w-lg rounded-t-2xl sm:rounded-2xl p-5 space-y-4"
             style={{
-              background: "oklch(0.205 0 0)",
-              border: "1px solid oklch(1 0 0 / 10%)",
+              background: "var(--surface-2)",
+              border: "1px solid var(--border-subtle)",
             }}
           >
             {/* Header */}
