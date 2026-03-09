@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
   const name = nameFromUrl(linkedin_url);
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
     const result = await model.generateContent(
       `I'm adding a LinkedIn creator/competitor to track. Their LinkedIn URL is: ${linkedin_url}
 Their name appears to be: ${name || "unknown"}

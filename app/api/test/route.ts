@@ -11,7 +11,7 @@ export async function GET() {
 
   try {
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY!);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
     const result = await model.generateContent("Say OK");
     results.gemini = "OK — " + result.response.text().trim();
   } catch (err) {
