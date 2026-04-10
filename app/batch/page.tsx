@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Copy, Check, ExternalLink, Save } from "lucide-react";
+import { Sparkles, Copy, Check, ExternalLink, Save, BookmarkPlus, BookmarkCheck } from "lucide-react";
 
 interface LeadMagnet {
   name: string;
@@ -40,14 +40,17 @@ export default function BatchPage() {
   const [posts, setPosts] = useState<GeneratedPost[]>([]);
   const [meta, setMeta] = useState<BatchMeta | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
   const [savedMsg, setSavedMsg] = useState<string | null>(null);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  // Per-card save state — tracks which posts have been saved.
+  // States: undefined (unsaved), "saving", "saved", "error".
+  const [saveState, setSaveState] = useState<Record<number, "saving" | "saved" | "error">>({});
 
   const generate = async () => {
     setGenerating(true);
     setError(null);
     setSavedMsg(null);
+    setSaveState({});
     try {
       const res = await fetch("/api/ai/batch", {
         method: "POST",
@@ -69,26 +72,29 @@ export default function BatchPage() {
     }
   };
 
-  const saveAll = async () => {
-    if (posts.length === 0) return;
-    setSaving(true);
+  const saveOne = async (idx: number) => {
+    const post = posts[idx];
+    if (!post) return;
+    if (saveState[idx] === "saving" || saveState[idx] === "saved") return;
+    setSaveState((prev) => ({ ...prev, [idx]: "saving" }));
     try {
       const res = await fetch("/api/posts/save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ posts }),
+        body: JSON.stringify({ posts: [post] }),
       });
       const data = await res.json();
       if (data.ok) {
-        setSavedMsg(`saved ${data.saved} posts to the sheet as drafts`);
+        setSaveState((prev) => ({ ...prev, [idx]: "saved" }));
       } else {
-        setSavedMsg(`error: ${data.error || "save failed"}`);
+        setSaveState((prev) => ({ ...prev, [idx]: "error" }));
+        setSavedMsg(`save failed: ${data.error || "unknown"}`);
+        setTimeout(() => setSavedMsg(null), 6000);
       }
     } catch (e) {
-      setSavedMsg(`error: ${e instanceof Error ? e.message : String(e)}`);
-    } finally {
-      setSaving(false);
-      setTimeout(() => setSavedMsg(null), 8000);
+      setSaveState((prev) => ({ ...prev, [idx]: "error" }));
+      setSavedMsg(`save failed: ${e instanceof Error ? e.message : String(e)}`);
+      setTimeout(() => setSavedMsg(null), 6000);
     }
   };
 
@@ -364,44 +370,90 @@ export default function BatchPage() {
                   </div>
                 )}
 
-                <button
-                  onClick={() => copyPost(post, i)}
-                  className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-md border transition-colors"
-                  style={{
-                    background: "var(--surface-2)",
-                    borderColor: "var(--border-subtle)",
-                    color: copiedIdx === i ? "#059669" : "var(--foreground)",
-                  }}
-                >
-                  {copiedIdx === i ? <Check size={12} /> : <Copy size={12} />}
-                  {copiedIdx === i ? "copied" : "copy post"}
-                </button>
+                {/* Per-card action row: copy + save */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => copyPost(post, i)}
+                    className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-md border transition-colors"
+                    style={{
+                      background: "var(--surface-2)",
+                      borderColor: "var(--border-subtle)",
+                      color: copiedIdx === i ? "#059669" : "var(--foreground)",
+                    }}
+                  >
+                    {copiedIdx === i ? <Check size={12} /> : <Copy size={12} />}
+                    {copiedIdx === i ? "copied" : "copy"}
+                  </button>
+
+                  {(() => {
+                    const state = saveState[i];
+                    const isSaved = state === "saved";
+                    const isSaving = state === "saving";
+                    const isError = state === "error";
+                    return (
+                      <button
+                        onClick={() => saveOne(i)}
+                        disabled={isSaving || isSaved}
+                        className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-md border transition-colors disabled:opacity-80"
+                        style={{
+                          background: isSaved
+                            ? "#059669"
+                            : isError
+                            ? "#dc2626"
+                            : "var(--surface-2)",
+                          borderColor: isSaved
+                            ? "#059669"
+                            : isError
+                            ? "#dc2626"
+                            : "var(--border-accent)",
+                          color: isSaved || isError ? "white" : "var(--color-accent)",
+                        }}
+                      >
+                        {isSaved ? (
+                          <>
+                            <BookmarkCheck size={12} />
+                            saved
+                          </>
+                        ) : isSaving ? (
+                          <>
+                            <Save size={12} className="animate-pulse" />
+                            saving...
+                          </>
+                        ) : isError ? (
+                          <>
+                            <BookmarkPlus size={12} />
+                            retry save
+                          </>
+                        ) : (
+                          <>
+                            <BookmarkPlus size={12} />
+                            save to sheet
+                          </>
+                        )}
+                      </button>
+                    );
+                  })()}
+                </div>
               </div>
             );
           })}
 
-          {/* Footer save bar */}
-          <div className="sticky bottom-20 mt-6">
-            <button
-              onClick={saveAll}
-              disabled={saving}
-              className="w-full flex items-center justify-center gap-2 text-sm font-semibold py-3 rounded-xl transition-colors disabled:opacity-50 shadow-lg"
-              style={{
-                background: "var(--color-accent)",
-                color: "white",
-              }}
-            >
-              <Save size={16} />
-              {saving ? "saving..." : `save all ${posts.length} to sheet`}
-            </button>
+          {/* Footer counter — shows how many of the batch are saved */}
+          <div
+            className="sticky bottom-20 mt-6 px-4 py-3 rounded-xl text-center text-xs"
+            style={{
+              background: "var(--surface-2)",
+              borderColor: "var(--border-subtle)",
+              color: "var(--muted-foreground, #888)",
+            }}
+          >
+            {(() => {
+              const savedCount = Object.values(saveState).filter((s) => s === "saved").length;
+              if (savedCount === 0) return `${posts.length} posts ready. tap "save to sheet" on the ones you want to keep.`;
+              return `saved ${savedCount} of ${posts.length} to the sheet as drafts.`;
+            })()}
             {savedMsg && (
-              <div
-                className="mt-2 text-center text-xs px-3 py-2 rounded-lg"
-                style={{
-                  background: "var(--surface-2)",
-                  color: "var(--color-accent)",
-                }}
-              >
+              <div className="mt-2" style={{ color: "#dc2626" }}>
                 {savedMsg}
               </div>
             )}
