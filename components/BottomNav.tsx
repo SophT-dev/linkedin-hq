@@ -2,34 +2,22 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Home, Sparkles, BookOpen, Calendar, Users,
-  BarChart2, Lightbulb, MessageSquare, Link as LinkIcon, Layers
-} from "lucide-react";
+import { Newspaper, Sparkles, Mic } from "lucide-react";
 
-const NAV_ITEMS = [
-  { href: "/", icon: Home, label: "Home" },
-  { href: "/ai-studio", icon: Sparkles, label: "AI" },
-  { href: "/swipe-file", icon: BookOpen, label: "Swipe" },
-  { href: "/calendar", icon: Calendar, label: "Calendar" },
-  { href: "/creators", icon: Users, label: "Creators" },
-];
-
-const MORE_ITEMS = [
-  { href: "/analytics", icon: BarChart2, label: "Analytics" },
-  { href: "/ideas", icon: Lightbulb, label: "Ideas" },
-  { href: "/reddit", icon: MessageSquare, label: "Reddit" },
-  { href: "/sources", icon: LinkIcon, label: "Sources" },
-  { href: "/lead-magnets", icon: Layers, label: "Leads" },
+// Stripped down to the v2 architecture: 3 pages only.
+// Batch and Capture are placeholders until those pages are built.
+// All other pages still exist on disk but are unreachable from the nav.
+const NAV_ITEMS: { href: string; icon: typeof Newspaper; label: string; enabled: boolean }[] = [
+  { href: "/batch", icon: Sparkles, label: "batch", enabled: true },
+  { href: "/news", icon: Newspaper, label: "news", enabled: true },
+  { href: "/capture", icon: Mic, label: "capture", enabled: false },
 ];
 
 const ACTIVE_COLOR = "var(--color-accent)";
 
 export default function BottomNav() {
   const pathname = usePathname();
-
-  const isActive = (href: string) =>
-    href === "/" ? pathname === "/" : pathname.startsWith(href);
+  const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
 
   return (
     <nav
@@ -42,65 +30,37 @@ export default function BottomNav() {
       }}
     >
       <div className="flex items-center justify-around h-16 px-1">
-        {NAV_ITEMS.map(({ href, icon: Icon, label }) => (
-          <Link
-            key={href}
-            href={href}
-            className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all text-muted-foreground hover:text-foreground"
-            style={isActive(href) ? { color: ACTIVE_COLOR } : undefined}
-          >
-            <Icon size={22} strokeWidth={isActive(href) ? 2.5 : 1.8} />
-            <span className="text-[10px] font-medium">{label}</span>
-          </Link>
-        ))}
+        {NAV_ITEMS.map(({ href, icon: Icon, label, enabled }) => {
+          const active = isActive(href);
+          const className =
+            "flex flex-col items-center gap-0.5 px-5 py-2 rounded-xl transition-all";
 
-        {/* More menu — dropdown for secondary pages */}
-        <MoreMenu pathname={pathname} items={MORE_ITEMS} />
+          if (!enabled) {
+            return (
+              <span
+                key={href}
+                className={`${className} text-muted-foreground opacity-40 cursor-not-allowed`}
+                title="coming soon"
+              >
+                <Icon size={22} strokeWidth={1.8} />
+                <span className="text-[10px] font-medium">{label}</span>
+              </span>
+            );
+          }
+
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={`${className} text-muted-foreground hover:text-foreground`}
+              style={active ? { color: ACTIVE_COLOR } : undefined}
+            >
+              <Icon size={22} strokeWidth={active ? 2.5 : 1.8} />
+              <span className="text-[10px] font-medium">{label}</span>
+            </Link>
+          );
+        })}
       </div>
     </nav>
-  );
-}
-
-function MoreMenu({
-  pathname,
-  items,
-}: {
-  pathname: string;
-  items: typeof MORE_ITEMS;
-}) {
-  const isAnyActive = items.some(({ href }) => pathname.startsWith(href));
-
-  return (
-    <div className="relative group">
-      <button
-        className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all text-muted-foreground hover:text-foreground"
-        style={isAnyActive ? { color: ACTIVE_COLOR } : undefined}
-      >
-        <BarChart2 size={22} strokeWidth={isAnyActive ? 2.5 : 1.8} />
-        <span className="text-[10px] font-medium">More</span>
-      </button>
-
-      {/* Dropdown */}
-      <div
-        className="absolute bottom-full right-0 mb-2 w-40 rounded-xl border overflow-hidden opacity-0 invisible group-focus-within:opacity-100 group-focus-within:visible transition-all"
-        style={{
-          background: "var(--surface-1)",
-          borderColor: "var(--border-accent)",
-          boxShadow: "0 -4px 24px oklch(0 0 0 / 50%)",
-        }}
-      >
-        {items.map(({ href, icon: Icon, label }) => (
-          <Link
-            key={href}
-            href={href}
-            className="flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-white/5 text-foreground"
-            style={pathname.startsWith(href) ? { color: ACTIVE_COLOR } : undefined}
-          >
-            <Icon size={16} />
-            {label}
-          </Link>
-        ))}
-      </div>
-    </div>
   );
 }

@@ -129,7 +129,7 @@ All colors use CSS variables — never hardcode oklch values in components.
 ## Taha's voice (for AI prompts)
 - Casual but authoritative, direct, no fluff
 - Specific over generic — real numbers, frameworks, examples
-- Cold email expert + Data.ai specialist
+- Cold email expert + founder of Bleed AI
 - Audience: B2B founders, sales teams, agencies
 - Funnel: TOFU (educate) → MOFU (frameworks) → BOFU (proof/CTA)
 - LinkedIn: professional-casual. Reddit: peer-to-peer, zero selling.
