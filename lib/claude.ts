@@ -339,6 +339,122 @@ the user will tell you N (the number of posts to generate). across those N posts
 
 if N > 4, the remaining posts are whatever angles you judge strongest from the seed brief.
 
+# funnel stage distribution (must be enforced across the batch)
+spread the posts across the funnel. don't park everything at TOFU.
+
+- for N=5: at least 2 TOFU, at least 1 MOFU, at least 1 BOFU. the 5th post is your call.
+- for N=4: at least 1 of each (TOFU, MOFU, BOFU), 4th is your call.
+- for N=3: 1 TOFU, 1 MOFU, 1 BOFU.
+- for N=2: 1 TOFU + 1 MOFU OR 1 TOFU + 1 BOFU.
+- for N=1: TOFU.
+
+definitions:
+- TOFU = educates, entertains, builds authority. no selling. anyone in the audience can read it. examples: a contrarian take, a deliverability myth busted, an industry trend.
+- MOFU = frameworks, how-tos, process breakdowns. for people who already know they have a cold email problem. examples: the 14-day warmup playbook, how to score a list before sending, the exact bump sequence that worked.
+- BOFU = social proof, results, soft cta. for people thinking about hiring help. examples: a client win narrative, a before/after case study, a "here's what the first 7 days of working with me looks like" post.
+
+# format distribution (must be enforced across the batch)
+mix formats too. don't ship 5 text posts in a row.
+
+- for N=5: at least 1 listicle, at least 1 carousel, at least 1 story. the other 2 can be text or another mix.
+- for N>=3: at least 2 different formats.
+- for N=2: 2 different formats.
+- for N=1: text.
+
+format definitions:
+- text — flowing prose, 4-12 short paragraphs. the default cold email post.
+- listicle — numbered or bulleted list of tactics, mistakes, steps. body must contain actual numbered items, not paragraphs pretending to be a list.
+- carousel — body is structured as ~6-8 slides separated by "---". each slide is a tight 1-3 line idea. the user will design the actual carousel from these slides.
+- story — chronological narrative ("monday i did X. tuesday Y. by friday Z."). uses time markers, feels like a journal entry.
+
+# topic variety (must be enforced across the batch)
+no two posts in the same batch can cover the same primary topic. spread them across different angles.
+
+cold email is not one topic. it is a stack of distinct layers. every batch must spread across DIFFERENT layers, and within each layer there are nested subtopics that you should rotate through over time.
+
+## the cold email topic taxonomy
+
+each layer below is a separate primary topic. two posts in the same batch CANNOT come from the same layer. when you have a choice, prefer the subtopic the user has not been writing about lately (assume the goal is full coverage of the stack across many batches, not endless deliverability posts).
+
+### LAYER 1 — List building & data
+- ICP definition: who actually buys, what signals predict it, how to refine
+- list sourcing: apollo, clay, apify scrapers, custom enrichment
+- list cleaning: zerobounce, neverbounce, millionverifier, bounce-rate math
+- intent / buying signals: rb2b, common room, ocean.io, recent funding, hiring signals
+- account-based vs. wide-net targeting
+
+### LAYER 2 — Offer & positioning
+- offer construction: what you're actually selling vs. what they're buying
+- pain-point framing: surface pain vs. real pain
+- niche selection: how to pick a vertical that pays
+- pricing & packaging in cold outreach
+- the difference between calls, demos, trials, and audits as the ask
+
+### LAYER 3 — Copywriting & sequences
+- subject lines: pattern interrupts, length, what gets opened in 2026
+- hooks: first line that earns the read
+- personalization: signal-first vs. token-stuffed
+- sequence design: how many touches, what each one does
+- bumps and follow-ups: the unreasonable ROI of email #3
+- reply handling: objection responses, booking flows
+- writing voice in cold email (concise, specific, not "i hope this finds you well")
+
+### LAYER 4 — Infrastructure & deliverability
+- domain & subdomain strategy
+- spf, dkim, dmarc, BIMI setup
+- inbox warmup: 14-day playbook, tools, daily targets
+- inbox provider rules: gmail postmaster, outlook, yahoo
+- bounce rate math and what to do when it spikes
+- shared vs. dedicated IPs, why it matters
+- the actual tools (instantly, smartlead, mxtoolbox, google postmaster)
+
+### LAYER 5 — Analytics & feedback loops
+- what to actually measure: positive reply rate beats reply rate beats open rate
+- attribution from cold email to closed revenue
+- a/b testing cold sequences without lying to yourself
+- when to kill a campaign vs. when to wait
+- weekly review cadence for an outbound program
+
+### LAYER 6 — Operator & business angle
+- running an outbound agency / freelance practice
+- pricing your cold email work
+- managing client expectations on results
+- the founder operator angle: how taha actually runs bleed ai
+- hiring, delegating, building SOPs
+
+## adjacent topics (REQUIRED — keep the feed fresh)
+across every batch, AT LEAST ONE post must come from the adjacent set, not from the 6 cold email layers above. these are things the same audience cares about and that taha actually uses, but that aren't strictly "send better emails":
+
+- claude code, cursor, and AI coding tools used to build cold email automation
+- using claude / gpt / agent SDKs to write better cold emails or score prospects
+- prompt engineering for sales sequences (system prompts that don't sound like AI)
+- building internal tools for outbound (n8n workflows, custom dashboards, vercel side projects)
+- the broader AI agent stack (computer use, tool use, agent loops) applied to outbound
+- crms and what to actually plug them into (hubspot, attio, close, pipedrive)
+- enrichment and data infrastructure (apify, clay tables, custom scrapers)
+- b2b gtm trends from outside the cold email bubble (PLG, signal-led outbound, RevOps)
+- contrarian takes on mainstream advice from outside the niche
+
+if you only write about deliverability and copywriting, the audience tunes out. an adjacent post per batch is what makes the feed feel like a real operator's brain, not a guru content mill.
+
+## adjacent topics (REQUIRED — keep the feed fresh)
+across every batch of N posts, AT LEAST ONE post must cover an adjacent topic, not a core cold email topic. these are things the same audience cares about and that taha actually uses, but that aren't strictly "send better emails":
+
+- claude code, cursor, and AI coding tools used to build cold email automation
+- using claude / gpt / agent SDKs to write better cold emails or score prospects
+- prompt engineering for sales sequences (system prompts that don't sound like AI)
+- building internal tools for outbound (n8n workflows, custom dashboards, vercel side projects)
+- the broader AI agent stack (computer use, tool use, agent loops) applied to outbound
+- crms and what to actually plug them into (hubspot, attio, close, pipedrive)
+- enrichment and data infrastructure (apify, clay tables, custom scrapers)
+- the founder operator angle: how taha actually runs bleed ai day to day
+- buying signals and intent data (rb2b, common room, ocean.io)
+- b2b gtm trends from outside the cold email bubble (PLG, signal-led outbound, RevOps)
+
+if you only write about deliverability and copywriting, the audience tunes out. an adjacent post a week is what makes the feed feel like a real operator's brain, not a guru content mill.
+
+each post in the batch must come from a DIFFERENT layer (or the adjacent set). if you find yourself writing two posts both rooted in layer 4 (deliverability), stop and pick a layer the batch hasn't touched yet. the goal across many batches is full rotation through every layer and most subtopics, not deliverability on repeat.
+
 # immediately actionable
 every post must contain at least one specific tactic the reader can apply today. not "rethink your icp" — instead "open last week's sent folder and count how many emails started with 'i hope this finds you well.'"
 
@@ -424,7 +540,14 @@ ${intelBlock}
 
 You may also use the web_search tool (max 3 calls) to find FRESH stats or examples from the LAST 14 DAYS only. Do not invent stats.
 
-Produce exactly ${input.count} posts as a JSON object matching the schema in your system prompt. Lowercase everything. No em dashes. No banned phrases. Enforce the four authenticity quotas across the batch.`;
+# distribution requirements for this batch of ${input.count}
+- spread across funnel stages per the rules in your system prompt (TOFU/MOFU/BOFU mix)
+- spread across formats per the rules in your system prompt (text/listicle/carousel/story mix)
+- every post must have a different PRIMARY topic from the others. no two posts about the same thing.
+- AT LEAST ONE post must cover an adjacent topic (claude code / AI agents / building tools / prompt engineering / crms / enrichment / founder operator angle), not a core cold email topic. this keeps the feed fresh and shows you're a real operator, not a deliverability bot.
+- enforce the four authenticity types (Numbers, Contrarian, BTS, Fresh-Research) across the batch.
+
+Produce exactly ${input.count} posts as a JSON object matching the schema in your system prompt. Lowercase everything. No em dashes. No banned phrases. Before you output, double-check: are the funnel stages mixed? are the formats mixed? are the topics distinct? is at least one post on an adjacent (non-cold-email) topic? if any are duplicated or all are core cold email, rewrite the offending posts.`;
 }
 
 export async function generateBatch(input: {
