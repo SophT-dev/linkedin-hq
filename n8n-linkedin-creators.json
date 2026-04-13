@@ -1,0 +1,143 @@
+{
+  "_comment": "LinkedIn creator feed → /api/intel/ingest. Import this into n8n, then: (1) create Apify credential with your ROTATED key, (2) set the x-ingest-token header to match INTEL_INGEST_TOKEN in Vercel env, (3) set the linkedin_creators key in the Config tab of the Google Sheet, (4) activate the schedule trigger. The workflow reads the creator list from Config each run so you can edit it in the sheet without touching n8n.",
+  "name": "LinkedIn HQ — creator feed",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 4
+            }
+          ]
+        }
+      },
+      "name": "Every 4 hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "1sACPFVKrHTxqUt1_Gc9X13D0NupZHwXbDsFNzWIx2Rk",
+          "mode": "id"
+        },
+        "sheetName": "Config",
+        "range": "A:B"
+      },
+      "name": "Read Config tab",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [460, 300],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_WITH_YOUR_SHEETS_CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse the Config tab into a creator URL list.\nconst rows = items.map(i => i.json);\nconst config = {};\nfor (const r of rows) {\n  const key = r['A'] || r['key'];\n  const val = r['B'] || r['value'];\n  if (key) config[key] = val || '';\n}\nconst raw = config['linkedin_creators'] || '';\nconst perCreator = parseInt(config['linkedin_posts_per_creator'] || '5', 10);\nconst urls = raw.split('\\n').map(s => s.trim()).filter(Boolean);\nreturn urls.map(url => ({ json: { profileUrl: url, maxPosts: perCreator } }));"
+      },
+      "name": "Parse creator list",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "resource": "actor",
+        "operation": "run",
+        "actorId": "apimaestro/linkedin-profile-posts",
+        "inputSchema": "json",
+        "inputJson": "={\n  \"profileUrl\": \"{{ $json.profileUrl }}\",\n  \"maxPosts\": {{ $json.maxPosts }}\n}",
+        "waitForFinish": true
+      },
+      "name": "Apify — LinkedIn Profile Posts",
+      "type": "n8n-nodes-base.apify",
+      "typeVersion": 1,
+      "position": [900, 300],
+      "credentials": {
+        "apifyApi": {
+          "id": "REPLACE_WITH_YOUR_ROTATED_APIFY_CREDENTIAL_ID",
+          "name": "Apify (rotated key)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Normalize Apify output into the shape /api/intel/ingest expects.\n// Apify actors return slightly different field names depending on the\n// actor version — adjust the field mapping below if your actor differs.\nconst out = [];\nfor (const item of items) {\n  const post = item.json;\n  const creatorName = post.author_name || post.authorName || post.profile_name || 'linkedin';\n  const creatorUrl = post.author_profile_url || post.authorProfileUrl || post.profile_url || '';\n  const url = post.post_url || post.postUrl || post.url || '';\n  const text = post.text || post.post_text || post.content || '';\n  const postedAt = post.posted_at || post.postedAt || post.date || '';\n  const reactions = Number(post.reactions || post.likes || 0);\n  const comments = Number(post.comments || post.comment_count || 0);\n  if (!url || !text) continue;\n  out.push({\n    json: {\n      creator_url: creatorUrl,\n      creator_name: creatorName,\n      posted_at: postedAt,\n      url,\n      text,\n      reactions,\n      comments,\n      type: 'linkedin'\n    }\n  });\n}\nreturn out;"
+      },
+      "name": "Normalize posts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "items"
+      },
+      "name": "Aggregate into one batch",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://linkedin-hq.vercel.app/api/intel/ingest",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-ingest-token",
+              "value": "REPLACE_WITH_INTEL_INGEST_TOKEN_FROM_ENV"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={\n  \"items\": {{ JSON.stringify($json.items) }}\n}",
+        "options": {}
+      },
+      "name": "POST to /api/intel/ingest",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1560, 300]
+    }
+  ],
+  "connections": {
+    "Every 4 hours": {
+      "main": [[{ "node": "Read Config tab", "type": "main", "index": 0 }]]
+    },
+    "Read Config tab": {
+      "main": [[{ "node": "Parse creator list", "type": "main", "index": 0 }]]
+    },
+    "Parse creator list": {
+      "main": [[{ "node": "Apify — LinkedIn Profile Posts", "type": "main", "index": 0 }]]
+    },
+    "Apify — LinkedIn Profile Posts": {
+      "main": [[{ "node": "Normalize posts", "type": "main", "index": 0 }]]
+    },
+    "Normalize posts": {
+      "main": [[{ "node": "Aggregate into one batch", "type": "main", "index": 0 }]]
+    },
+    "Aggregate into one batch": {
+      "main": [[{ "node": "POST to /api/intel/ingest", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "versionId": "v2-2026-04-13"
+}

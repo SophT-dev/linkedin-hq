@@ -23,8 +23,11 @@
  * before running this. There is no undo.
  */
 
-var KEEP_TABS = ["Intel", "Config", "WinsLog", "Posts"];
+var KEEP_TABS = ["Intel", "Config", "WinsLog", "Posts", "LeadMagnets"];
 
+// Legacy v1 tabs to delete on first setup. LeadMagnets was in this list
+// originally but is now a v2 tab for the lead magnet build pipeline, so
+// it is no longer deleted.
 var LEGACY_TABS_TO_DELETE = [
   "DailyLog",
   "QuickCaptures",
@@ -35,7 +38,6 @@ var LEGACY_TABS_TO_DELETE = [
   "Analytics",
   "IdeasBank",
   "RedditFlagged",
-  "LeadMagnets",
 ];
 
 var WINSLOG_HEADERS = [
@@ -117,7 +119,13 @@ var WINSLOG_SEED = [
   ],
 ];
 
+// v2 Posts schema — `id` column (nanoid) added at position A on 2026-04-13
+// so the lead magnet builder can target specific rows after publish. If
+// you're running this on a sheet that already has the old 10-column Posts
+// tab, run migrate-posts-add-id.gs FIRST to add the id column and
+// backfill existing rows.
 var POSTS_HEADERS = [
+  "id",
   "batch_date",
   "hook",
   "body",
@@ -128,6 +136,28 @@ var POSTS_HEADERS = [
   "sources_used",
   "authenticity_tag",
   "status",
+];
+
+// v2 LeadMagnets tab — tracks each lead magnet build from research
+// through publish. The linkedin-batch Claude skill writes rows here
+// and the public /lead-magnet/<slug> landing page reads from here.
+var LEAD_MAGNETS_HEADERS = [
+  "id",
+  "post_id",
+  "slug",
+  "status",       // researching | outline_ready | body_ready | published | error
+  "title",
+  "hero_text",
+  "value_props",  // JSON array of strings
+  "cta_text",
+  "outline_md",
+  "body_md",
+  "notion_url",
+  "landing_url",
+  "gif_url",
+  "created_at",
+  "clicks",
+  "conversions",
 ];
 
 function setupV2() {
@@ -151,10 +181,11 @@ function setupV2() {
     }
   }
 
-  // Step 2 — make sure WinsLog and Posts exist BEFORE deleting anything,
-  // so the sheet always has at least one tab (Google Sheets requires this).
+  // Step 2 — make sure WinsLog, Posts, and LeadMagnets exist BEFORE
+  // deleting anything, so the sheet always has at least one tab.
   ensureTab(ss, "WinsLog", WINSLOG_HEADERS);
   ensureTab(ss, "Posts", POSTS_HEADERS);
+  ensureTab(ss, "LeadMagnets", LEAD_MAGNETS_HEADERS);
 
   // Pre-seed WinsLog with portfolio wins ONLY if it's currently empty
   // (only header row exists). Re-running setupV2 won't duplicate.
@@ -177,16 +208,16 @@ function setupV2() {
 
   ui.alert(
     "Setup complete.\n\n" +
-      "Created (or kept): WinsLog, Posts\n" +
+      "Created (or kept): WinsLog, Posts, LeadMagnets\n" +
       "Kept as-is: Intel, Config\n" +
       "Deleted: " +
       deleted +
       " legacy tab(s)\n\n" +
       "WinsLog seeded with " +
       WINSLOG_SEED.length +
-      " portfolio wins (from upwork proposal/CLAUDE.md).\n" +
-      "Edit any of them in the sheet, or add more rows.\n\n" +
-      "Now open /batch and click generate."
+      " portfolio wins.\n\n" +
+      "Batch generation now runs in the linkedin-batch Claude Code skill,\n" +
+      "not on Vercel. Run /linkedin-batch in a Claude Code session to begin."
   );
 }
 
