@@ -1,135 +1,169 @@
 # LinkedIn HQ — Claude Context
 
 ## What this project is
-A mobile-first Next.js web app that acts as Taha Anwar's complete LinkedIn operating system. One bookmarked URL on phone. Everything in one place.
+Taha Anwar's (Bleed AI) personal LinkedIn operating system. Mobile-first Next.js web app on Vercel + a Claude Code skill that owns batch generation. One bookmarked URL on phone for intel scanning; one `/linkedin-batch` skill in Claude Code for producing posts and lead magnets. Everything else lives in one Google Sheet.
 
-## Live URL
-Deployed on Vercel as `linkedin-hq` project under sophiya136-2634's Vercel account.
-GitHub: https://github.com/SophT-dev/linkedin-hq
+## Live URLs
+- App: https://linkedin-hq.vercel.app
+- GitHub: https://github.com/SophT-dev/linkedin-hq
+- Vercel project owner: sophiya136-2634
+
+## Architecture (v2, post 2026-04-13 refactor)
+On 2026-04-13 batch generation moved out of the Vercel app and into a Claude Code skill. The Vercel app is now a thin data+intel host. The skill is where posts and lead magnets are actually written.
+
+```
+Claude Code skill (linkedin-batch)          Vercel web app
+├── reads WinsLog + starred Intel           ├── /news    — reddit + google news + linkedin
+├── generates N posts in Taha's voice       ├── /capture — placeholder (solo post gen coming)
+├── reviews interactively with user         ├── /lead-magnet/<slug> — public landing pages
+├── saves approved posts to Posts tab       └── API routes:
+└── builds lead magnets end-to-end:               /api/winslog          (GET)
+      - deep research (10-15 WebSearch)            /api/intel/starred    (GET)
+      - outline → approve                          /api/intel/refresh    (POST) news+reddit scout
+      - body → approve                             /api/intel/ingest     (POST) n8n linkedin feed
+      - POST /api/notion/publish                   /api/posts/save       (POST)
+      - POST /api/lead-magnet/save                 /api/posts/:id        (GET)
+        (creates LeadMagnets row, rewrites        /api/notion/publish   (POST)
+         Post row lead_magnet cell with            /api/lead-magnet/save (POST)
+         landing URL, revalidates landing page)
+```
 
 ## Stack
-- Next.js (App Router) + Tailwind + shadcn/ui
+- Next.js 16 (App Router) + Tailwind v4 + shadcn/ui
 - Google Sheets API (service account) as database
-- **Anthropic Claude API** (`claude-sonnet-4-6`) for all AI features — env var: `ANTHROPIC_API_KEY`
-- Web Speech API for voice capture
-- n8n cloud for automation (Reddit monitor, morning brief, reminders)
+- Anthropic Claude API (`claude-sonnet-4-6`) — still used by legacy v1 AI helpers (ai-studio, comment, hook, etc) but **not** for batch generation anymore
+- @notionhq/client for lead magnet publishing
+- nanoid for stable post ids
+- Web Speech API for voice capture (still on `/capture` placeholder)
+- n8n cloud for the LinkedIn creator scraping pipeline
 
-## Credentials & Config
-- Google Cloud project: `linkedin-489621`
-- Service account: `linkedin-hq-sheets@linkedin-489621.iam.gserviceaccount.com`
-- Credentials JSON: `c:\Users\sophi\Downloads\linkedin-489621-eee5ff52c88d.json`
-- `.env.local` has all vars filled in EXCEPT `GOOGLE_SHEETS_ID` (needs to be added)
-- Vercel has all 4 env vars set including the Sheet ID
-
-## Google Sheets Database
-One spreadsheet with 11 tabs. Run `setup-sheets.gs` in Google Apps Script on the sheet to initialize.
+## Google Sheet — 5 tabs
+One spreadsheet. Run `setup-v2.gs` in Google Apps Script once to initialize. If migrating from pre-2026-04-13 Posts schema (no id column), run `migrate-posts-add-id.gs` first.
 
 | Tab | Purpose |
-|-----|---------|
-| DailyLog | Daily checklist completion + streak |
-| QuickCaptures | On-the-go thoughts, voice captures |
-| SwipeFile | Saved LinkedIn/Reddit posts |
-| ContentCalendar | Scheduled posts with funnel tags |
-| Creators | Competitor/creator profiles + notes |
-| Sources | YouTube, articles, podcasts |
-| Analytics | Post performance stats + patterns |
-| IdeasBank | Hooks, post ideas, strategies |
-| RedditFlagged | n8n-populated Reddit threads |
-| LeadMagnets | Lead magnet click/conversion tracking |
-| Config | Key-value config (editable without code) |
+|---|---|
+| **Intel** | Unified news feed. Reddit + Google News + LinkedIn creators. Columns: `pulled_at \| posted_at \| type \| source \| title \| url \| summary \| score \| starred` |
+| **Config** | Key-value config. Keys used by the app: `linkedin_creators` (newline-separated profile URLs), `linkedin_posts_per_creator` (int). Legacy keys still supported: `daily_focus`, `strategy_context`. |
+| **WinsLog** | Taha's real client wins — the authenticity moat. Seeded from `upwork proposal/CLAUDE.md`. Columns: `date \| client \| campaign \| what_we_did \| result \| lesson \| tags` |
+| **Posts** | Generated posts saved by the skill. Columns: `id \| batch_date \| hook \| body \| format \| funnel_stage \| visual_brief \| lead_magnet \| sources_used \| authenticity_tag \| status`. `id` is a 10-char nanoid. `lead_magnet` starts as `name | prop | cta` and is rewritten to the live landing URL after a lead magnet is built. |
+| **LeadMagnets** | Lead magnet build pipeline. Columns: `id \| post_id \| slug \| status \| title \| hero_text \| value_props \| cta_text \| outline_md \| body_md \| notion_url \| landing_url \| gif_url \| created_at \| clicks \| conversions`. Status values: `researching \| outline_ready \| body_ready \| published \| error`. |
 
-## Config tab controls (customizable without code changes)
-- `daily_focus` — shown in morning brief
-- `strategy_context` — fed to AI strategy chat
-- `target_posting_frequency` — reference
-- `funnel_target_tofu/mofu/bofu` — balance targets
-- `knowledge_doc_url` — link to Google Doc knowledge base
-- `n8n_webhook_url` — for n8n integration
+## Env vars
+Local in `.env.local`, production in Vercel project env. All must be set for full functionality.
 
-## Pages built
-| Route | What it does |
-|-------|-------------|
-| `/` | Dashboard: checklist, streak chart, morning AI brief, creator links, Reddit alert |
-| `/ai-studio` | Comment gen (LinkedIn+Reddit), hook scorer, post ideas, strategy chat |
-| `/capture` | Quick capture: text + voice → Google Sheets |
-| `/swipe-file` | Save posts with tags, creator filters, search |
-| `/calendar` | Monthly content calendar, funnel balance tracker |
-| `/creators` | Competitor grid, activity status, study notes |
-| `/analytics` | Post stats, impressions chart, best format analysis |
-| `/sources` | YouTube/article/podcast log |
-| `/ideas` | Ideas bank with funnel tags and status |
-| `/reddit` | n8n-populated Reddit threads to reply to |
-| `/lead-magnets` | Lead magnet click/conversion tracker |
+| Var | Purpose |
+|---|---|
+| `GOOGLE_SHEETS_ID` | the one sheet |
+| `GOOGLE_SERVICE_ACCOUNT_EMAIL` | sheets API auth |
+| `GOOGLE_PRIVATE_KEY` | sheets API auth (escape newlines as `\n`) |
+| `ANTHROPIC_API_KEY` | used by legacy `/api/ai/*` routes (not by the batch skill) |
+| `NOTION_TOKEN` | internal integration token from notion.so/my-integrations |
+| `NOTION_PARENT_ID` | Notion page id that is publicly shared and shared with the integration — child lead magnet pages inherit this visibility |
+| `INTEL_INGEST_TOKEN` | shared secret header for `/api/intel/ingest` (protects the n8n → Vercel ingress) |
+
+## Pages (v2)
+| Route | Purpose |
+|---|---|
+| `/news` | Mobile news feed. Reddit + Google News + LinkedIn creators. Time-window chips (1h/24h/week/all), source chips, sort chips, star-to-keep, "new since last visit" highlight. |
+| `/capture` | Placeholder. Slot reserved for the solo post generator + quick capture rebuild. |
+| `/lead-magnet/[slug]` | Public landing page. Route group `(public)` so BottomNav/QuickCapture/ThemeToggle don't render for strangers. Reads the LeadMagnets row by slug server-side. Revalidated when the skill publishes. |
+
+Legacy v1 pages (`/ai-studio`, `/analytics`, `/calendar`, `/creators`, `/ideas`, `/lead-magnets`, `/reddit`, `/sources`, `/swipe-file`) still exist on disk but are unreachable from the v2 nav. They can be deleted later.
+
+`/batch` was removed entirely on 2026-04-13 when batch generation moved to the skill.
 
 ## Key files
-- `lib/sheets.ts` — Google Sheets wrapper (readSheet, appendRow, updateRow, deleteRow, getConfig)
-- `lib/claude.ts` — Anthropic SDK wrapper + Taha's full system prompt (TAHA_SYSTEM_PROMPT). Uses lazy `getClient()` init to avoid build-time env errors.
-- `components/BottomNav.tsx` — Mobile bottom nav (5 main tabs + More dropdown)
-- `components/QuickCaptureButton.tsx` — Floating + button with voice capture
-- `components/StreakChart.tsx` — 30-day area chart (recharts)
-- `setup-sheets.gs` — One-click Google Sheets initialization script
+- [lib/sheets.ts](lib/sheets.ts) — sheets wrapper. Intel + Posts + LeadMagnets loaders, `appendPosts` returns ids + rowIndices, `updatePostLeadMagnet`, `createLeadMagnetRow`, `updateLeadMagnetRow`, etc.
+- [lib/claude.ts](lib/claude.ts) — Anthropic SDK wrapper for the *legacy* AI helpers (comment, hook, ideas, brief, strategy) + news scout (`fetchIntelFromWeb`). `BATCH_SYSTEM_PROMPT` and `generateBatch` were **deleted** on 2026-04-13.
+- [lib/intel-filter.ts](lib/intel-filter.ts) — shared keyword relevance gate used by news scouts, reddit fetcher, and the LinkedIn creator ingest route.
+- [lib/notion.ts](lib/notion.ts) — `publishLeadMagnetToNotion()` + a minimal markdown → Notion blocks converter.
+- [lib/reddit.ts](lib/reddit.ts) — direct Reddit JSON fetcher for r/coldemail (OAuth pending).
+- [components/BottomNav.tsx](components/BottomNav.tsx) — 2-tab mobile nav (News + Capture). Hides itself on `/lead-magnet/*`.
+- [components/QuickCaptureButton.tsx](components/QuickCaptureButton.tsx) — floating + button with voice capture. Also hides itself on `/lead-magnet/*`.
+- [setup-v2.gs](setup-v2.gs) — one-click sheet cleanup/setup. Creates WinsLog, Posts, LeadMagnets. Seeds WinsLog from Taha's real wins.
+- [migrate-posts-add-id.gs](migrate-posts-add-id.gs) — one-time migration to add `id` column to existing Posts tab.
+- [n8n-linkedin-creators.json](n8n-linkedin-creators.json) — n8n workflow template for the LinkedIn creator scraper. Import, set your rotated Apify credential and `x-ingest-token` header, activate.
+- [.claude/skills/linkedin-batch/SKILL.md](.claude/skills/linkedin-batch/SKILL.md) — the batch generator skill. Single source of truth for Taha's voice rules.
 
-## API routes
-- `POST /api/sheets` — read/write/delete any sheet tab
-- `GET /api/checklist` — load today's state + 30-day history
-- `POST /api/checklist` — save checklist, calc streak
-- `POST /api/ai/comment` — generate 3 comments in Taha's voice
-- `POST /api/ai/hook` — score hook 1-10 + improved versions
-- `POST /api/ai/ideas` — generate 5 post ideas with hooks + lead magnets
-- `GET /api/ai/brief` — generate morning intelligence brief (fault-tolerant: works even if Sheets unavailable)
-- `POST /api/ai/strategy` — strategy chat with full context
-- `POST /api/reddit` — receives Reddit threads from n8n, deduplicates, saves to RedditFlagged sheet
-- `POST /api/ai/creator` — given a LinkedIn URL, AI guesses name/niche/format/notes (auto-fills creator form)
+## API routes (v2 — skill-facing + legacy)
+- `GET  /api/winslog` — thin proxy, returns WinsLog rows (skill input)
+- `GET  /api/intel/starred` — thin proxy, returns starred Intel rows (skill input)
+- `POST /api/intel/refresh` — runs the Reddit + Google News scouts (news page refresh button)
+- `POST /api/intel/ingest` — n8n LinkedIn creator pipeline entrypoint. Protected by `x-ingest-token`
+- `POST /api/posts/save` — appends posts, returns `{ saved, items: [{id, rowIndex, hook}] }`
+- `GET  /api/posts/:id` — fetch a single post by nanoid id
+- `GET  /api/news` — reads Intel tab for the /news page
+- `POST /api/news/star` — toggles starred flag
+- `POST /api/notion/publish` — markdown body → Notion page, returns `{ notionUrl, pageId }`
+- `POST /api/lead-magnet/save` — creates LeadMagnets row, rewrites source Post's lead_magnet cell with landing URL, revalidates landing page
+- **Legacy** (v1 pages still on disk): `/api/ai/comment`, `/api/ai/hook`, `/api/ai/ideas`, `/api/ai/brief`, `/api/ai/strategy`, `/api/ai/creator`, `/api/checklist`, `/api/reddit`, `/api/sheets`
 
 ## Theming — IMPORTANT
-⚠️ **Any UI change must be checked/tested in BOTH light and dark mode.**
-All colors use CSS variables — never hardcode oklch values in components.
-- Light mode: warm maroon/dusty-rose surfaces, deep maroon accents, dark text
-- Dark mode: near-black surfaces, red accents, light text
+⚠️ **Any UI change must be checked in both light and dark mode.** All colors use CSS variables — never hardcode oklch in components.
+
+- Light: warm maroon/dusty-rose surfaces, deep maroon accents, dark text
+- Dark: near-black surfaces, red accents, light text
 - Toggle: `components/ThemeToggle.tsx` (fixed top-right), persists via localStorage
 - Anti-flash script in `layout.tsx` reads localStorage before render
-- When adding new UI: use `var(--surface-1/2/3)`, `var(--border-subtle/accent)`, `var(--color-accent)` — never raw oklch values
+- Tailwind v4 dark mode: `@variant dark (&:where(.dark, .dark *))` in globals.css — no `tailwind.config` darkMode setting
 
-### CSS variables (defined in globals.css `:root` and `.dark`)
+### CSS variables (defined in `app/globals.css` `:root` and `.dark`)
 | Variable | Purpose |
-|----------|---------|
+|---|---|
 | `--surface-1` | Main card backgrounds |
-| `--surface-2` | Elevated panels (AI studio etc) |
+| `--surface-2` | Elevated panels |
 | `--surface-3` | Input backgrounds |
 | `--surface-4` | Secondary/muted backgrounds |
 | `--surface-pulse` | Skeleton loading animation |
 | `--nav-bg` | Bottom nav background |
 | `--border-subtle` | Subtle borders |
 | `--border-accent` | Red/maroon-tinted borders |
-| `--color-accent` | Primary accent color (red dark / maroon light) |
+| `--color-accent` | Primary accent color |
 
-## What still needs to be done
-- [ ] Add `GOOGLE_SHEETS_ID` to `.env.local` for local dev
-- [ ] Set up n8n Reddit Monitor workflow (see below — needs Reddit OAuth credential)
-- [ ] Set up remaining n8n workflows (morning brief, Sunday reminder, Friday reminder, midnight reset)
-- [ ] Add competitor LinkedIn profile URLs in the Creators tab of Google Sheets
-- [ ] Update `knowledge_doc_url` in Config tab to point to actual Google Doc
-- [x] Create PWA icons (icon-192.png, icon-512.png) in /public for home screen install — done, maskable maroon
-- [ ] Delete `/api/test` route before going to production (exposes env var status)
+## The linkedin-batch Claude Code skill
+This is where batch generation and lead magnet building happen. Lives at [.claude/skills/linkedin-batch/SKILL.md](.claude/skills/linkedin-batch/SKILL.md).
+
+Invoke it in a Claude Code session with `/linkedin-batch`. The skill:
+1. Parses `[count] [seed brief]` args
+2. Pulls WinsLog + starred Intel from the Vercel proxies
+3. Optionally runs 2–3 WebSearch calls if the seed brief names a topic
+4. Writes N posts following the full voice rules block embedded in SKILL.md
+5. Enters a free-form review loop with the user until they approve
+6. Saves the approved posts via `POST /api/posts/save`
+7. Asks which posts deserve a full lead magnet
+8. For each selected: deep research (10–15 WebSearch) → outline → approve → body → approve → publish to Notion → save to LeadMagnets → rewrite source Post row with landing URL
+
+**Voice rules in SKILL.md are the single source of truth.** Anything about Taha's voice — lowercase, no em dashes, banned words/phrases, 4 authenticity tags, funnel mix, format mix, 6 topic layers + adjacent — lives there. Do not duplicate those rules anywhere else in the codebase.
 
 ## n8n workflows
-### Reddit Monitor (file: `n8n-reddit-monitor.json`) — PARTIALLY DONE
-- Uses n8n's built-in Reddit node (requires Reddit OAuth2 credential)
-- To set up Reddit credential: go to reddit.com/prefs/apps → create "web app" → redirect URI: `https://app.n8n.cloud/rest/oauth2-credential/callback` → paste client ID + secret into n8n Credentials → Reddit OAuth2 API
-- Flow: Schedule (2hr) → Reddit "Get many posts" (3 subreddits) → Normalise (Code node) → Keyword Filter → POST to `/api/reddit`
-- Still need to replace `YOUR-VERCEL-URL` in the JSON before importing
-- Reddit RSS feeds 403 from n8n cloud IPs — must use the native Reddit node with OAuth
+### LinkedIn Creators (file: `n8n-linkedin-creators.json`) — template ready, not active
+Schedule (4h) → read `linkedin_creators` from Config tab → Apify LinkedIn Profile Posts actor per creator → normalize → aggregate → `POST /api/intel/ingest` with `x-ingest-token` header.
 
-### Remaining workflows (not started)
-2. **Morning Brief** — 7am daily → GET `/api/ai/brief`
-3. **Sunday planning reminder** — email/notification with calendar link
-4. **Friday analytics reminder** — prompt to log post stats
-5. **Midnight checklist reset** — archive yesterday, prep today
+**Prereqs before activating:**
+1. Rotate the Apify API key — the old one was leaked in a prior n8n workflow export. Log into the Apify console, revoke it, generate a fresh one, and use the fresh one in the n8n Apify credential. Do not put the old or new key in any committed file.
+2. Create an Apify credential in n8n with the rotated key.
+3. Set `x-ingest-token` in the HTTP Request node to match `INTEL_INGEST_TOKEN` in Vercel env.
+4. Populate the `linkedin_creators` config key with newline-separated profile URLs.
+5. Set `linkedin_posts_per_creator` (default 5 if missing).
+6. Activate the schedule trigger.
 
-## Taha's voice (for AI prompts)
-- Casual but authoritative, direct, no fluff
-- Specific over generic — real numbers, frameworks, examples
-- Cold email expert + founder of Bleed AI
-- Audience: B2B founders, sales teams, agencies
-- Funnel: TOFU (educate) → MOFU (frameworks) → BOFU (proof/CTA)
-- LinkedIn: professional-casual. Reddit: peer-to-peer, zero selling.
+### Reddit Monitor (file: `n8n-reddit-monitor.json`) — partial
+Still needs Reddit OAuth credential setup before it can run. Not blocking anything — the direct JSON fetcher in `lib/reddit.ts` is what `/api/intel/refresh` uses today.
+
+## Taha's voice — where to find it
+Only one place: [.claude/skills/linkedin-batch/SKILL.md](.claude/skills/linkedin-batch/SKILL.md) under the **Voice Rules** heading. The legacy `TAHA_SYSTEM_PROMPT` in `lib/claude.ts` is a different, shorter voice description used by the v1 `/api/ai/*` helpers — it's not the real batch voice.
+
+## What still needs doing (ordered)
+1. **User prereqs:** rotate Apify key, create Notion integration, set `NOTION_TOKEN`/`NOTION_PARENT_ID`/`INTEL_INGEST_TOKEN` in local + Vercel env
+2. Run `migrate-posts-add-id.gs` on the sheet, then re-run `setup-v2.gs` to add LeadMagnets tab
+3. Populate `linkedin_creators` in Config tab
+4. Import and activate the n8n LinkedIn creator workflow
+5. First end-to-end test run of the skill (`/linkedin-batch 3` → save → build a lead magnet on post 1)
+6. Build out `/capture` as the solo post generator + quick capture (out of scope for the 2026-04-13 session)
+7. GIF screen-recorder for published lead magnet landing pages (task #3 in the v2 priority queue)
+
+## Important rules
+- NEVER hardcode colors — CSS variables only
+- NEVER duplicate Taha's voice rules outside SKILL.md
+- NEVER commit `.env.local` (gitignored, but worth a reminder)
+- ALWAYS update this CLAUDE.md whenever meaningful architectural changes ship
