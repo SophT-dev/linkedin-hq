@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { Plus, Mic, MicOff, X, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 const TAGS = ["Post Idea", "Hook", "Insight", "Strategy", "Competitor Note", "Random"];
 
 export default function QuickCaptureButton() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
   const [tag, setTag] = useState("Post Idea");
@@ -78,6 +80,10 @@ export default function QuickCaptureButton() {
       setOpen(false);
     }, 1200);
   };
+
+  // Hide on public lead magnet landing pages so strangers don't see
+  // internal quick-capture UI.
+  if (pathname?.startsWith("/lead-magnet/")) return null;
 
   return (
     <>

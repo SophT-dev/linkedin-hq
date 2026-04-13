@@ -2,13 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Newspaper, Sparkles, Mic } from "lucide-react";
+import { Newspaper, Mic } from "lucide-react";
 
-// Stripped down to the v2 architecture: 3 pages only.
-// Batch and Capture are placeholders until those pages are built.
-// All other pages still exist on disk but are unreachable from the nav.
+// v2 nav — after the batch → skill migration, only /news and /capture live
+// on Vercel. Batch generation moved into the linkedin-batch Claude Code skill.
+// Capture is still a placeholder until the solo-post-generator build.
 const NAV_ITEMS: { href: string; icon: typeof Newspaper; label: string; enabled: boolean }[] = [
-  { href: "/batch", icon: Sparkles, label: "batch", enabled: true },
   { href: "/news", icon: Newspaper, label: "news", enabled: true },
   { href: "/capture", icon: Mic, label: "capture", enabled: false },
 ];
@@ -18,6 +17,10 @@ const ACTIVE_COLOR = "var(--color-accent)";
 export default function BottomNav() {
   const pathname = usePathname();
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
+
+  // Hide on public lead magnet landing pages so strangers don't see the
+  // internal nav.
+  if (pathname?.startsWith("/lead-magnet/")) return null;
 
   return (
     <nav
