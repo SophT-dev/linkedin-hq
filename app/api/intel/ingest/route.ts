@@ -64,7 +64,11 @@ export async function POST(req: NextRequest) {
       .filter((it) => it.url && it.text)
       .map((it) => {
         const title = (it.text || "").slice(0, 80);
-        const summary = (it.text || "").slice(0, 500);
+        // Keep the full post body (LinkedIn caps posts at ~3000 chars, so
+        // 3000 captures everything). The auto-comment generator needs to
+        // see trigger words like "Comment GEM" which are almost always at
+        // the END of the post, far past the old 500-char cutoff.
+        const summary = (it.text || "").slice(0, 3000);
         const score =
           (typeof it.reactions === "number" ? it.reactions : 0) +
           (typeof it.comments === "number" ? it.comments : 0) * 2;

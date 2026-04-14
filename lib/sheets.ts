@@ -173,14 +173,32 @@ export async function loadLinkedInPostsNeedingComment(): Promise<IntelRow[]> {
 }
 
 // Counts LinkedIn intel rows where the comment was actually posted today
-// (used for the daily cap). The "today" check is timezone-naive on UTC,
-// matching the day field convention used elsewhere.
+// (used for the daily cap). "Today" is Asia/Karachi local day (Taha's
+// timezone), so the cap resets at PKT midnight instead of UTC midnight
+// (which would be 5 AM PKT). comment_posted_at is written as a full ISO
+// UTC timestamp by /api/comments/log, so we convert each row's timestamp
+// to the Karachi day and compare.
 export async function countCommentsPostedToday(): Promise<number> {
   const all = await loadIntel();
-  const today = new Date().toISOString().slice(0, 10);
+  const today = karachiDay(new Date());
   return all.filter(
-    (r) => r.comment_status === "posted" && r.comment_posted_at.startsWith(today)
+    (r) =>
+      r.comment_status === "posted" &&
+      r.comment_posted_at &&
+      karachiDay(new Date(r.comment_posted_at)) === today
   ).length;
+}
+
+// Returns YYYY-MM-DD for a Date as observed in Asia/Karachi (UTC+5, no DST).
+function karachiDay(d: Date): string {
+  if (isNaN(d.getTime())) return "";
+  const fmt = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Karachi",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  return fmt.format(d);
 }
 
 // Updates the comment_* columns on the Intel row matching this URL.

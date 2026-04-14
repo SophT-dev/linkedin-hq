@@ -181,7 +181,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "// Randomized wait between 30 and 90 seconds. Spreads the 3-5 comments\n// over a few minutes instead of hammering LinkedIn back-to-back.\n// 'Run once for each item' mode is critical: it preserves the pairedItem\n// chain so downstream nodes can trace each item back to its source.\nconst seconds = 30 + Math.floor(Math.random() * 60);\nreturn { json: { ...$json, wait_seconds: seconds } };"
+        "jsCode": "// Cumulative wait: spreads comments across MINUTES, not seconds.\n//\n// Background: n8n runs all items in parallel through the Wait node, so\n// 'wait 30-90s per item' ends up spreading 11 items across a single\n// ~60s window (they all start at the same wall-clock time). That looks\n// nothing like a human commenting.\n//\n// Fix: make item N wait (N+1) * random(45-120) seconds. All items still\n// start at t=0, but they FINISH spaced out — item 0 posts ~80s later,\n// item 1 posts ~160s later, item 2 ~240s later, and so on. With 11\n// items that's ~15-20 minutes of natural drift, which is what a human\n// scrolling LinkedIn on and off would look like.\nconst base = 45 + Math.floor(Math.random() * 75); // 45-120s per slot\nconst slot = $itemIndex + 1;\nconst seconds = slot * base;\nreturn { json: { ...$json, wait_seconds: seconds, slot_index: $itemIndex } };"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
