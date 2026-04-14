@@ -47,7 +47,7 @@ export const STYLE_PRESETS: Record<StylePreset, PresetSpec> = {
   agree_witty: {
     id: "agree_witty",
     instruction:
-      "write a genuinely funny, sharp reaction in 1-20 words. this is the humor slot — do NOT play it safe. the energy is 'the one funny friend at the table who finally says the real thing'. pick whichever technique fits the post best:\n\n1. **SPECIFIC ABSURD DETAIL** — zoom in on one ridiculous concrete thing the post mentioned. e.g. 'the guy who personalized with literally {first_name} still in the brackets'\n2. **BRUTAL INDUSTRY HONESTY** — say the part everyone thinks but doesn't post. e.g. 'deliverability is just a fancy word for we finally cleaned the list'\n3. **CALLED OUT WITH AFFECTION** — roast a common behavior everyone including yourself is guilty of. e.g. 'this post is attacking me personally and honestly i deserve it'\n4. **UNEXPECTED COMPARISON** — compare the thing to something completely unrelated that makes it feel obvious. e.g. 'cold email is like asking someone out, the first line decides the whole thing'\n5. **MATTER-OF-FACT ABSURDITY** — deliver something wild in a deadpan 'obviously' tone. e.g. 'the fix was always just turning it off and on again'\n6. **PLAYFUL OBSERVATIONAL** — Taha's actual style. e.g. 'the goats in one room 🐐 (or should i say, villa?)'\n\nthe humor MUST reference something SPECIFIC from the post. no generic jokes, no dad-jokes, no puns, no 'lol so relatable'. sharp, conversational, a little irreverent. if the model system prompt says you can use an emoji this slot, feel free to work one in where it's genuinely earned.\n\nNO client stories, NO 'we ran a test', NO flexes. pure observational comedy plus agreement.",
+      "write a genuinely funny, sharp reaction in 1-20 words. this is the humor slot — do NOT play it safe. the energy is 'the one funny friend at the table who finally says the real thing'. pick whichever technique fits the post best:\n\n1. **SPECIFIC ABSURD DETAIL** — zoom in on one ridiculous concrete thing the post mentioned. e.g. 'the guy who personalized with literally {first_name} still in the brackets'\n2. **BRUTAL INDUSTRY HONESTY** — say the part everyone thinks but doesn't post. e.g. 'deliverability is just a fancy word for we finally cleaned the list'\n3. **CALLED OUT WITH AFFECTION** — roast a common behavior everyone including yourself is guilty of. e.g. 'this post is attacking me personally and honestly i deserve it'\n4. **UNEXPECTED COMPARISON** — compare the thing to something completely unrelated that makes it feel obvious. e.g. 'cold email is like asking someone out, the first line decides the whole thing'\n5. **MATTER-OF-FACT ABSURDITY** — deliver something wild in a deadpan 'obviously' tone. e.g. 'the fix was always just turning it off and on again'\n6. **PLAYFUL OBSERVATIONAL** — Taha's actual style. e.g. 'everyone in cold email is either shipping 10x or posting about not shipping', 'the villa energy is real'\n\nthe humor MUST reference something SPECIFIC from the post. no generic jokes, no dad-jokes, no puns, no 'lol so relatable'. sharp, conversational, a little irreverent. if the model system prompt says you can use an emoji this slot, feel free to work one in where it's genuinely earned.\n\nNO client stories, NO 'we ran a test', NO flexes. pure observational comedy plus agreement.",
   },
   agree_curious: {
     id: "agree_curious",
@@ -138,7 +138,7 @@ Natural casing (mixed case, lowercase, caps — whatever feels right). Contracti
 ## WHAT GOOD LOOKS LIKE (these are Taha's actual voice)
 These are real examples. Match this energy:
 
-- "the goats in one room 🐐 (or should i say, villa?)"
+- "the villa energy is wild (or should i say, reunion?)"
 - "Cool"
 - "yess, title-to-persona mapping usually falls apart at mid-market, where roles blur constantly so its tough to pinpoint"
 - "We do something similar as well! Always play to the advantages of the situation, local outreach definitely has its unique benefits"
@@ -186,9 +186,8 @@ If the post asks readers to comment a specific word to receive a lead magnet (gu
 Your comment should then look like: "yess i need this, GEM please" or "dropping INBOX, looks useful" — short (3-15 words), and the trigger word in ALL CAPS. Without the caps the author's automation won't see it as a valid trigger.
 
 ## EMOJIS — ALLOWED LIST, USE SOMETIMES, ONLY WHEN RELEVANT
-The ONLY emojis you can use are these five:
+The ONLY emojis you can use are these four:
 - 👑 (crown) — for a power move, dominance, clear #1
-- 🐐 (goat) — for elite, best-in-class, the real ones
 - 👏 (clapping) — for a clean breakdown, well-made point
 - 🚀 (rocket) — for launches, fast growth, scaling
 - 👍 (thumbs up) — simple agreement
@@ -196,8 +195,8 @@ The ONLY emojis you can use are these five:
 RULES:
 - Use them SOMETIMES, not every comment. Most comments have zero emojis.
 - Only when the emoji is GENUINELY EARNED by the post content. Never force one.
-- If nothing about the post matches one of these five, use NO emoji.
-- NEVER use any other emoji. No 🙌, no 💯, no 🔥, no ✨, no hearts, no faces, NOTHING outside this whitelist. The comment will be rejected if it contains any emoji not on this list.
+- If nothing about the post matches one of these four, use NO emoji.
+- NEVER use any other emoji. No 🙌, no 💯, no 🔥, no ✨, no 🐐, no hearts, no faces, NOTHING outside this whitelist. The comment will be rejected if it contains any emoji not on this list.
 
 ## HARD RULES (non-negotiable)
 - No em dashes (—) or en dashes (–). Use a comma or period.
@@ -243,7 +242,7 @@ export async function generateExpertComment(
   const preset = STYLE_PRESETS[stylePreset];
 
   const emojiDirective = allowEmoji
-    ? "This slot IS allowed to use ONE emoji from the whitelist (👑 🐐 👏 🚀 👍) if it's genuinely earned by the post content. Skip the emoji if nothing fits."
+    ? "This slot IS allowed to use ONE emoji from the whitelist (👑 👏 🚀 👍) if it's genuinely earned by the post content. Skip the emoji if nothing fits."
     : "DO NOT use any emoji in this comment. Zero emojis. Plain text only.";
 
   const userPrompt = `LinkedIn post by ${post.creator_name}:
@@ -290,7 +289,7 @@ Write the comment now. 1-20 words. Natural casing. No quotes around it, no pream
 // Allowed emojis in auto-generated comments. Anything outside this list
 // fails the quality gate. Taha's voice uses these sparingly and only when
 // genuinely earned by the post content.
-const ALLOWED_EMOJIS = new Set(["👑", "🐐", "👏", "🚀", "👍"]);
+const ALLOWED_EMOJIS = new Set(["👑", "👏", "🚀", "👍"]);
 
 // Regex matching the main emoji unicode blocks. Catches the common blocks
 // (misc symbols & pictographs, supplemental, emoticons, transport & map,
@@ -335,7 +334,7 @@ export function qualityGateComment(text: string): VoiceCheck {
     if (!ALLOWED_EMOJIS.has(e)) {
       return {
         ok: false,
-        reason: `emoji "${e}" not in whitelist (allowed: 👑 🐐 👏 🚀 👍)`,
+        reason: `emoji "${e}" not in whitelist (allowed: 👑 👏 🚀 👍)`,
       };
     }
   }
