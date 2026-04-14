@@ -47,7 +47,7 @@ export const STYLE_PRESETS: Record<StylePreset, PresetSpec> = {
   agree_witty: {
     id: "agree_witty",
     instruction:
-      "write a genuinely funny, sharp reaction in 1-20 words. this is the humor slot — do NOT play it safe. the energy is 'the one funny friend at the table who finally says the real thing'. pick whichever technique fits the post best:\n\n1. **SPECIFIC ABSURD DETAIL** — zoom in on one ridiculous concrete thing the post mentioned. e.g. 'the guy who personalized with literally {first_name} still in the brackets'\n2. **BRUTAL INDUSTRY HONESTY** — say the part everyone thinks but doesn't post. e.g. 'deliverability is just a fancy word for we finally cleaned the list'\n3. **CALLED OUT WITH AFFECTION** — roast a common behavior everyone including yourself is guilty of. e.g. 'this post is attacking me personally and honestly i deserve it'\n4. **UNEXPECTED COMPARISON** — compare the thing to something completely unrelated that makes it feel obvious. e.g. 'cold email is like asking someone out, the first line decides the whole thing'\n5. **MATTER-OF-FACT ABSURDITY** — deliver something wild in a deadpan 'obviously' tone. e.g. 'the fix was always just turning it off and on again'\n6. **PLAYFUL OBSERVATIONAL** — Taha's actual style. e.g. 'everyone in cold email is either shipping 10x or posting about not shipping', 'the villa energy is real'\n\nthe humor MUST reference something SPECIFIC from the post. no generic jokes, no dad-jokes, no puns, no 'lol so relatable'. sharp, conversational, a little irreverent. if the model system prompt says you can use an emoji this slot, feel free to work one in where it's genuinely earned.\n\nNO client stories, NO 'we ran a test', NO flexes. pure observational comedy plus agreement.",
+      "write a genuinely funny, sharp reaction in 1-20 words. this is the humor slot — do NOT play it safe. the energy is 'the one funny friend at the table who finally says the real thing'. pick whichever technique fits the post best:\n\n1. **SPECIFIC ABSURD DETAIL** — zoom in on one ridiculous concrete thing the post mentioned. e.g. 'the guy who personalized with literally {first_name} still in the brackets'\n2. **UNEXPECTED COMPARISON** — compare the thing to something completely unrelated that makes it feel obvious. e.g. 'cold email is like asking someone out, the first line decides the whole thing'\n3. **MATTER-OF-FACT ABSURDITY** — deliver something wild in a deadpan 'obviously' tone. ALWAYS end this technique with 😂 so readers know it's a joke and not a real claim. e.g. 'the fix was always just turning it off and on again 😂', 'yeah the secret was caring about the person you were emailing, wild 😂'\n4. **PLAYFUL OBSERVATIONAL** — Taha's actual style. e.g. 'everyone in cold email is either shipping 10x or posting about not shipping', 'the villa energy is real'\n\nthe humor MUST reference something SPECIFIC from the post. no generic jokes, no dad-jokes, no puns, no 'lol so relatable'. sharp, conversational, a little irreverent. the 😂 emoji is ONLY for technique #3 (matter-of-fact absurdity) so the reader doesn't mistake the joke for a real take. the other techniques should generally be plain text unless the allowEmoji flag from the system says otherwise.\n\nNO client stories, NO 'we ran a test', NO flexes. pure observational comedy plus agreement.",
   },
   agree_curious: {
     id: "agree_curious",
@@ -185,18 +185,31 @@ If the post asks readers to comment a specific word to receive a lead magnet (gu
 
 Your comment should then look like: "yess i need this, GEM please" or "dropping INBOX, looks useful" — short (3-15 words), and the trigger word in ALL CAPS. Without the caps the author's automation won't see it as a valid trigger.
 
-## EMOJIS — ALLOWED LIST, USE SOMETIMES, ONLY WHEN RELEVANT
-The ONLY emojis you can use are these four:
+## EMOJIS — TWO KINDS, DIFFERENT RULES
+There are two separate emoji lists, and they follow different rules.
+
+### Decorative emojis (strict — only in allowed slots)
+The ONLY decorative emojis you can use are these four:
 - 👑 (crown) — for a power move, dominance, clear #1
 - 👏 (clapping) — for a clean breakdown, well-made point
 - 🚀 (rocket) — for launches, fast growth, scaling
 - 👍 (thumbs up) — simple agreement
 
-RULES:
-- Use them SOMETIMES, not every comment. Most comments have zero emojis.
-- Only when the emoji is GENUINELY EARNED by the post content. Never force one.
-- If nothing about the post matches one of these four, use NO emoji.
-- NEVER use any other emoji. No 🙌, no 💯, no 🔥, no ✨, no 🐐, no hearts, no faces, NOTHING outside this whitelist. The comment will be rejected if it contains any emoji not on this list.
+Rules:
+- Use them SOMETIMES, not every comment. Most comments have zero decorative emojis.
+- Only when GENUINELY EARNED by the post content. Never force one.
+- Only when the user-prompt directive says this slot is allowed to use one — otherwise none.
+- NEVER use any other decorative emoji. No 🙌, no 💯, no 🔥, no ✨, no 🐐, no hearts, no faces.
+
+### Joke-marker emoji (always allowed, for humor safety)
+The 😂 (laughing face) is a joke marker, not a decoration. It signals "i'm joking" to the reader when you deliver a deadpan absurd claim that could otherwise be mistaken for a real take.
+
+Rules:
+- 😂 is ALWAYS allowed, in ANY comment, regardless of slot.
+- Use it ONLY for the matter-of-fact-absurdity humor technique (deadpan wild claim). Put it at the END of the comment.
+- Do NOT use 😂 for ordinary agreement or praise — it's a JOKE marker, not a "this is funny haha" marker. If nothing wild is being claimed, skip it.
+- Example: "the fix was always just turning it off and on again 😂"
+- Do NOT use any other laughing/face emoji (no 🤣, 😅, 😆, 🙃 — only 😂).
 
 ## HARD RULES (non-negotiable)
 - No em dashes (—) or en dashes (–). Use a comma or period.
@@ -242,8 +255,8 @@ export async function generateExpertComment(
   const preset = STYLE_PRESETS[stylePreset];
 
   const emojiDirective = allowEmoji
-    ? "This slot IS allowed to use ONE emoji from the whitelist (👑 👏 🚀 👍) if it's genuinely earned by the post content. Skip the emoji if nothing fits."
-    : "DO NOT use any emoji in this comment. Zero emojis. Plain text only.";
+    ? "This slot IS allowed to use ONE decorative emoji from the whitelist (👑 👏 🚀 👍) if it's genuinely earned by the post content. Skip the emoji if nothing fits. Separately: 😂 is ALWAYS allowed in this comment if you're using the matter-of-fact-absurdity humor technique — it signals 'i'm joking' to the reader."
+    : "DO NOT use any decorative emoji in this comment (no 👑 👏 🚀 👍). The ONLY exception: if the comment uses the matter-of-fact-absurdity humor technique (deadpan wild claim), you MAY and SHOULD end it with 😂 so the reader knows it's a joke, not a real take.";
 
   const userPrompt = `LinkedIn post by ${post.creator_name}:
 
@@ -276,7 +289,15 @@ Write the comment now. 1-20 words. Natural casing. No quotes around it, no pream
     .trim();
 
   if (!allowEmoji) {
-    cleaned = cleaned.replace(EMOJI_REGEX, "").replace(/\s+/g, " ").trim();
+    // Strip decorative emojis that slipped in, but KEEP joke-marker
+    // emojis (😂) — those are exempt from the 1-in-4 ratio because they
+    // function as "i'm joking" signals, not decoration.
+    cleaned = cleaned
+      .replace(EMOJI_REGEX, (match) =>
+        JOKE_MARKER_EMOJIS.has(match) ? match : ""
+      )
+      .replace(/\s+/g, " ")
+      .trim();
   }
 
   return {
@@ -286,10 +307,16 @@ Write the comment now. 1-20 words. Natural casing. No quotes around it, no pream
   };
 }
 
-// Allowed emojis in auto-generated comments. Anything outside this list
-// fails the quality gate. Taha's voice uses these sparingly and only when
-// genuinely earned by the post content.
+// Decorative emojis in auto-generated comments. Subject to the 1-in-4
+// slot ratio enforced by /api/comments/plan. Anything outside this list
+// (and outside the joke-marker list below) fails the quality gate.
 const ALLOWED_EMOJIS = new Set(["👑", "👏", "🚀", "👍"]);
+
+// Joke-marker emojis — always allowed, in ANY slot, regardless of the
+// 1-in-4 emoji ratio. These exist so the matter-of-fact-absurdity humor
+// technique can signal "i'm joking" without risking the reader thinking
+// the wild claim is a serious take. Only the laughing face for now.
+const JOKE_MARKER_EMOJIS = new Set(["😂"]);
 
 // Regex matching the main emoji unicode blocks. Catches the common blocks
 // (misc symbols & pictographs, supplemental, emoticons, transport & map,
@@ -327,14 +354,14 @@ export function qualityGateComment(text: string): VoiceCheck {
     return { ok: false, reason: "contains em or en dash" };
   }
 
-  // Emoji whitelist check — any emoji-range character that isn't in the
-  // allowed set fails the gate.
+  // Emoji whitelist check — any emoji-range character that isn't in
+  // the decorative whitelist OR the joke-marker whitelist fails the gate.
   const emojiMatches = text.match(EMOJI_REGEX) || [];
   for (const e of emojiMatches) {
-    if (!ALLOWED_EMOJIS.has(e)) {
+    if (!ALLOWED_EMOJIS.has(e) && !JOKE_MARKER_EMOJIS.has(e)) {
       return {
         ok: false,
-        reason: `emoji "${e}" not in whitelist (allowed: 👑 👏 🚀 👍)`,
+        reason: `emoji "${e}" not in whitelist (allowed: 👑 👏 🚀 👍 😂)`,
       };
     }
   }
