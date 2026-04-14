@@ -1,5 +1,5 @@
 {
-  "_comment": "linkedin-hq creator feed — TEMPLATE with placeholders. To get a ready-to-import version with secrets pre-filled, see n8n-linkedin-creators.local.json (gitignored, generated from this template). This committed copy has REPLACE_WITH_APIFY_TOKEN and REPLACE_WITH_INGEST_TOKEN placeholders so it's safe to share publicly. Reads linkedin_creators from the linkedin-hq Config tab, scrapes posts via Apify HTTP API, POSTs results to /api/intel/ingest. Independent of the parasite flow.",
+  "_comment": "linkedin-hq creator feed v2 — TEMPLATE with placeholders. Import the gitignored sibling n8n-linkedin-creators.local.json instead — it has all secrets pre-filled. Sequential flow: scrape → ingest to Intel tab → plan comments (reads back from Intel) → split → wait → POST to LinkedIn → log result back to Intel row → Slack notify. Comment data lives as 4 extra columns on each Intel row, not in a separate Comments tab.",
   "name": "LinkedIn HQ — creator feed",
   "nodes": [
     {
@@ -15,7 +15,7 @@
       },
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
-      "position": [-640, 0],
+      "position": [-960, 0],
       "id": "trigger-1",
       "name": "Every 4 hours"
     },
@@ -35,7 +35,7 @@
       },
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
-      "position": [-432, 0],
+      "position": [-752, 0],
       "id": "read-config",
       "name": "Read linkedin-hq Config",
       "credentials": {
@@ -47,11 +47,11 @@
     },
     {
       "parameters": {
-        "jsCode": "// Parse the Config tab into a creator URL list.\n// The Config tab is key/value: column A = key, column B = value.\n// We pick out linkedin_creators (newline-separated URLs) and\n// linkedin_posts_per_creator (integer, default 5).\nconst rows = items.map(i => i.json);\nconst config = {};\nfor (const r of rows) {\n  const key = r.key || r.A;\n  const val = r.value !== undefined ? r.value : r.B;\n  if (key) config[key] = val == null ? '' : String(val);\n}\nconst raw = config['linkedin_creators'] || '';\nconst perCreator = parseInt(config['linkedin_posts_per_creator'] || '5', 10);\nconst urls = raw\n  .split('\\n')\n  .map(s => s.trim())\n  .filter(s => s.length > 0 && s.startsWith('http'));\nif (urls.length === 0) {\n  throw new Error('linkedin_creators is empty in the linkedin-hq Config tab. Add LinkedIn profile URLs (one per line) to row B for the linkedin_creators key.');\n}\nreturn [\n  {\n    json: {\n      targetUrls: urls,\n      maxPosts: perCreator,\n    },\n  },\n];"
+        "jsCode": "const rows = items.map(i => i.json);\nconst config = {};\nfor (const r of rows) {\n  const key = r.key || r.A;\n  const val = r.value !== undefined ? r.value : r.B;\n  if (key) config[key] = val == null ? '' : String(val);\n}\nconst raw = config['linkedin_creators'] || '';\nconst perCreator = parseInt(config['linkedin_posts_per_creator'] || '5', 10);\nconst urls = raw\n  .split('\\n')\n  .map(s => s.trim())\n  .filter(s => s.length > 0 && s.startsWith('http'));\nif (urls.length === 0) {\n  throw new Error('linkedin_creators is empty in the linkedin-hq Config tab.');\n}\nreturn [\n  {\n    json: {\n      targetUrls: urls,\n      maxPosts: perCreator,\n    },\n  },\n];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [-208, 0],
+      "position": [-528, 0],
       "id": "parse-config",
       "name": "Parse creator list"
     },
@@ -83,7 +83,7 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [16, 0],
+      "position": [-304, 0],
       "id": "apify-call",
       "name": "Apify — scrape creator posts"
     },
@@ -95,17 +95,17 @@
       },
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
-      "position": [240, 0],
+      "position": [-80, 0],
       "id": "aggregate",
       "name": "Aggregate posts"
     },
     {
       "parameters": {
-        "jsCode": "// Map raw Apify items into the shape /api/intel/ingest expects.\n// The actor returns one item per scraped LinkedIn post with this rough shape:\n//   { id, linkedinUrl (post URL), content, author: {linkedinUrl, name},\n//     postedAt: {date}, engagement: {likes, comments}, postImages: [...] }\n// We flatten into the IntelRow contract on the linkedin-hq side.\nconst raw = $input.first().json.items || [];\nconst out = [];\nfor (const p of raw) {\n  if (!p) continue;\n  const url = p.linkedinUrl || p.postUrl || p.url || '';\n  const text = p.content || p.text || '';\n  if (!url || !text) continue;\n  const author = p.author || {};\n  const engagement = p.engagement || {};\n  const postedAt = p.postedAt || {};\n  out.push({\n    creator_url: author.linkedinUrl || '',\n    creator_name: author.name || 'linkedin',\n    posted_at: postedAt.date || postedAt || '',\n    url,\n    text,\n    reactions: Number(engagement.likes || 0),\n    comments: Number(engagement.comments || 0),\n    type: 'linkedin',\n  });\n}\nreturn [{ json: { items: out } }];"
+        "jsCode": "// Map raw Apify items into the shape /api/intel/ingest expects.\nconst raw = $input.first().json.items || [];\nconst out = [];\nfor (const p of raw) {\n  if (!p) continue;\n  const url = p.linkedinUrl || p.postUrl || p.url || '';\n  const text = p.content || p.text || '';\n  if (!url || !text) continue;\n  const author = p.author || {};\n  const engagement = p.engagement || {};\n  const postedAt = p.postedAt || {};\n  out.push({\n    creator_url: author.linkedinUrl || '',\n    creator_name: author.name || 'linkedin',\n    posted_at: (typeof postedAt === 'object' ? postedAt.date : postedAt) || '',\n    url,\n    text,\n    reactions: Number(engagement.likes || 0),\n    comments: Number(engagement.comments || 0),\n    type: 'linkedin',\n  });\n}\nreturn [{ json: { items: out } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [464, 0],
+      "position": [144, 0],
       "id": "normalize",
       "name": "Normalize for ingest"
     },
@@ -133,18 +133,264 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [688, 0],
+      "position": [368, 0],
       "id": "post-ingest",
-      "name": "POST to linkedin-hq"
+      "name": "POST to /api/intel/ingest"
     },
     {
       "parameters": {
-        "content": "## linkedin-hq creator feed\n**What this does**\n1. Reads `linkedin_creators` from the linkedin-hq Config tab (key/value sheet)\n2. Calls Apify actor `A3cAPGpwBEG8RJwse` with those URLs to scrape last-week posts\n3. Maps results into the linkedin-hq Intel row shape\n4. POSTs to `/api/intel/ingest` with the shared-secret header\n\n**To edit the creator list**: just edit row B of `linkedin_creators` in the linkedin-hq Config tab. No need to touch this workflow.\n\n**To rotate the Apify key**: edit the Authorization header in the `Apify — scrape creator posts` node.\n\n**To rotate the ingest token**: edit the x-ingest-token header in the `POST to linkedin-hq` node AND the INTEL_INGEST_TOKEN env var on Vercel — they must match.",
-        "height": 280,
-        "width": 600
+        "method": "POST",
+        "url": "https://linkedin-hq.vercel.app/api/comments/plan",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [592, 0],
+      "id": "post-plan",
+      "name": "POST to /api/comments/plan"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "comments",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [816, 0],
+      "id": "split-comments",
+      "name": "Split comments"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Randomized wait between 30 and 90 seconds. Spreads the 3-5 comments\n// over a few minutes instead of hammering LinkedIn back-to-back.\nconst ms = 30000 + Math.floor(Math.random() * 60000);\nreturn [{ json: { ...$json, wait_ms: ms } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1040, 0],
+      "id": "calc-wait",
+      "name": "Calculate random wait"
+    },
+    {
+      "parameters": {
+        "amount": "={{ $json.wait_ms }}",
+        "unit": "ms"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1264, 0],
+      "id": "wait-random",
+      "name": "Wait (humanize cadence)",
+      "webhookId": "linkedin-hq-comment-wait"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.linkedin.com/v2/socialActions/{{ encodeURIComponent($json.post_urn) }}/comments",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "linkedInOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Restli-Protocol-Version",
+              "value": "2.0.0"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"actor\": \"urn:li:person:CYH_eYFiZb\",\n  \"object\": \"{{ $json.post_urn }}\",\n  \"message\": {\n    \"text\": \"{{ $json.comment_text.replace(/\"/g, '\\\\\"') }}\"\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1488, 0],
+      "id": "post-comment",
+      "name": "POST comment to LinkedIn",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "Dg0fNXlvpYL0WwHR",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "status-201",
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": 201,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1712, 0],
+      "id": "check-success",
+      "name": "Was it 201?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://linkedin-hq.vercel.app/api/comments/log",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"url\": \"{{ $('Split comments').item.json.url }}\",\n  \"status\": \"posted\"\n}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1936, -80],
+      "id": "log-success",
+      "name": "Log posted"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://linkedin-hq.vercel.app/api/comments/log",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"url\": \"{{ $('Split comments').item.json.url }}\",\n  \"status\": \"post_failed\",\n  \"error\": \"linkedin returned {{ $json.statusCode }}\"\n}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1936, 80],
+      "id": "log-failure",
+      "name": "Log failed"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "linkedin-comments",
+          "mode": "name"
+        },
+        "text": "=auto-commented on *{{ $('Split comments').item.json.creator_name }}*'s post:\n\n> {{ $('Split comments').item.json.comment_text }}\n\nstyle: `{{ $('Split comments').item.json.style_preset }}`\nlink: {{ $('Split comments').item.json.url }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [2160, -80],
+      "id": "slack-success",
+      "name": "Slack notify (posted)",
+      "webhookId": "linkedin-hq-slack-success",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "4mJJu3Vcba9QnUDR",
+          "name": "sophiya-slack-connection"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "linkedin-comments",
+          "mode": "name"
+        },
+        "text": "=:warning: failed to post comment on *{{ $('Split comments').item.json.creator_name }}*'s post\n\nattempted comment:\n> {{ $('Split comments').item.json.comment_text }}\n\nlink: {{ $('Split comments').item.json.url }}\nstatus: {{ $json.statusCode }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [2160, 80],
+      "id": "slack-failure",
+      "name": "Slack notify (failed)",
+      "webhookId": "linkedin-hq-slack-failure",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "4mJJu3Vcba9QnUDR",
+          "name": "sophiya-slack-connection"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## linkedin-hq creator feed v2 — with auto-comment\n\n**Sequential flow:**\n1. Schedule trigger every 4h\n2. Read linkedin_creators from the linkedin-hq Config tab\n3. Apify scrape latest posts from each creator\n4. Aggregate + normalize into intel item shape\n5. POST to /api/intel/ingest — writes scraped posts to the Intel tab (for /news display)\n6. POST to /api/comments/plan — Vercel reads the Intel tab, picks LinkedIn posts that don't yet have a comment, generates one comment per post via Claude, runs the voice quality gate, writes the draft comment_text + comment_status='draft' + comment_style straight into the matching Intel row's new comment columns, returns the approved comments to n8n\n7. Split returned comments into individual items\n8. Random 30-90s wait per item (humanize cadence — never burst-post all 5 in 2 seconds)\n9. POST each comment to LinkedIn /v2/socialActions/{urn}/comments via the existing OAuth credential\n10. Branch on success (201) vs failure\n11. Log result back to /api/comments/log → updates the matching Intel row's comment_status to 'posted' or 'post_failed' (looked up by URL)\n12. Slack notify the #linkedin-comments channel either way\n\n**Why this design:**\n- One row per LinkedIn post in Intel, with comment data attached. No separate Comments tab. You can scan the Intel tab and see exactly which posts have a comment and which don't, in one place.\n- Daily cap (default 5) is enforced by /api/comments/plan reading the Intel tab. Once 5 posts today have comment_status='posted', /plan returns an empty list and posts nothing until tomorrow.\n- Dedup is automatic — /plan only picks rows where comment_status is empty.\n\n**Hardcoded values:**\n- LINKEDIN_HQ ingest token: `a11621255680d70047e1967dca84a3b9e67c91f942a237fb`\n- LinkedIn person URN: `urn:li:person:CYH_eYFiZb` (Taha)\n- Apify token: existing leaked one\n- LinkedIn OAuth credential: `LinkedIn account` (id `Dg0fNXlvpYL0WwHR`, same as parasite flow)\n- Slack credential: `sophiya-slack-connection` (id `4mJJu3Vcba9QnUDR`, same as parasite flow)\n- Slack channel: `linkedin-comments` — create this in your workspace before activating\n\n**To kill a bad comment**: open the post URL from the Slack notification → delete the comment from LinkedIn UI → manually update the matching Intel row's comment_status to `deleted`.",
+        "height": 600,
+        "width": 800
       },
       "type": "n8n-nodes-base.stickyNote",
-      "position": [-640, -360],
+      "position": [-960, -680],
       "typeVersion": 1,
       "id": "doc-note",
       "name": "Documentation"
@@ -167,10 +413,40 @@
       "main": [[{ "node": "Normalize for ingest", "type": "main", "index": 0 }]]
     },
     "Normalize for ingest": {
-      "main": [[{ "node": "POST to linkedin-hq", "type": "main", "index": 0 }]]
+      "main": [[{ "node": "POST to /api/intel/ingest", "type": "main", "index": 0 }]]
+    },
+    "POST to /api/intel/ingest": {
+      "main": [[{ "node": "POST to /api/comments/plan", "type": "main", "index": 0 }]]
+    },
+    "POST to /api/comments/plan": {
+      "main": [[{ "node": "Split comments", "type": "main", "index": 0 }]]
+    },
+    "Split comments": {
+      "main": [[{ "node": "Calculate random wait", "type": "main", "index": 0 }]]
+    },
+    "Calculate random wait": {
+      "main": [[{ "node": "Wait (humanize cadence)", "type": "main", "index": 0 }]]
+    },
+    "Wait (humanize cadence)": {
+      "main": [[{ "node": "POST comment to LinkedIn", "type": "main", "index": 0 }]]
+    },
+    "POST comment to LinkedIn": {
+      "main": [[{ "node": "Was it 201?", "type": "main", "index": 0 }]]
+    },
+    "Was it 201?": {
+      "main": [
+        [{ "node": "Log posted", "type": "main", "index": 0 }],
+        [{ "node": "Log failed", "type": "main", "index": 0 }]
+      ]
+    },
+    "Log posted": {
+      "main": [[{ "node": "Slack notify (posted)", "type": "main", "index": 0 }]]
+    },
+    "Log failed": {
+      "main": [[{ "node": "Slack notify (failed)", "type": "main", "index": 0 }]]
     }
   },
   "active": false,
   "settings": { "executionOrder": "v1" },
-  "versionId": "linkedin-hq-feed-v1"
+  "versionId": "linkedin-hq-feed-v2-intel-comments"
 }

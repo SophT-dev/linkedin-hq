@@ -160,6 +160,24 @@ var LEAD_MAGNETS_HEADERS = [
   "conversions",
 ];
 
+// v2 auto-comment feature — instead of a separate Comments tab, we add
+// 4 columns to the existing Intel tab so each LinkedIn post row carries
+// its own comment state. setup-v2 ensures these columns exist on the
+// right side of the Intel tab without touching existing data.
+var INTEL_COMMENT_COLUMNS = [
+  "comment_text",
+  "comment_status",       // draft | quality_failed | posted | post_failed | deleted
+  "comment_posted_at",
+  "comment_style",        // agree_add | contrarian | sharp_question | bts_story | tactical_tip
+];
+
+// Default Config rows for the auto-comment feature. Seeded only if the
+// keys don't already exist in the Config tab.
+var COMMENTS_CONFIG_DEFAULTS = [
+  ["comments_daily_cap", "5"],
+  ["comments_min_engagement", "0"],
+];
+
 function setupV2() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var ui = SpreadsheetApp.getUi();
@@ -187,6 +205,15 @@ function setupV2() {
   ensureTab(ss, "Posts", POSTS_HEADERS);
   ensureTab(ss, "LeadMagnets", LEAD_MAGNETS_HEADERS);
 
+  // Extend the existing Intel tab with the 4 auto-comment columns
+  // without touching existing rows. Old rows just have empty cells in
+  // the new columns, which the auto-comment loop reads as "not yet
+  // commented" and is free to comment on.
+  ensureColumns(ss, "Intel", INTEL_COMMENT_COLUMNS);
+
+  // Seed the auto-comment Config keys if not already present.
+  ensureConfigKeys(ss, COMMENTS_CONFIG_DEFAULTS);
+
   // Pre-seed WinsLog with portfolio wins ONLY if it's currently empty
   // (only header row exists). Re-running setupV2 won't duplicate.
   var winsSheet = ss.getSheetByName("WinsLog");
@@ -209,16 +236,94 @@ function setupV2() {
   ui.alert(
     "Setup complete.\n\n" +
       "Created (or kept): WinsLog, Posts, LeadMagnets\n" +
-      "Kept as-is: Intel, Config\n" +
+      "Extended: Intel tab now has 4 comment columns on the right\n" +
+      "Kept as-is: Config (with comments_daily_cap + comments_min_engagement seeded)\n" +
       "Deleted: " +
       deleted +
       " legacy tab(s)\n\n" +
       "WinsLog seeded with " +
       WINSLOG_SEED.length +
       " portfolio wins.\n\n" +
-      "Batch generation now runs in the linkedin-batch Claude Code skill,\n" +
-      "not on Vercel. Run /linkedin-batch in a Claude Code session to begin."
+      "Batch generation runs in the linkedin-batch Claude Code skill.\n" +
+      "Auto-commenting on scraped LinkedIn posts runs in the n8n creator feed workflow."
   );
+}
+
+// Adds new columns to the right side of an existing tab if they don't
+// already exist. Looks at the header row and appends any missing column
+// names. Existing data rows are untouched — new columns just have empty
+// cells until something writes to them.
+function ensureColumns(ss, tabName, columnNames) {
+  var sheet = ss.getSheetByName(tabName);
+  if (!sheet) return; // tab doesn't exist, nothing to extend
+
+  var lastCol = sheet.getLastColumn();
+  if (lastCol === 0) {
+    // Empty sheet — write headers starting at column A
+    sheet
+      .getRange(1, 1, 1, columnNames.length)
+      .setValues([columnNames])
+      .setFontWeight("bold")
+      .setBackground("#0d0608")
+      .setFontColor("#ffffff");
+    sheet.setFrozenRows(1);
+    return;
+  }
+
+  var existingHeaders = sheet
+    .getRange(1, 1, 1, lastCol)
+    .getValues()[0]
+    .map(function (h) {
+      return String(h || "").trim();
+    });
+
+  var missing = [];
+  for (var i = 0; i < columnNames.length; i++) {
+    if (existingHeaders.indexOf(columnNames[i]) === -1) {
+      missing.push(columnNames[i]);
+    }
+  }
+
+  if (missing.length === 0) return;
+
+  var startCol = lastCol + 1;
+  sheet
+    .getRange(1, startCol, 1, missing.length)
+    .setValues([missing])
+    .setFontWeight("bold")
+    .setBackground("#0d0608")
+    .setFontColor("#ffffff");
+}
+
+// Seeds key/value rows in the Config tab without overwriting existing values.
+// Used by setupV2 to add new feature config keys (e.g. comments_daily_cap)
+// when the feature is first enabled.
+function ensureConfigKeys(ss, keyValuePairs) {
+  var sheet = ss.getSheetByName("Config");
+  if (!sheet) return;
+
+  var lastRow = sheet.getLastRow();
+  var existingKeys = {};
+  if (lastRow >= 2) {
+    var existing = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
+    for (var i = 0; i < existing.length; i++) {
+      if (existing[i][0]) existingKeys[existing[i][0]] = true;
+    }
+  }
+
+  var rowsToAdd = [];
+  for (var j = 0; j < keyValuePairs.length; j++) {
+    var key = keyValuePairs[j][0];
+    var val = keyValuePairs[j][1];
+    if (!existingKeys[key]) {
+      rowsToAdd.push([key, val]);
+    }
+  }
+
+  if (rowsToAdd.length === 0) return;
+
+  var startRow = lastRow + 1;
+  sheet.getRange(startRow, 1, rowsToAdd.length, 2).setValues(rowsToAdd);
 }
 
 function ensureTab(ss, name, headers) {

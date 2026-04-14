@@ -42,7 +42,7 @@ One spreadsheet. Run `setup-v2.gs` in Google Apps Script once to initialize. If 
 
 | Tab | Purpose |
 |---|---|
-| **Intel** | Unified news feed. Reddit + Google News + LinkedIn creators. Columns: `pulled_at \| posted_at \| type \| source \| title \| url \| summary \| score \| starred` |
+| **Intel** | Unified news feed. Reddit + Google News + LinkedIn creators. Columns: `pulled_at \| posted_at \| type \| source \| title \| url \| summary \| score \| starred \| comment_text \| comment_status \| comment_posted_at \| comment_style`. The four comment_* columns are added by `setup-v2.gs`'s `ensureColumns` helper and carry the auto-comment state for each LinkedIn post (one row per post, no separate Comments tab). |
 | **Config** | Key-value config. Keys used by the app: `linkedin_creators` (newline-separated profile URLs), `linkedin_posts_per_creator` (int). Legacy keys still supported: `daily_focus`, `strategy_context`. |
 | **WinsLog** | Taha's real client wins — the authenticity moat. Seeded from `upwork proposal/CLAUDE.md`. Columns: `date \| client \| campaign \| what_we_did \| result \| lesson \| tags` |
 | **Posts** | Generated posts saved by the skill. Columns: `id \| batch_date \| hook \| body \| format \| funnel_stage \| visual_brief \| lead_magnet \| sources_used \| authenticity_tag \| status`. `id` is a 10-char nanoid. `lead_magnet` starts as `name | prop | cta` and is rewritten to the live landing URL after a lead magnet is built. |
@@ -90,6 +90,8 @@ Legacy v1 pages (`/ai-studio`, `/analytics`, `/calendar`, `/creators`, `/ideas`,
 - `GET  /api/intel/starred` — thin proxy, returns starred Intel rows (skill input)
 - `POST /api/intel/refresh` — runs the Reddit + Google News scouts (news page refresh button)
 - `POST /api/intel/ingest` — n8n LinkedIn creator pipeline entrypoint. Protected by `x-ingest-token`
+- `POST /api/comments/plan` — reads Intel for LinkedIn posts that have no comment yet, picks top-engagement ones up to the daily cap, generates a comment per post in Taha's voice, runs voice quality gate, writes draft to the matching Intel row, returns approved comments to n8n. Called by the n8n creator feed AFTER `/api/intel/ingest`.
+- `POST /api/comments/log` — receives `{ url, status, error? }` from n8n after each LinkedIn comment POST attempt. Looks up the Intel row by URL and updates `comment_status` (and `comment_posted_at` if posted, or `comment_text` with the error if failed).
 - `POST /api/posts/save` — appends posts, returns `{ saved, items: [{id, rowIndex, hook}] }`
 - `GET  /api/posts/:id` — fetch a single post by nanoid id
 - `GET  /api/news` — reads Intel tab for the /news page
@@ -97,6 +99,27 @@ Legacy v1 pages (`/ai-studio`, `/analytics`, `/calendar`, `/creators`, `/ideas`,
 - `POST /api/notion/publish` — markdown body → Notion page, returns `{ notionUrl, pageId }`
 - `POST /api/lead-magnet/save` — creates LeadMagnets row, rewrites source Post's lead_magnet cell with landing URL, revalidates landing page
 - **Legacy** (v1 pages still on disk): `/api/ai/comment`, `/api/ai/hook`, `/api/ai/ideas`, `/api/ai/brief`, `/api/ai/strategy`, `/api/ai/creator`, `/api/checklist`, `/api/reddit`, `/api/sheets`
+
+## Auto-comment loop on LinkedIn creator posts (v2, shipped 2026-04-14)
+
+Closes the loop on the LinkedIn creator feed: every 4 hours when n8n scrapes the latest posts from the creators in the `linkedin_creators` Config row, it now also generates a comment in Taha's voice for the top-engagement ones and posts them to LinkedIn under his account, with Slack notifications for visibility.
+
+**Flow:** Apify scrape → POST `/api/intel/ingest` (writes posts to Intel tab) → POST `/api/comments/plan` (reads Intel for LinkedIn posts that have no comment yet, picks the top by score up to `comments_daily_cap`, generates a comment via Claude using one of 5 style presets selected heuristically, runs the voice quality gate from `lib/voice-rules.ts`, writes draft to the matching Intel row, returns approved list) → split → random 30-90s wait → POST to LinkedIn `/v2/socialActions/{urn}/comments` via existing parasite OAuth credential → branch on success/fail → POST `/api/comments/log` with the post URL → Slack notify `#linkedin-comments`.
+
+**Daily cap:** `comments_daily_cap` row in the Config tab, default 5. The plan route counts Intel rows where `comment_status=posted` and `comment_posted_at` starts with today, and stops generating once the cap is hit.
+
+**Safety:**
+- Voice quality gate enforces lowercase, no em dashes, no banned words/phrases, no rhetorical questions, no @mentions, length 30-280 chars
+- 30-90s randomized wait between comments humanizes the cadence so it doesn't burst-post
+- Slack notification is the kill switch — if a comment looks bad, you click the link in Slack and delete it manually from LinkedIn
+
+**Style presets** (`lib/comments.ts` `STYLE_PRESETS`): `agree_add` (default, agrees and adds a stat), `contrarian` (pushes back on a strong claim), `sharp_question` (asks a real follow-up), `bts_story` (shares a 2-3 sentence behind-the-scenes), `tactical_tip` (drops one specific tactic). The picker is a heuristic over the post text.
+
+**Files:** [lib/voice-rules.ts](lib/voice-rules.ts), [lib/comments.ts](lib/comments.ts), [app/api/comments/plan/route.ts](app/api/comments/plan/route.ts), [app/api/comments/log/route.ts](app/api/comments/log/route.ts), and the `attachCommentToIntelRow` / `loadLinkedInPostsNeedingComment` / `countCommentsPostedToday` helpers in [lib/sheets.ts](lib/sheets.ts).
+
+**n8n side:** `n8n-linkedin-creators.local.json` (gitignored) has the secrets pre-filled for import. The committed `n8n-linkedin-creators.json` has placeholders.
+
+**Pre-flight test:** `n8n-gate0-comment-test.json` is a one-off throwaway workflow that posts a single test comment to verify the LinkedIn API accepts the OAuth credential. Always run this after reconnecting the LinkedIn credential to confirm it's healthy.
 
 ## Theming — IMPORTANT
 ⚠️ **Any UI change must be checked in both light and dark mode.** All colors use CSS variables — never hardcode oklch in components.
