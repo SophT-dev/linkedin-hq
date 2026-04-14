@@ -180,7 +180,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Randomized wait between 30 and 90 seconds. Spreads the 3-5 comments\n// over a few minutes instead of hammering LinkedIn back-to-back.\nconst ms = 30000 + Math.floor(Math.random() * 60000);\nreturn [{ json: { ...$json, wait_ms: ms } }];"
+        "jsCode": "// Randomized wait between 30 and 90 seconds. Spreads the 3-5 comments\n// over a few minutes instead of hammering LinkedIn back-to-back.\nconst seconds = 30 + Math.floor(Math.random() * 60);\nreturn [{ json: { ...$json, wait_seconds: seconds } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -190,8 +190,8 @@
     },
     {
       "parameters": {
-        "amount": "={{ $json.wait_ms }}",
-        "unit": "ms"
+        "amount": "={{ $json.wait_seconds }}",
+        "unit": "seconds"
       },
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
