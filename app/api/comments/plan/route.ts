@@ -116,7 +116,18 @@ export async function POST() {
       comment_text: string;
       creator_name: string;
       style_preset: string;
+      post_preview: string;
     }> = [];
+
+    // Short, single-line preview of the original LinkedIn post for the
+    // Slack notification. Slack's own LinkedIn unfurl is disabled in the
+    // n8n workflow (it dumps the entire post body), so we send our own
+    // truncated version instead.
+    const buildPreview = (raw: string | undefined): string => {
+      const text = (raw || "").replace(/\s+/g, " ").trim();
+      if (text.length <= 140) return text;
+      return text.slice(0, 137) + "...";
+    };
 
     for (const row of selected) {
       const post_urn = extractPostUrn(row.url);
@@ -143,6 +154,7 @@ export async function POST() {
           comment_text: row.comment_text,
           creator_name: row.source || "linkedin",
           style_preset: row.comment_style || "agree_add",
+          post_preview: buildPreview(row.summary || row.title),
         });
         continue;
       }
@@ -192,6 +204,7 @@ export async function POST() {
         comment_text: generated.comment_text,
         creator_name: post.creator_name,
         style_preset: generated.style_preset,
+        post_preview: buildPreview(row.summary || row.title),
       });
     }
 

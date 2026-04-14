@@ -491,8 +491,11 @@
           "value": "linkedin-comments",
           "mode": "name"
         },
-        "text": "=auto-commented on *{{ $json.creator_name }}*'s post:\n\n> {{ $json.comment_text }}\n\nstyle: `{{ $json.style_preset }}`\nlink: {{ $json.url }}",
-        "otherOptions": {}
+        "text": "=auto-commented on *{{ $json.creator_name }}*'s post:\n\n> {{ $json.comment_text }}\n\nstyle: `{{ $json.style_preset }}`\nlink: <{{ $json.url }}|view post>\n\npreview: _{{ $json.post_preview }}_",
+        "otherOptions": {
+          "includeLinkUnfurls": false,
+          "includeLinkUnfurlsMedia": false
+        }
       },
       "type": "n8n-nodes-base.slack",
       "typeVersion": 2.3,
@@ -516,8 +519,11 @@
           "value": "linkedin-comments",
           "mode": "name"
         },
-        "text": "=:warning: failed to post comment on *{{ $json.creator_name }}*'s post\n\nattempted comment:\n> {{ $json.comment_text }}\n\nlink: {{ $json.url }}\nstatus: {{ $json.linkedin_status || $json.retry_status }}\nerror: `{{ ($json.error_body || '').slice(0, 200) }}`",
-        "otherOptions": {}
+        "text": "=:warning: failed to post comment on *{{ $json.creator_name }}*'s post\n\nattempted comment:\n> {{ $json.comment_text }}\n\nlink: <{{ $json.url }}|view post>\nstatus: {{ $json.linkedin_status || $json.retry_status }}\nerror: `{{ ($json.error_body || '').slice(0, 200) }}`",
+        "otherOptions": {
+          "includeLinkUnfurls": false,
+          "includeLinkUnfurlsMedia": false
+        }
       },
       "type": "n8n-nodes-base.slack",
       "typeVersion": 2.3,
