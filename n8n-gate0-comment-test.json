@@ -1,0 +1,173 @@
+{
+  "_comment": "Gate 0 test for the linkedin-hq auto-comment feature. Import this into n8n, then: (1) edit the 'Set test post URN' node to paste the URN of one of your OWN recent LinkedIn posts (so a bad test comment can be deleted instantly), (2) click Execute Workflow, (3) check the 'POST comment to LinkedIn' node's output. If you get 201 + a comment URN back, the official API works for our use case and we can build the full auto-comment MVP. If you get 403 PERMISSION_DENIED, we have to pivot. The /v2/me node auto-fetches your person URN so you don't have to figure it out by hand.",
+  "name": "Gate 0 — LinkedIn comment API test",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [-640, 0],
+      "id": "trigger",
+      "name": "When clicking Execute"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "post-urn-assign",
+              "name": "post_urn",
+              "value": "urn:li:activity:REPLACE_WITH_19_DIGIT_POST_ID",
+              "type": "string"
+            },
+            {
+              "id": "comment-text-assign",
+              "name": "comment_text",
+              "value": "test comment please ignore, deleting in 30 seconds",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-432, 0],
+      "id": "set-test-vars",
+      "name": "Set test post URN"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.linkedin.com/v2/me",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "linkedInOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Restli-Protocol-Version",
+              "value": "2.0.0"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-208, 0],
+      "id": "fetch-me",
+      "name": "GET /v2/me (fetch person URN)",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "Dg0fNXlvpYL0WwHR",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "actor-urn-assign",
+              "name": "actor_urn",
+              "value": "=urn:li:person:{{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "post-urn-pass",
+              "name": "post_urn",
+              "value": "={{ $('Set test post URN').item.json.post_urn }}",
+              "type": "string"
+            },
+            {
+              "id": "text-pass",
+              "name": "comment_text",
+              "value": "={{ $('Set test post URN').item.json.comment_text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [16, 0],
+      "id": "build-actor",
+      "name": "Build actor URN"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.linkedin.com/v2/socialActions/{{ encodeURIComponent($json.post_urn) }}/comments",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "linkedInOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Restli-Protocol-Version",
+              "value": "2.0.0"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"actor\": \"{{ $json.actor_urn }}\",\n  \"object\": \"{{ $json.post_urn }}\",\n  \"message\": {\n    \"text\": \"{{ $json.comment_text }}\"\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [240, 0],
+      "id": "post-comment",
+      "name": "POST comment to LinkedIn",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "Dg0fNXlvpYL0WwHR",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Gate 0 — LinkedIn comment API test\n\n**What this does:** posts a single test comment to LinkedIn via the official `/v2/socialActions` endpoint using the same OAuth credential the Linkedin Parasite workflow already uses for `Create a post`.\n\n**How to run:**\n1. Open the **Set test post URN** node\n2. Replace `REPLACE_WITH_19_DIGIT_POST_ID` with the 19-digit post id from one of YOUR OWN recent LinkedIn posts\n   - Find a post you made → copy its URL → look for `activity-XXXXXXXXXXXXXXXXXXX-` → that 19-digit number is the post id\n   - Use one of YOUR OWN posts so a bad test comment can be deleted by you immediately without anyone seeing it\n3. (Optional) Edit the `comment_text` field to something different\n4. Click **Execute Workflow** at the bottom\n5. Click the **POST comment to LinkedIn** node → switch to the **Output** tab\n\n**Read the result:**\n- **statusCode 201** + JSON body with a comment URN → SUCCESS. Tell Claude. We build the full MVP.\n- **statusCode 403** with `PERMISSION_DENIED` → the official API rejects us. Tell Claude. We pivot to the manual review page fallback.\n- **statusCode 400** with `INVALID_URN` → URN format issue. Try wrapping the post id as `urn:li:share:XXX` or `urn:li:ugcPost:XXX` instead of `urn:li:activity:XXX` and re-run.\n- **Anything else** → paste Claude the exact response body and we debug.\n\n**After SUCCESS:** delete the test comment from LinkedIn UI immediately so it doesn't pollute your real engagement. The test comment text is intentionally embarrassing so you remember to delete it.\n\nThe `/v2/me` node above auto-fetches your person URN so you don't have to figure it out by hand.\n\nThe HTTP Request node has `neverError: true` set, so even on 4xx/5xx the workflow completes without throwing — you can read the actual error response from the Output tab.",
+        "height": 700,
+        "width": 600
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [-640, -800],
+      "typeVersion": 1,
+      "id": "doc-note",
+      "name": "Instructions"
+    }
+  ],
+  "connections": {
+    "When clicking Execute": {
+      "main": [[{ "node": "Set test post URN", "type": "main", "index": 0 }]]
+    },
+    "Set test post URN": {
+      "main": [[{ "node": "GET /v2/me (fetch person URN)", "type": "main", "index": 0 }]]
+    },
+    "GET /v2/me (fetch person URN)": {
+      "main": [[{ "node": "Build actor URN", "type": "main", "index": 0 }]]
+    },
+    "Build actor URN": {
+      "main": [[{ "node": "POST comment to LinkedIn", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "versionId": "gate0-v1"
+}
