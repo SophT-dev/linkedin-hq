@@ -84,12 +84,26 @@ export async function getConfig(): Promise<Record<string, string>> {
 }
 
 // ============================================================
-// Intel tab — unified news feed
-// Schema: pulled_at | posted_at | type | source | title | url | summary | score | starred
-// (columns A..I)
+// Intel tab — unified news feed (extended with comment fields)
+// Schema: pulled_at | posted_at | type | source | title | url | summary |
+//         score | starred | comment_text | comment_status |
+//         comment_posted_at | comment_style
+// (columns A..M)
+//
+// The 4 comment_* columns are added by setup-v2.gs's ensureColumns helper.
+// Old rows from before the extension just have empty cells in M..P, which
+// loadIntel reads as empty strings — so the auto-comment loop treats them
+// as "not yet commented" and is free to comment on them.
 // ============================================================
 
 export type IntelType = "linkedin" | "reddit" | "news";
+export type CommentStatus =
+  | ""
+  | "draft"
+  | "quality_failed"
+  | "posted"
+  | "post_failed"
+  | "deleted";
 
 export interface IntelRow {
   pulled_at: string;     // ISO — when WE fetched it
@@ -99,15 +113,19 @@ export interface IntelRow {
   title: string;
   url: string;
   summary: string;
-  score: number;         // upvotes for reddit, 0 for news
+  score: number;         // reactions+comments*2 for linkedin, upvotes for reddit
   starred: boolean;
+  comment_text: string;       // empty if not yet generated
+  comment_status: CommentStatus;
+  comment_posted_at: string;  // ISO timestamp when LinkedIn accepted it
+  comment_style: string;      // which preset was picked
   rowIndex?: number;     // 1-based, only set when read from sheet
 }
 
 const INTEL_TAB = "Intel";
 
 export async function loadIntel(opts: { sinceDays?: number } = {}): Promise<IntelRow[]> {
-  const rows = await readSheet(INTEL_TAB, "A:I");
+  const rows = await readSheet(INTEL_TAB, "A:M");
   if (rows.length <= 1) return [];
 
   const cutoff = opts.sinceDays
@@ -134,13 +152,96 @@ export async function loadIntel(opts: { sinceDays?: number } = {}): Promise<Inte
       summary: r[6] || "",
       score: isNaN(scoreNum) ? 0 : scoreNum,
       starred: String(r[8]).toUpperCase() === "TRUE",
+      comment_text: r[9] || "",
+      comment_status: (r[10] || "") as CommentStatus,
+      comment_posted_at: r[11] || "",
+      comment_style: r[12] || "",
       rowIndex: i + 1,
     });
   }
   return out;
 }
 
-export async function appendIntel(items: Omit<IntelRow, "starred" | "rowIndex">[]) {
+// Returns LinkedIn intel rows that haven't had a comment generated yet,
+// sorted by engagement score descending. Used by /api/comments/plan to
+// pick the best candidates each run.
+export async function loadLinkedInPostsNeedingComment(): Promise<IntelRow[]> {
+  const all = await loadIntel();
+  return all
+    .filter((r) => r.type === "linkedin" && !r.comment_status)
+    .sort((a, b) => b.score - a.score);
+}
+
+// Counts LinkedIn intel rows where the comment was actually posted today
+// (used for the daily cap). The "today" check is timezone-naive on UTC,
+// matching the day field convention used elsewhere.
+export async function countCommentsPostedToday(): Promise<number> {
+  const all = await loadIntel();
+  const today = new Date().toISOString().slice(0, 10);
+  return all.filter(
+    (r) => r.comment_status === "posted" && r.comment_posted_at.startsWith(today)
+  ).length;
+}
+
+// Updates the comment_* columns on the Intel row matching this URL.
+// Used by both /api/comments/plan (to write the draft) and
+// /api/comments/log (to record the posted/failed status).
+export async function attachCommentToIntelRow(
+  url: string,
+  patch: {
+    comment_text?: string;
+    comment_status?: CommentStatus;
+    comment_posted_at?: string;
+    comment_style?: string;
+  }
+): Promise<{ rowIndex: number } | null> {
+  const all = await loadIntel();
+  const row = all.find((r) => r.url === url);
+  if (!row || !row.rowIndex) return null;
+
+  const auth = getAuth();
+  const sheets = google.sheets({ version: "v4", auth });
+
+  // Comment columns are J..M (10..13, 0-indexed 9..12).
+  const data: { range: string; values: (string | number)[][] }[] = [];
+  const colMap: Record<string, string> = {
+    comment_text: "J",
+    comment_status: "K",
+    comment_posted_at: "L",
+    comment_style: "M",
+  };
+
+  for (const [key, value] of Object.entries(patch)) {
+    const col = colMap[key];
+    if (!col) continue;
+    if (value === undefined) continue;
+    data.push({
+      range: `${INTEL_TAB}!${col}${row.rowIndex}`,
+      values: [[value as string]],
+    });
+  }
+
+  if (data.length === 0) return { rowIndex: row.rowIndex };
+
+  await sheets.spreadsheets.values.batchUpdate({
+    spreadsheetId: SHEET_ID,
+    requestBody: { valueInputOption: "USER_ENTERED", data },
+  });
+
+  return { rowIndex: row.rowIndex };
+}
+
+export async function appendIntel(
+  items: Omit<
+    IntelRow,
+    | "starred"
+    | "rowIndex"
+    | "comment_text"
+    | "comment_status"
+    | "comment_posted_at"
+    | "comment_style"
+  >[]
+) {
   if (items.length === 0) return { ingested: 0, skipped: 0 };
 
   // Dedupe against existing URLs
@@ -526,3 +627,19 @@ export async function updateLeadMagnetRow(
     requestBody: { valueInputOption: "USER_ENTERED", data },
   });
 }
+
+// ============================================================
+// Comments tab — auto-generated comments on scraped LinkedIn posts
+// Schema (16 cols):
+//   id | post_id | post_url | post_urn | creator_name | comment_text |
+//   style_preset | status | posted_at | linkedin_response_id | error |
+//   reactions | replies | created_at | scraped_at | day
+// (columns A..P)
+//
+// status values: draft | quality_failed | posted | post_failed | deleted
+// day is YYYY-MM-DD for the daily cap counter.
+// ============================================================
+
+// (Comments tab CRUD removed — comment data now lives as 4 extra columns
+// on each Intel row. See attachCommentToIntelRow / loadLinkedInPostsNeedingComment
+// / countCommentsPostedToday at the top of this file.)
