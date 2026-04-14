@@ -1,5 +1,5 @@
 {
-  "_comment": "Gate 0 test for the linkedin-hq auto-comment feature. Import this into n8n, then: (1) edit the 'Set test post URN' node to paste the URN of one of your OWN recent LinkedIn posts (so a bad test comment can be deleted instantly), (2) click Execute Workflow, (3) check the 'POST comment to LinkedIn' node's output. If you get 201 + a comment URN back, the official API works for our use case and we can build the full auto-comment MVP. If you get 403 PERMISSION_DENIED, we have to pivot. The /v2/me node auto-fetches your person URN so you don't have to figure it out by hand.",
+  "_comment": "Gate 0 test for the linkedin-hq auto-comment feature. v2 — removed the /v2/me node because the existing LinkedIn OAuth credential only has w_member_social scope, not r_liteprofile. Hardcoding the actor URN as urn:li:person:CYH_eYFiZb (the same id the parasite flow's Create a post node uses). Just import this and click Execute Workflow — no manual editing needed.",
   "name": "Gate 0 — LinkedIn comment API test",
   "nodes": [
     {
@@ -21,6 +21,12 @@
               "type": "string"
             },
             {
+              "id": "actor-urn-assign",
+              "name": "actor_urn",
+              "value": "urn:li:person:CYH_eYFiZb",
+              "type": "string"
+            },
+            {
               "id": "comment-text-assign",
               "name": "comment_text",
               "value": "test comment please ignore, deleting in 30 seconds",
@@ -34,68 +40,7 @@
       "typeVersion": 3.4,
       "position": [-432, 0],
       "id": "set-test-vars",
-      "name": "Set test post URN"
-    },
-    {
-      "parameters": {
-        "method": "GET",
-        "url": "https://api.linkedin.com/v2/me",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "linkedInOAuth2Api",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "X-Restli-Protocol-Version",
-              "value": "2.0.0"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [-208, 0],
-      "id": "fetch-me",
-      "name": "GET /v2/me (fetch person URN)",
-      "credentials": {
-        "linkedInOAuth2Api": {
-          "id": "Dg0fNXlvpYL0WwHR",
-          "name": "LinkedIn account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "actor-urn-assign",
-              "name": "actor_urn",
-              "value": "=urn:li:person:{{ $json.id }}",
-              "type": "string"
-            },
-            {
-              "id": "post-urn-pass",
-              "name": "post_urn",
-              "value": "={{ $('Set test post URN').item.json.post_urn }}",
-              "type": "string"
-            },
-            {
-              "id": "text-pass",
-              "name": "comment_text",
-              "value": "={{ $('Set test post URN').item.json.comment_text }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [16, 0],
-      "id": "build-actor",
-      "name": "Build actor URN"
+      "name": "Set test variables"
     },
     {
       "parameters": {
@@ -130,7 +75,7 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [240, 0],
+      "position": [-208, 0],
       "id": "post-comment",
       "name": "POST comment to LinkedIn",
       "credentials": {
@@ -142,7 +87,7 @@
     },
     {
       "parameters": {
-        "content": "## Gate 0 — LinkedIn comment API test\n\n**What this does:** posts a single test comment to LinkedIn via the official `/v2/socialActions` endpoint using the same OAuth credential the Linkedin Parasite workflow already uses for `Create a post`.\n\n**How to run:**\n1. Open the **Set test post URN** node\n2. Replace `REPLACE_WITH_19_DIGIT_POST_ID` with the 19-digit post id from one of YOUR OWN recent LinkedIn posts\n   - Find a post you made → copy its URL → look for `activity-XXXXXXXXXXXXXXXXXXX-` → that 19-digit number is the post id\n   - Use one of YOUR OWN posts so a bad test comment can be deleted by you immediately without anyone seeing it\n3. (Optional) Edit the `comment_text` field to something different\n4. Click **Execute Workflow** at the bottom\n5. Click the **POST comment to LinkedIn** node → switch to the **Output** tab\n\n**Read the result:**\n- **statusCode 201** + JSON body with a comment URN → SUCCESS. Tell Claude. We build the full MVP.\n- **statusCode 403** with `PERMISSION_DENIED` → the official API rejects us. Tell Claude. We pivot to the manual review page fallback.\n- **statusCode 400** with `INVALID_URN` → URN format issue. Try wrapping the post id as `urn:li:share:XXX` or `urn:li:ugcPost:XXX` instead of `urn:li:activity:XXX` and re-run.\n- **Anything else** → paste Claude the exact response body and we debug.\n\n**After SUCCESS:** delete the test comment from LinkedIn UI immediately so it doesn't pollute your real engagement. The test comment text is intentionally embarrassing so you remember to delete it.\n\nThe `/v2/me` node above auto-fetches your person URN so you don't have to figure it out by hand.\n\nThe HTTP Request node has `neverError: true` set, so even on 4xx/5xx the workflow completes without throwing — you can read the actual error response from the Output tab.",
+        "content": "## Gate 0 — LinkedIn comment API test (v2)\n\n**v2 changes:** removed the `/v2/me` profile fetch because the existing LinkedIn OAuth credential only has `w_member_social` scope (not `r_liteprofile`). Hardcoding `urn:li:person:CYH_eYFiZb` as the actor — same id the parasite flow's `Create a post` node uses, so we know it's right.\n\n**Test post:** `urn:li:activity:7449448814329085952` (Taha's own post, supplied earlier).\n\n**Comment text:** `\"test comment please ignore, deleting in 30 seconds\"` — intentionally embarrassing so you remember to delete it.\n\n## How to run\n1. Click **Execute Workflow** at the bottom\n2. Click the **POST comment to LinkedIn** node → switch to **Output** tab in the right panel\n3. Read the `statusCode` and `body` fields\n\n## What the result means\n\n**statusCode 201** + JSON body with a comment URN → SUCCESS.\nThe official API works. Tell Claude. We build the full MVP. Also: jump to LinkedIn immediately and delete the test comment.\n\n**statusCode 401** with the same 'invalid, expired, revoked' message → the token is expired. You need to go to n8n Settings → Credentials → 'LinkedIn account' → click Reconnect (or delete and recreate). After reconnecting, run this test again. Note: the parasite flow's `Create a post` node will also be broken right now if the token is expired.\n\n**statusCode 403** with `PERMISSION_DENIED` → the official API rejects us at the comment endpoint specifically. Tell Claude. We pivot to the manual review fallback path.\n\n**statusCode 400** with `INVALID_URN` → URN format issue. Try editing the Set node and changing `urn:li:activity:` to `urn:li:share:` or `urn:li:ugcPost:`, then re-run.\n\n**statusCode 422** or any other 4xx → paste Claude the exact body and we debug.",
         "height": 700,
         "width": 600
       },
@@ -155,19 +100,13 @@
   ],
   "connections": {
     "When clicking Execute": {
-      "main": [[{ "node": "Set test post URN", "type": "main", "index": 0 }]]
+      "main": [[{ "node": "Set test variables", "type": "main", "index": 0 }]]
     },
-    "Set test post URN": {
-      "main": [[{ "node": "GET /v2/me (fetch person URN)", "type": "main", "index": 0 }]]
-    },
-    "GET /v2/me (fetch person URN)": {
-      "main": [[{ "node": "Build actor URN", "type": "main", "index": 0 }]]
-    },
-    "Build actor URN": {
+    "Set test variables": {
       "main": [[{ "node": "POST comment to LinkedIn", "type": "main", "index": 0 }]]
     }
   },
   "active": false,
   "settings": { "executionOrder": "v1" },
-  "versionId": "gate0-v1"
+  "versionId": "gate0-v2"
 }
