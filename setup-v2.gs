@@ -376,13 +376,14 @@ function formatIntelTab(ss) {
   // Freeze the header row so it stays visible while scrolling
   sheet.setFrozenRows(1);
 
-  // Faint background tint on the 4 comment columns so they pop visually.
-  // Only applied if those columns exist (i.e. setupV2 has been run).
+  // Subtle warm tint on the 4 comment columns so they're visually
+  // separated from the original 9 Intel columns. Light enough that
+  // empty cells don't look broken and any text in them stays readable.
   var commentColors = {
-    comment_text: "#1a0f12",       // very dark maroon
-    comment_status: "#1a0f12",
-    comment_posted_at: "#1a0f12",
-    comment_style: "#1a0f12",
+    comment_text: "#fff4e6",       // very light cream
+    comment_status: "#fff4e6",
+    comment_posted_at: "#fff4e6",
+    comment_style: "#fff4e6",
   };
   for (var j = 0; j < headers.length; j++) {
     var bg = commentColors[headers[j]];
