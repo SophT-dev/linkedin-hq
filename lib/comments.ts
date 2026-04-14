@@ -46,7 +46,7 @@ export const STYLE_PRESETS: Record<StylePreset, PresetSpec> = {
   agree_witty: {
     id: "agree_witty",
     instruction:
-      "react to the post with agreement + a joke, funny aside, or relatable peer moment in 10-20 words total. think self-deprecating, relatable, 'haha yeah this is so real' energy. examples of the kind of humor: 'haha the amount of founders who still use 'hope this finds you well' is unhinged', 'not me literally doing this exact thing at 11pm last tuesday', 'wait you mean we weren't supposed to send 800 emails from one inbox'. matches the post's energy, never forced. NO client stories, NO 'we ran a test', just a casual human reaction.",
+      "write a genuinely funny, very witty agreement in 10-20 words. not 'haha relatable' safe humor — actually sharp and specific. use one of these techniques, picking whichever fits the post best:\n\n1. **SPECIFIC ABSURD DETAIL** — zoom in on one ridiculous concrete thing that makes the point hit harder. e.g. 'yep and the worst offender is the guy who personalized with literally {first_name} still in the brackets'\n\n2. **BRUTAL INDUSTRY HONESTY** — say the quiet part loud about cold email or outbound. e.g. 'deliverability is just a fancy word for we finally cleaned the list'\n\n3. **CALLED OUT WITH AFFECTION** — roast a common behavior everyone is guilty of, including yourself. e.g. 'this post is attacking me personally and honestly i deserve it'\n\n4. **UNEXPECTED COMPARISON** — compare the cold email thing to something completely unrelated that makes it feel obvious in hindsight. e.g. 'cold email is like asking someone out, the first line decides the whole thing'\n\n5. **MATTER-OF-FACT ABSURDITY** — deliver something wild in a deadpan 'obviously' tone. e.g. 'the fix was always just turning it off and on again, this is every cold email problem btw'\n\nthe humor must be SPECIFIC to the post's actual content, not a generic template joke. reference a specific detail the author mentioned. NO forced punchlines, NO pun humor, NO dad-joke energy, NO 'actually' guys. sharp and conversational. you can be a little irreverent — people are tired of 'love this, such a great point' comments.\n\nNO client stories, NO 'we ran a test', NO flexes. just humor + agreement.",
   },
   agree_curious: {
     id: "agree_curious",
@@ -169,13 +169,19 @@ If the post is asking readers to comment a specific word to receive a lead magne
 
 Your comment should then look like: "yessss i need this, GUIDE please" or "dropping INBOX, looks super useful" — short (8-15 words), enthusiastic, and the trigger word in ALL CAPS so the lead magnet automation delivers. Without the caps the author's automation won't see it as a valid trigger.
 
-## HUMOR ENCOURAGED
-When the post has any energy to play off, be funny. Not joke-joke comedian funny, just relatable and a little self-deprecating. Good humor examples:
-- "haha the amount of founders who still write 'i hope this finds you well' is unhinged"
-- "not me literally doing this exact thing at 11pm last tuesday"
-- "wait so you're telling me the fix was just... cleaning the list"
-- "the 'send 800 emails from one inbox' era really tested us all"
-- "honestly i see this mistake 10x a week and still cringe every single time"
+## HUMOR ENCOURAGED (and when it's used, it should be GENUINELY funny)
+When the post has any energy to play off, be funny. Not dad-joke funny. Not "haha so relatable" safe funny. Sharp, specific, a little irreverent. People on LinkedIn are drowning in "love this, such a great point" — your comment should feel like the one funny friend at the table finally saying the real thing.
+
+Techniques that land:
+1. **Specific absurd detail** — zoom in on one ridiculous concrete thing. "the guy who personalized with literally {first_name} still in the brackets"
+2. **Brutal honesty about the industry** — say the quiet part loud. "deliverability is just a fancy word for we finally cleaned the list"
+3. **Called out with affection** — roast a common behavior everyone's guilty of, including yourself. "this post is attacking me personally and i deserve it"
+4. **Unexpected comparison** — compare the thing to something unrelated. "cold email is like asking someone out, the first line decides the whole thing"
+5. **Matter-of-fact absurdity** — deliver something wild in a deadpan 'obviously' tone. "the fix was always just turning it off and on again"
+
+NEVER FORCE IT. If nothing is funny about the post, don't push a joke. Switch to a sincere agreement instead. Forced humor is worse than no humor.
+
+The humor must reference a SPECIFIC detail from the post, not a generic template joke. No "lol so relatable", no puns, no "we've all been there" unless you follow it with something specific.
 
 You can also ask a real follow-up question if you're curious about something the post raised. Not rhetorical — a genuine one. Example: "how do you handle it when the prospect replies with just 'no thanks'?"
 
