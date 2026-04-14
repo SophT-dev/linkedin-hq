@@ -47,7 +47,7 @@ export const STYLE_PRESETS: Record<StylePreset, PresetSpec> = {
   agree_witty: {
     id: "agree_witty",
     instruction:
-      "react with a short, playful, observational line — 1-20 words. the energy is 'scrolled past a funny post and typed the first real thing that came to mind'. examples of the shape: 'the goats in one room 🐐 (or should i say, villa?)', 'Cool', 'sounds neat'. you can use one of the allowed emojis IF it's genuinely earned by the post content (crown 👑 for a power move or dominance, goat 🐐 for elite/best-in-class, clapping 👏 for a clean breakdown, rocket 🚀 for launches/fast growth, thumbs up 👍 for simple agreement). NEVER force an emoji. if nothing about the post fits an emoji, skip it. the humor should be SPECIFIC to the post if it's more than a one-word reaction. NO dad-jokes, NO puns, NO forced punchlines.",
+      "write a genuinely funny, sharp reaction in 1-20 words. this is the humor slot — do NOT play it safe. the energy is 'the one funny friend at the table who finally says the real thing'. pick whichever technique fits the post best:\n\n1. **SPECIFIC ABSURD DETAIL** — zoom in on one ridiculous concrete thing the post mentioned. e.g. 'the guy who personalized with literally {first_name} still in the brackets'\n2. **BRUTAL INDUSTRY HONESTY** — say the part everyone thinks but doesn't post. e.g. 'deliverability is just a fancy word for we finally cleaned the list'\n3. **CALLED OUT WITH AFFECTION** — roast a common behavior everyone including yourself is guilty of. e.g. 'this post is attacking me personally and honestly i deserve it'\n4. **UNEXPECTED COMPARISON** — compare the thing to something completely unrelated that makes it feel obvious. e.g. 'cold email is like asking someone out, the first line decides the whole thing'\n5. **MATTER-OF-FACT ABSURDITY** — deliver something wild in a deadpan 'obviously' tone. e.g. 'the fix was always just turning it off and on again'\n6. **PLAYFUL OBSERVATIONAL** — Taha's actual style. e.g. 'the goats in one room 🐐 (or should i say, villa?)'\n\nthe humor MUST reference something SPECIFIC from the post. no generic jokes, no dad-jokes, no puns, no 'lol so relatable'. sharp, conversational, a little irreverent. if the model system prompt says you can use an emoji this slot, feel free to work one in where it's genuinely earned.\n\nNO client stories, NO 'we ran a test', NO flexes. pure observational comedy plus agreement.",
   },
   agree_curious: {
     id: "agree_curious",
@@ -96,6 +96,19 @@ export function pickStylePreset(postText: string): StylePreset {
     return "agree_leadmagnet";
   }
 
+  // Post is playful, uses humor, or talks about the absurd parts of
+  // cold email, OR contains a story/hot-take/opinion → witty agreement.
+  // Broadened from the original narrow "lol|lmao|wild" list so humor
+  // gets picked more often. Cold email posts are often ranty, opinionated,
+  // or slightly absurd — all fertile ground for a witty reaction.
+  if (
+    /(lol|lmao|crazy|wild|insane|funny|ridiculous|unhinged|literally|honestly|nobody|everyone|stop|still|actually|worst|best|worst thing|mistake|hot take|unpopular|hate when|love when|obsessed|obvious|broken|plot twist|genuinely|weirdly)/.test(
+      lower
+    )
+  ) {
+    return "agree_witty";
+  }
+
   // Post introduces a new tool, tactic, or asks a question → curious follow-up
   if (
     lower.includes("?") ||
@@ -106,17 +119,9 @@ export function pickStylePreset(postText: string): StylePreset {
     return "agree_curious";
   }
 
-  // Post is playful, uses humor, or talks about the absurd/crazy parts
-  // of cold email → match the energy with agree_witty
-  if (
-    /(lol|lmao|crazy|wild|insane|funny|ridiculous|unhinged|literally|honestly)/.test(
-      lower
-    )
-  ) {
-    return "agree_witty";
-  }
-
-  // Default — enthusiastic agreement plus a small peer observation
+  // Default — enthusiastic agreement plus a small peer observation.
+  // Witty has priority over add because human comments lean playful;
+  // the insight slot (add) is the fallback when nothing else fits.
   return "agree_add";
 }
 
@@ -221,13 +226,25 @@ export interface GeneratedComment {
 }
 
 // Generates one comment for one post. Picks a style preset, calls the model,
-// sanitizes (lowercase + dash strip), returns. Caller is expected to run
-// qualityGateComment on the result before saving.
+// sanitizes (dash strip, optional emoji strip), returns. Caller is expected
+// to run qualityGateComment on the result before saving.
+//
+// allowEmoji: controls whether this slot is one of the ~1-in-4 slots where
+// emojis are permitted. When false, any emoji (even whitelisted ones) is
+// stripped from the output and the prompt explicitly forbids them — this
+// keeps the batch from being emoji-soup and matches how humans actually
+// write (most comments have zero emojis).
 export async function generateExpertComment(
-  post: CandidatePost
+  post: CandidatePost,
+  opts: { allowEmoji?: boolean } = {}
 ): Promise<GeneratedComment> {
+  const allowEmoji = opts.allowEmoji ?? false;
   const stylePreset = pickStylePreset(post.text);
   const preset = STYLE_PRESETS[stylePreset];
+
+  const emojiDirective = allowEmoji
+    ? "This slot IS allowed to use ONE emoji from the whitelist (👑 🐐 👏 🚀 👍) if it's genuinely earned by the post content. Skip the emoji if nothing fits."
+    : "DO NOT use any emoji in this comment. Zero emojis. Plain text only.";
 
   const userPrompt = `LinkedIn post by ${post.creator_name}:
 
@@ -236,6 +253,8 @@ ${post.text.slice(0, 3000)}
 """
 
 Style for this comment: ${preset.instruction}
+
+${emojiDirective}
 
 Write the comment now. 1-20 words. Natural casing. No quotes around it, no preamble.`;
 
@@ -249,13 +268,17 @@ Write the comment now. 1-20 words. Natural casing. No quotes around it, no pream
 
   const raw =
     res.content[0]?.type === "text" ? res.content[0].text.trim() : "";
-  // Strip any quotes the model wrapped around its output and strip em/en
-  // dashes (always banned), but KEEP the original casing — Gen Z casual
-  // voice allows natural capitalization.
-  const cleaned = raw
+  // Strip surrounding quotes and em/en dashes (always banned). When this
+  // slot isn't an emoji slot, also strip every emoji the model may have
+  // slipped in — a hard guarantee that the 1-in-4 ratio holds.
+  let cleaned = raw
     .replace(/^["']|["']$/g, "")
     .replace(/[—–]/g, ",")
     .trim();
+
+  if (!allowEmoji) {
+    cleaned = cleaned.replace(EMOJI_REGEX, "").replace(/\s+/g, " ").trim();
+  }
 
   return {
     comment_text: cleaned,

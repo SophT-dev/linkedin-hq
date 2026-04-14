@@ -48,6 +48,7 @@ export async function POST() {
       quality_failed: 0,
       capped: 0,
       returned: 0,
+      emoji_slots: 0,
     };
 
     const [config, postedToday, allIntel] = await Promise.all([
@@ -129,7 +130,22 @@ export async function POST() {
       return text.slice(0, 137) + "...";
     };
 
-    for (const row of selected) {
+    // Emoji ratio: at most 1 in every 4 comments per batch gets an emoji.
+    // Slots are spread evenly across the batch so they don't cluster at
+    // the start or end. With fewer than 4 candidates, no slots qualify —
+    // small batches are all plain text, which matches how humans comment.
+    const emojiSlots = new Set<number>();
+    const maxEmojiCount = Math.floor(selected.length / 4);
+    if (maxEmojiCount > 0) {
+      const spacing = selected.length / maxEmojiCount;
+      for (let i = 0; i < maxEmojiCount; i++) {
+        emojiSlots.add(Math.floor(i * spacing));
+      }
+    }
+    stats.emoji_slots = maxEmojiCount;
+
+    for (let idx = 0; idx < selected.length; idx++) {
+      const row = selected[idx];
       const post_urn = extractPostUrn(row.url);
       if (!post_urn) {
         await attachCommentToIntelRow(row.url, {
@@ -169,7 +185,9 @@ export async function POST() {
 
       let generated;
       try {
-        generated = await generateExpertComment(post);
+        generated = await generateExpertComment(post, {
+          allowEmoji: emojiSlots.has(idx),
+        });
       } catch (e) {
         await attachCommentToIntelRow(row.url, {
           comment_status: "quality_failed",
