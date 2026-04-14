@@ -4,8 +4,9 @@
 // this file is what verifies content already generated (quality gates).
 
 export const BANNED_WORDS: string[] = [
-  "tough",
   "quiet",
+  "quietly",
+  "breaks",
   "leverage",
   "utilize",
   "unlock",
