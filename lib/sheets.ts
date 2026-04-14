@@ -175,18 +175,25 @@ export async function loadLinkedInPostsNeedingComment(): Promise<IntelRow[]> {
 // Counts LinkedIn intel rows where the comment was actually posted today
 // (used for the daily cap). "Today" is Asia/Karachi local day (Taha's
 // timezone), so the cap resets at PKT midnight instead of UTC midnight
-// (which would be 5 AM PKT). comment_posted_at is written as a full ISO
-// UTC timestamp by /api/comments/log, so we convert each row's timestamp
-// to the Karachi day and compare.
+// (which would be 5 AM PKT).
+//
+// comment_posted_at is written by /api/comments/log in the format
+// "YYYY-MM-DD HH:mm:ss PKT" (already in Karachi local time), so we just
+// compare the first 10 chars against today's Karachi date. For backwards
+// compat with any legacy rows written in UTC ISO format (before the PKT
+// switch), we also convert those to Karachi day as a fallback.
 export async function countCommentsPostedToday(): Promise<number> {
   const all = await loadIntel();
   const today = karachiDay(new Date());
-  return all.filter(
-    (r) =>
-      r.comment_status === "posted" &&
-      r.comment_posted_at &&
-      karachiDay(new Date(r.comment_posted_at)) === today
-  ).length;
+  return all.filter((r) => {
+    if (r.comment_status !== "posted" || !r.comment_posted_at) return false;
+    const raw = r.comment_posted_at.trim();
+    // New PKT format: "YYYY-MM-DD HH:mm:ss PKT" — prefix is already the
+    // Karachi day, compare directly.
+    if (raw.endsWith("PKT")) return raw.slice(0, 10) === today;
+    // Legacy ISO UTC format — convert to Karachi day.
+    return karachiDay(new Date(raw)) === today;
+  }).length;
 }
 
 // Returns YYYY-MM-DD for a Date as observed in Asia/Karachi (UTC+5, no DST).
