@@ -587,9 +587,15 @@
     },
     "Branch on response": {
       "main": [
-        [{ "node": "Log posted", "type": "main", "index": 0 }],
+        [
+          { "node": "Log posted", "type": "main", "index": 0 },
+          { "node": "Slack notify (posted)", "type": "main", "index": 0 }
+        ],
         [{ "node": "Retry POST with correct URN", "type": "main", "index": 0 }],
-        [{ "node": "Log failed", "type": "main", "index": 0 }]
+        [
+          { "node": "Log failed", "type": "main", "index": 0 },
+          { "node": "Slack notify (failed)", "type": "main", "index": 0 }
+        ]
       ]
     },
     "Retry POST with correct URN": {
@@ -600,15 +606,15 @@
     },
     "Was retry 201?": {
       "main": [
-        [{ "node": "Log posted", "type": "main", "index": 0 }],
-        [{ "node": "Log failed", "type": "main", "index": 0 }]
+        [
+          { "node": "Log posted", "type": "main", "index": 0 },
+          { "node": "Slack notify (posted)", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Log failed", "type": "main", "index": 0 },
+          { "node": "Slack notify (failed)", "type": "main", "index": 0 }
+        ]
       ]
-    },
-    "Log posted": {
-      "main": [[{ "node": "Slack notify (posted)", "type": "main", "index": 0 }]]
-    },
-    "Log failed": {
-      "main": [[{ "node": "Slack notify (failed)", "type": "main", "index": 0 }]]
     }
   },
   "active": false,
