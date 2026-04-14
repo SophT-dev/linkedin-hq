@@ -7,8 +7,8 @@
         "rule": {
           "interval": [
             {
-              "field": "hours",
-              "hoursInterval": 4
+              "field": "cronExpression",
+              "expression": "0 0,4,8,12,16,20 * * *"
             }
           ]
         }
@@ -17,7 +17,7 @@
       "typeVersion": 1.2,
       "position": [-960, 0],
       "id": "trigger-1",
-      "name": "Every 4 hours"
+      "name": "Every 4h starting midnight PKT"
     },
     {
       "parameters": {
@@ -552,7 +552,7 @@
     }
   ],
   "connections": {
-    "Every 4 hours": {
+    "Every 4h starting midnight PKT": {
       "main": [[{ "node": "Read linkedin-hq Config", "type": "main", "index": 0 }]]
     },
     "Read linkedin-hq Config": {
@@ -624,6 +624,6 @@
     }
   },
   "active": false,
-  "settings": { "executionOrder": "v1" },
-  "versionId": "linkedin-hq-feed-v2-urn-retry"
+  "settings": { "executionOrder": "v1", "timezone": "Asia/Karachi" },
+  "versionId": "linkedin-hq-feed-v2-pkt-schedule"
 }
