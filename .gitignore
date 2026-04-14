@@ -33,6 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# local-only n8n workflow exports with secrets filled in
+*.local.json
+
 # vercel
 .vercel
 
