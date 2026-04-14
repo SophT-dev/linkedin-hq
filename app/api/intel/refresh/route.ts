@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { fetchIntelFromWeb } from "@/lib/claude";
 import { fetchRedditIntel } from "@/lib/reddit";
-import { appendIntel, IntelType } from "@/lib/sheets";
+import { appendIntel, IntelType, karachiIso } from "@/lib/sheets";
 
 // Long-running: multiple sequential web search calls + reddit fetches
 export const maxDuration = 300;
@@ -15,7 +15,9 @@ export async function POST() {
 }
 
 async function runRefresh() {
-  const startedAt = new Date().toISOString();
+  // Write pulled_at in Asia/Karachi local ISO (+05:00) so the sheet's
+  // column A shows Taha's wall-clock day, not UTC.
+  const startedAt = karachiIso(new Date());
   const errors: string[] = [];
 
   // Run Reddit (direct fetch) and Claude news scouts in parallel.
@@ -37,12 +39,18 @@ async function runRefresh() {
   let scoutDebug: Array<{ scout: string; ok: boolean; count: number; error?: string }> = [];
   let redditCount = 0;
 
+  // posted_at from reddit/news scouts arrives as a UTC ISO string —
+  // convert to Karachi local ISO before writing so column B shows the
+  // post's date in PKT. Empty strings stay empty.
+  const toKarachi = (raw: string): string =>
+    raw ? karachiIso(new Date(raw)) : "";
+
   if (redditResult.status === "fulfilled") {
     redditCount = redditResult.value.length;
     for (const r of redditResult.value) {
       items.push({
         pulled_at: startedAt,
-        posted_at: r.posted_at,
+        posted_at: toKarachi(r.posted_at),
         type: "reddit",
         source: r.source,
         title: r.title,
@@ -60,7 +68,7 @@ async function runRefresh() {
     for (const w of webResult.value.items) {
       items.push({
         pulled_at: startedAt,
-        posted_at: w.posted_at,
+        posted_at: toKarachi(w.posted_at),
         type: w.type as IntelType,
         source: w.source,
         title: w.title,

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { appendIntel, IntelType } from "@/lib/sheets";
+import { appendIntel, IntelType, karachiIso } from "@/lib/sheets";
 import { isIntelRelevant } from "@/lib/intel-filter";
 
 export const dynamic = "force-dynamic";
@@ -57,7 +57,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, ingested: 0, skipped: 0, filtered: 0 });
     }
 
-    const pulledAt = new Date().toISOString();
+    // pulled_at is written in Asia/Karachi local time (ISO with +05:00
+    // offset) so the sheet displays Taha's actual wall-clock day. Still
+    // ISO-parseable by Date.parse() for sorting and time-window filters.
+    const pulledAt = karachiIso(new Date());
 
     // Map incoming LinkedIn-shaped items into the IntelRow contract.
     const mapped = items
@@ -72,9 +75,15 @@ export async function POST(req: NextRequest) {
         const score =
           (typeof it.reactions === "number" ? it.reactions : 0) +
           (typeof it.comments === "number" ? it.comments : 0) * 2;
+        // Apify returns posted_at as a UTC ISO string. Convert to Karachi
+        // local ISO so the sheet shows the post's date in Taha's timezone.
+        const rawPostedAt = it.posted_at || "";
+        const postedAtKarachi = rawPostedAt
+          ? karachiIso(new Date(rawPostedAt))
+          : "";
         return {
           pulled_at: pulledAt,
-          posted_at: it.posted_at || "",
+          posted_at: postedAtKarachi,
           type: (it.type || "linkedin") as IntelType,
           source: it.creator_name || "linkedin",
           title,

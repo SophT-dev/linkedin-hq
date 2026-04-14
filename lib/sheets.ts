@@ -208,6 +208,31 @@ function karachiDay(d: Date): string {
   return fmt.format(d);
 }
 
+// Returns an ISO 8601 string in Asia/Karachi local time with a +05:00
+// offset, e.g. "2026-04-15T00:40:31+05:00". Used for pulled_at / posted_at
+// columns so the date visible in the sheet matches Taha's wall-clock.
+// Still parseable by Date.parse() (standard ISO), still sorts
+// lexicographically, still the same instant in time as the UTC version.
+export function karachiIso(d: Date): string {
+  if (isNaN(d.getTime())) return "";
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Karachi",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).formatToParts(d);
+  const get = (t: string) => parts.find((p) => p.type === t)?.value || "";
+  // Intl sometimes returns "24" for midnight in hour12:false mode; normalize.
+  const hour = get("hour") === "24" ? "00" : get("hour");
+  return `${get("year")}-${get("month")}-${get(
+    "day"
+  )}T${hour}:${get("minute")}:${get("second")}+05:00`;
+}
+
 // Updates the comment_* columns on the Intel row matching this URL.
 // Used by both /api/comments/plan (to write the draft) and
 // /api/comments/log (to record the posted/failed status).
