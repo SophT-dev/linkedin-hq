@@ -211,6 +211,11 @@ function setupV2() {
   // commented" and is free to comment on.
   ensureColumns(ss, "Intel", INTEL_COMMENT_COLUMNS);
 
+  // Tidy up the Intel tab so long summaries and URLs don't blow up
+  // row heights or column widths. Sets fixed widths per column,
+  // clips text instead of wrapping, freezes the header row.
+  formatIntelTab(ss);
+
   // Seed the auto-comment Config keys if not already present.
   ensureConfigKeys(ss, COMMENTS_CONFIG_DEFAULTS);
 
@@ -247,6 +252,145 @@ function setupV2() {
       "Batch generation runs in the linkedin-batch Claude Code skill.\n" +
       "Auto-commenting on scraped LinkedIn posts runs in the n8n creator feed workflow."
   );
+}
+
+// Standalone formatter for the Intel tab. You can run this directly
+// from the Apps Script editor whenever the tab gets messy — no need
+// to re-run the whole setupV2 dialog flow.
+function tidyIntelTab() {
+  formatIntelTab(SpreadsheetApp.getActiveSpreadsheet());
+  SpreadsheetApp.getUi().alert(
+    "Intel tab tidied.\n\n" +
+      "- headers in row 1 forced to the 13 canonical names\n" +
+      "  (pulled_at, posted_at, type, source, title, url, summary, score,\n" +
+      "   starred, comment_text, comment_status, comment_posted_at, comment_style)\n" +
+      "- column widths reset to sensible defaults\n" +
+      "- text clipped instead of wrapping (no more giant rows)\n" +
+      "- row height fixed to 24px\n" +
+      "- header row frozen\n" +
+      "- comment columns highlighted slightly\n\n" +
+      "Existing data rows were NOT touched. If you ever want to see the\n" +
+      "full text of a cell, click the cell and look at the formula bar."
+  );
+}
+
+// The canonical Intel tab schema after the v2 auto-comment migration.
+// 13 columns A..M. lib/sheets.ts loadIntel + appendIntel both depend
+// on this exact column order, so it's the source of truth.
+var INTEL_CANONICAL_HEADERS = [
+  "pulled_at",          // A
+  "posted_at",          // B
+  "type",               // C
+  "source",             // D
+  "title",              // E
+  "url",                // F
+  "summary",            // G
+  "score",              // H
+  "starred",            // I
+  "comment_text",       // J
+  "comment_status",     // K
+  "comment_posted_at",  // L
+  "comment_style",      // M
+];
+
+// Forces row 1 of the Intel tab to be the 13 canonical headers. Used
+// to repair a tab where headers are missing, blank, or out of date.
+// Only touches columns A..M; anything past column M is left alone.
+//
+// SAFETY: existing data rows (row 2 onwards) are NOT modified. Only
+// the header row is overwritten. If the data in those columns is in
+// the wrong order, this WILL mislabel it — but lib/sheets.ts has been
+// writing data in this canonical order for the whole v2 lifecycle, so
+// any existing rows should match.
+function repairIntelHeaders(sheet) {
+  sheet
+    .getRange(1, 1, 1, INTEL_CANONICAL_HEADERS.length)
+    .setValues([INTEL_CANONICAL_HEADERS])
+    .setFontWeight("bold")
+    .setBackground("#0d0608")
+    .setFontColor("#ffffff");
+  sheet.setFrozenRows(1);
+}
+
+// Tidies the Intel tab. Repairs missing/wrong headers, sets per-column
+// widths, clips text instead of wrapping, fixes row heights to single-
+// line, freezes the header row, and gives the 4 comment columns a
+// faint background tint so they're visually separated from the
+// original 9 Intel columns.
+//
+// Safe to re-run. Existing data rows are never touched (only the header
+// row + formatting).
+function formatIntelTab(ss) {
+  var sheet = ss.getSheetByName("Intel");
+  if (!sheet) return;
+
+  // Step 0 — repair headers FIRST so the rest of this function can
+  // rely on the canonical column names being present.
+  repairIntelHeaders(sheet);
+
+  // Per-column widths in pixels, indexed by header name. Anything not
+  // in this map is left at its current width.
+  var WIDTHS = {
+    pulled_at: 140,
+    posted_at: 140,
+    type: 70,
+    source: 140,
+    title: 280,
+    url: 240,
+    summary: 360,
+    score: 60,
+    starred: 70,
+    comment_text: 360,
+    comment_status: 110,
+    comment_posted_at: 140,
+    comment_style: 120,
+  };
+
+  var lastCol = sheet.getLastColumn();
+  if (lastCol === 0) return;
+
+  var headers = sheet
+    .getRange(1, 1, 1, lastCol)
+    .getValues()[0]
+    .map(function (h) {
+      return String(h || "").trim();
+    });
+
+  // Set column widths
+  for (var i = 0; i < headers.length; i++) {
+    var width = WIDTHS[headers[i]];
+    if (width) sheet.setColumnWidth(i + 1, width);
+  }
+
+  // Clip all text in the data area instead of wrapping
+  var lastRow = Math.max(sheet.getLastRow(), 2);
+  var dataRange = sheet.getRange(1, 1, lastRow, lastCol);
+  dataRange.setWrapStrategy(SpreadsheetApp.WrapStrategy.CLIP);
+  dataRange.setVerticalAlignment("middle");
+
+  // Fixed single-line row height for every data row (skip the header)
+  if (lastRow > 1) {
+    sheet.setRowHeights(2, lastRow - 1, 24);
+  }
+
+  // Freeze the header row so it stays visible while scrolling
+  sheet.setFrozenRows(1);
+
+  // Faint background tint on the 4 comment columns so they pop visually.
+  // Only applied if those columns exist (i.e. setupV2 has been run).
+  var commentColors = {
+    comment_text: "#1a0f12",       // very dark maroon
+    comment_status: "#1a0f12",
+    comment_posted_at: "#1a0f12",
+    comment_style: "#1a0f12",
+  };
+  for (var j = 0; j < headers.length; j++) {
+    var bg = commentColors[headers[j]];
+    if (!bg) continue;
+    if (lastRow > 1) {
+      sheet.getRange(2, j + 1, lastRow - 1, 1).setBackground(bg);
+    }
+  }
 }
 
 // Adds new columns to the right side of an existing tab if they don't
