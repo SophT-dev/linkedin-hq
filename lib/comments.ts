@@ -1,5 +1,9 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { checkVoiceCompliance, lowerSanitize, VoiceCheck } from "./voice-rules";
+import {
+  BANNED_WORDS,
+  BANNED_PHRASES,
+  VoiceCheck,
+} from "./voice-rules";
 
 const MODEL = "claude-sonnet-4-6";
 function getClient() {
@@ -21,112 +25,173 @@ function getClient() {
 
 export type StylePreset =
   | "agree_add"
-  | "contrarian"
-  | "sharp_question"
-  | "bts_story"
-  | "tactical_tip";
+  | "agree_witty"
+  | "agree_curious"
+  | "agree_leadmagnet";
 
 interface PresetSpec {
   id: StylePreset;
   instruction: string;
 }
 
-// The 5 style presets. Each is a focused prompt fragment fed alongside the
-// post text. All apply the full voice rules from the system prompt.
+// 3 style presets, all agreement-based, all short. The generator picks
+// one based on the post content. All apply the voice rules from the
+// system prompt. Target length: 10-20 words per comment.
 export const STYLE_PRESETS: Record<StylePreset, PresetSpec> = {
   agree_add: {
     id: "agree_add",
     instruction:
-      "agree with the post's main claim and add one specific number, real example, or stat from cold email or AI agents that strengthens it. start with a single short statement, not a hedge.",
+      "agree with the post in 10-20 words AND add ONE real insight that extends the point. the insight must be genuine domain knowledge — something true about how cold email or AI agents actually work, the kind of thing another practitioner would read and nod at. NOT a client story, NOT a 'we had X do Y' stat, NOT a flex. just peer-shared knowledge. examples of the shape (copy the energy, not the content): 'yessss and the reason it works is specificity signals actual research', '100%, the real fix is usually one trigger signal instead of three', 'exactly, warmup only matters if your domain is under 30 days old'. the insight must be backed by how the space actually works, never invented.",
   },
-  contrarian: {
-    id: "contrarian",
+  agree_witty: {
+    id: "agree_witty",
     instruction:
-      "respectfully push back on one specific claim in the post. lead with what's right about it, then say where you'd disagree based on real cold email work, with one concrete example.",
+      "react to the post with agreement + a joke, funny aside, or relatable peer moment in 10-20 words total. think self-deprecating, relatable, 'haha yeah this is so real' energy. examples of the kind of humor: 'haha the amount of founders who still use 'hope this finds you well' is unhinged', 'not me literally doing this exact thing at 11pm last tuesday', 'wait you mean we weren't supposed to send 800 emails from one inbox'. matches the post's energy, never forced. NO client stories, NO 'we ran a test', just a casual human reaction.",
   },
-  sharp_question: {
-    id: "sharp_question",
+  agree_curious: {
+    id: "agree_curious",
     instruction:
-      "ask one specific, useful question that pushes the conversation forward. not rhetorical. not 'great post.' a real question that the author would actually want to answer because it makes them think. keep it under 20 words.",
+      "agree briefly then ask ONE short genuine follow-up question in 10-20 words total. not rhetorical, not a gotcha. a real question you'd want the author to answer because you're curious how they'd handle it. short.",
   },
-  bts_story: {
-    id: "bts_story",
+  agree_leadmagnet: {
+    id: "agree_leadmagnet",
     instruction:
-      "share a 2-3 sentence behind-the-scenes from your own cold email or AI agent work that connects to the post's theme. real numbers, real outcomes, no metaphors.",
-  },
-  tactical_tip: {
-    id: "tactical_tip",
-    instruction:
-      "drop one specific tactic the reader can apply today that builds on the post. one sentence setup, one sentence tactic. nothing more.",
+      "this post is offering a lead magnet (guide, template, checklist, playbook, etc.) in exchange for commenting a specific trigger word. read the post carefully to find the EXACT word the author asked readers to comment — it's usually after phrases like 'comment', 'type', 'drop', 'reply with', or 'say', and often in quotes or caps. include that exact word IN ALL CAPS inside your comment so the lead magnet automation sends it to Taha. keep the comment SHORT: 8-15 words, casual, enthusiastic but not flattery. the trigger word MUST appear in ALL CAPS in your output. examples of the shape (not the content, copy the energy): 'yessss i need this, GUIDE please', 'dropping INBOX, looks super useful', 'okay this sounds perfect — TEMPLATE'. if you can't find the exact trigger word, write the comment using a guessed common word like GUIDE but always IN CAPS.",
   },
 };
 
-// Heuristic style picker. Looks at the post text and decides which preset
-// fits best. Cheap, deterministic, no model call needed.
+// Heuristic style picker. Looks at the post text and decides which of the
+// 4 agreement-based presets fits best.
 //
-// Order matters — first match wins.
+// Order matters — first match wins. Lead magnet detection is highest
+// priority because if we miss it, Taha doesn't get the lead magnet.
 export function pickStylePreset(postText: string): StylePreset {
-  const lower = (postText || "").toLowerCase();
+  const text = postText || "";
+  const lower = text.toLowerCase();
 
-  // If the post text already contains a question, asking another question
-  // back is awkward — pick something else.
-  const hasQuestion = lower.includes("?");
-
-  // Strong universal claims → contrarian opportunity
+  // HIGHEST PRIORITY — lead magnet post detection.
+  // LinkedIn creators commonly offer a lead magnet in exchange for commenting
+  // a specific word. We detect the pattern so our comment includes that word
+  // in ALL CAPS and Taha receives the lead magnet.
+  //
+  // Common patterns:
+  //   "Comment 'GUIDE' below"
+  //   "Type INBOX in the comments"
+  //   "Drop 'YES' if you want"
+  //   "Reply with 'PLAYBOOK'"
+  //   "Say 'SEND IT' below"
+  //   "Comment below and I'll DM you the link"
   if (
-    /(always|never|everyone|nobody|all (founders|sdrs|agencies)|the only way)/.test(
+    // Quoted trigger word after an action verb
+    /(comment|type|drop|reply|say)\s+['"][a-z]{2,20}['"]/i.test(text) ||
+    // Uppercase trigger word after an action verb
+    /(comment|type|drop|reply|say)\s+["']?[A-Z]{3,20}\b/.test(text) ||
+    // Common lead magnet pattern: "comment below and I'll send"
+    (/comment\s+(below|down below)/i.test(text) &&
+      /(dm|send|share|link|guide|free|template|playbook|checklist)/i.test(
+        text
+      ))
+  ) {
+    return "agree_leadmagnet";
+  }
+
+  // Post introduces a new tool, tactic, or asks a question → curious follow-up
+  if (
+    lower.includes("?") ||
+    /(just (launched|shipped|built|tried)|new (tool|tactic|approach|framework)|what do you think)/.test(
       lower
     )
   ) {
-    return "contrarian";
+    return "agree_curious";
   }
 
-  // How-to / numbered list patterns → tactical_tip
+  // Post is playful, uses humor, or talks about the absurd/crazy parts
+  // of cold email → match the energy with agree_witty
   if (
-    /(here's how|step \d|^\d+\.|^- |^\* )/m.test(lower) ||
-    /(how to|the playbook|the framework)/.test(lower)
-  ) {
-    return "tactical_tip";
-  }
-
-  // Personal narrative markers → bts_story
-  if (
-    /(last (week|month|year|tuesday|monday|friday)|i (just|recently|spent|built|tried|ran))/.test(
+    /(lol|lmao|crazy|wild|insane|funny|ridiculous|unhinged|literally|honestly)/.test(
       lower
     )
   ) {
-    return "bts_story";
+    return "agree_witty";
   }
 
-  // The post asks the reader something → answer it with our own take, don't
-  // ask another question. Skip sharp_question.
-  if (hasQuestion) {
-    return "agree_add";
-  }
-
-  // Default
+  // Default — enthusiastic agreement plus a small peer observation
   return "agree_add";
 }
 
-const COMMENT_SYSTEM_PROMPT = `You write LinkedIn comments as Taha Anwar, founder of Bleed AI. He runs cold email campaigns for B2B founders, sales teams, and outbound agencies, and builds AI agent infrastructure for outbound.
+const COMMENT_SYSTEM_PROMPT = `You write LinkedIn comments as Taha Anwar. He works in cold email and AI agents, but in these comments you are NOT selling anything. You are a peer reader reacting to good content. Chill, short, natural.
 
-Voice rules (NON-NEGOTIABLE):
-- everything lowercase. every character. no exceptions except urls.
-- no em dashes (—). no en dashes (–). use commas or periods.
-- no rhetorical questions. no question marks at all unless asking a real specific question the author would answer.
-- no hedging ("in my opinion", "i think", "this might be wrong but"). just say it.
-- no metaphors as standalone claims. metaphors only inside real stories.
-- specific over generic. real numbers from real work over vague claims.
-- friendly text-message energy. like one founder telling another founder something true.
-- write the way alex hormozi talks on a quiet podcast — long flowing sentences when explaining, short ones only as a punch.
+## THE VIBE
+Gen Z casual. You just scrolled past a good post and tapped the comment box. Two short sentences max. You're not writing an essay, you're not dropping a case study, you're not name-dropping clients. You're reacting like a normal human who agreed with the thing you just read.
 
-BANNED WORDS (instant fail, never use): tough, quiet, leverage, utilize, unlock, robust, comprehensive, streamlined, tailored, cutting-edge, ensure, maximize, noise, crucial, vital, essential, pivotal, seamless, empower, elevate, revolutionize, harness, foster, delve, realm, synergy, holistic, bandwidth, navigate, dive, explore, landscape, journey, ecosystem, transform, 10x, game changer, level up, needle mover, low-hanging fruit, actionable insights, value-add, circle back, moving the needle.
+Natural casing is fine (capital letters, lowercase, mixed — whatever feels right). Contractions always ("you're", "it's", "i've"). Casual tone. Light humor ok when it fits.
 
-BANNED PHRASES: "let me tell you", "here's the thing", "the truth is", "you need to understand", "i'll be honest", "let that sink in", "the secret to", "nobody talks about this", "this changed everything", "in today's world", "in this day and age", "now more than ever", "as we all know", "it goes without saying", "at the end of the day", "when push comes to shove".
+## THE LENGTH RULE — THIS IS STRICT
+Every comment is 10 to 20 words. Count them before outputting. Not 25, not 30, not a paragraph. Two short sentences or one medium sentence. If it's longer than 20 words, it's too long — cut it.
 
-Length: 30 to 280 characters. Shorter is better. LinkedIn comments perform best between 50 and 150 chars.
+## ALWAYS AGREE, NEVER SALESY
+Every comment agrees with the post. No pushback, no corrections.
 
-Output: ONLY the comment text. No preamble. No quotes around it. No explanation. Just the comment that will be posted as-is.`;
+HARD BAN on anything that sounds like a pitch or a flex:
+- No "we had X clients do Y" — you're not advertising
+- No "we ran a test and got 47%" — you're not showing off
+- No client names, no "bleed ai", no campaign numbers
+- No "in my experience" followed by a humblebrag stat
+
+## INSIGHT IS GOOD, FLEX IS BAD (this is the fine line)
+You CAN and SHOULD add genuine insight to comments when it fits. Insight means peer-level domain knowledge that extends the post's point. NOT personal wins, just true things about how cold email or AI agents work.
+
+GOOD insight examples (these add value to the reader):
+- "yessss, and the reason specific openers land is they signal the sender did actual research, not pulled from a template"
+- "100%, the fix is usually picking ONE trigger signal per sequence instead of stacking three"
+- "exactly, warmup only matters if your domain is <30 days old, after that it's a rounding error"
+
+BAD flex examples (these sound like sales):
+- "we ran an A/B on 8k sends and saw 11% reply vs 4%" (personal stat)
+- "our clients jumped from 40% to 70% inbox placement" (client name-drop)
+- "in my last campaign we..." (personal flex)
+
+The test: if the insight would still be true if someone who has never run a cold email campaign said it, it's peer knowledge. If it requires "I did this specific thing and got this specific result", it's a flex. Share the first, never the second.
+
+## NOT FLATTERY EITHER
+Do NOT say "great post", "love this", "so insightful", "amazing point", "fantastic read". Those are dead giveaways of a bot. Agreement means reacting to the content specifically, not complimenting the author.
+
+## GEN Z LANGUAGE OK
+Feel free to use: yessss, exactly, 100%, this, fr, ngl, literally, honestly, wait, okay but. Short emphatic reactions are great. Multiple s's on "yesss" or "sooo" are fine.
+
+## LEAD MAGNET POSTS
+If the post is asking readers to comment a specific word to receive a lead magnet (guide, template, checklist, playbook, etc.), your comment MUST include that exact word IN ALL CAPS. Examples of what to look for in the post:
+- "Comment 'GUIDE' below and I'll DM you the link"
+- "Type INBOX in the comments"
+- "Drop 'YES' if you want me to send this"
+- "Reply with PLAYBOOK"
+- "Comment below and I'll share the checklist"
+
+Your comment should then look like: "yessss i need this, GUIDE please" or "dropping INBOX, looks super useful" — short (8-15 words), enthusiastic, and the trigger word in ALL CAPS so the lead magnet automation delivers. Without the caps the author's automation won't see it as a valid trigger.
+
+## HUMOR ENCOURAGED
+When the post has any energy to play off, be funny. Not joke-joke comedian funny, just relatable and a little self-deprecating. Good humor examples:
+- "haha the amount of founders who still write 'i hope this finds you well' is unhinged"
+- "not me literally doing this exact thing at 11pm last tuesday"
+- "wait so you're telling me the fix was just... cleaning the list"
+- "the 'send 800 emails from one inbox' era really tested us all"
+- "honestly i see this mistake 10x a week and still cringe every single time"
+
+You can also ask a real follow-up question if you're curious about something the post raised. Not rhetorical — a genuine one. Example: "how do you handle it when the prospect replies with just 'no thanks'?"
+
+## READ THE POST FIRST
+Understand the specific thing the post is saying. Reference a specific idea from it in your comment, not just a generic reaction. "Yessss exactly" by itself is too empty — "yessss the warmup part is huge" connects to something specific.
+
+## HARD RULES (non-negotiable)
+- No em dashes (—) or en dashes (–). Use a comma or period.
+- No hedging: "in my opinion", "i think", "just my two cents". Just say the thing.
+- No "actually" or corrections. You're agreeing.
+- No @mentions.
+- No corporate buzzwords: leverage, utilize, unlock, robust, comprehensive, streamlined, seamless, synergy, holistic, empower, elevate, revolutionize, delve, landscape, journey, ecosystem, actionable insights, value-add, moving the needle, game changer, needle mover, cutting-edge.
+- No banned formal phrases: "let me tell you", "here's the thing", "the truth is", "you need to understand", "let that sink in", "the secret to", "nobody talks about this", "in today's world", "now more than ever", "as we all know", "it goes without saying", "at the end of the day".
+
+## OUTPUT
+Just the comment text, 10-20 words. No preamble, no quotes around it, no explanation. Plain text that will be posted as-is.`;
 
 export interface CandidatePost {
   url: string;
@@ -171,10 +236,13 @@ Write the comment now. Lowercase only. 30-280 chars. No quotes around it, no pre
 
   const raw =
     res.content[0]?.type === "text" ? res.content[0].text.trim() : "";
-  // Strip any quotes the model wrapped around its output, and run the
-  // standard sanitizer (lowercase + em/en dash → comma).
-  const stripped = raw.replace(/^["']|["']$/g, "").trim();
-  const cleaned = lowerSanitize(stripped);
+  // Strip any quotes the model wrapped around its output and strip em/en
+  // dashes (always banned), but KEEP the original casing — Gen Z casual
+  // voice allows natural capitalization.
+  const cleaned = raw
+    .replace(/^["']|["']$/g, "")
+    .replace(/[—–]/g, ",")
+    .trim();
 
   return {
     comment_text: cleaned,
@@ -183,18 +251,69 @@ Write the comment now. Lowercase only. 30-280 chars. No quotes around it, no pre
   };
 }
 
-// Wraps the voice-rules check + adds comment-specific length bounds.
+// Comment-specific quality gate. Unlike the skill's voice rules (which
+// enforce lowercase and ban all questions), comments allow natural casing
+// and can ask genuine follow-up questions. Length is enforced in WORDS
+// (target 10-20 words) not characters. Still enforces: no em/en dashes,
+// no banned buzzwords, no banned formal phrases, no @mentions.
 export function qualityGateComment(text: string): VoiceCheck {
   if (!text || text.trim().length === 0) {
     return { ok: false, reason: "empty comment" };
   }
-  if (text.length < 30) {
-    return { ok: false, reason: `too short (${text.length} chars, min 30)` };
+
+  // Word count check (target 10-20, allow a little slack: 8-22).
+  const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
+  if (wordCount < 8) {
+    return {
+      ok: false,
+      reason: `too short (${wordCount} words, min 8, target 10-20)`,
+    };
   }
-  if (text.length > 280) {
-    return { ok: false, reason: `too long (${text.length} chars, max 280)` };
+  if (wordCount > 22) {
+    return {
+      ok: false,
+      reason: `too long (${wordCount} words, max 22, target 10-20)`,
+    };
   }
-  return checkVoiceCompliance(text);
+
+  if (/[—–]/.test(text)) {
+    return { ok: false, reason: "contains em or en dash" };
+  }
+
+  const lower = text.toLowerCase();
+
+  // Banned buzzwords (word-boundary matched to avoid false positives
+  // like "unlocking" when "unlock" is banned — the word boundary makes
+  // it still match "unlock" inside "unlocking", which is fine).
+  for (const word of BANNED_WORDS) {
+    const isMultiWord = word.includes(" ") || word.includes("-");
+    if (isMultiWord) {
+      if (lower.includes(word)) {
+        return { ok: false, reason: `banned word/phrase: "${word}"` };
+      }
+    } else {
+      const re = new RegExp(
+        `\\b${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`
+      );
+      if (re.test(lower)) {
+        return { ok: false, reason: `banned word: "${word}"` };
+      }
+    }
+  }
+
+  // Banned formal phrases (substring match — no word boundary needed)
+  for (const phrase of BANNED_PHRASES) {
+    if (lower.includes(phrase)) {
+      return { ok: false, reason: `banned phrase: "${phrase}"` };
+    }
+  }
+
+  // @mentions still banned (LinkedIn API mention syntax is fragile)
+  if (/@[a-z]/i.test(text)) {
+    return { ok: false, reason: "contains @mention" };
+  }
+
+  return { ok: true };
 }
 
 // Pulls the 19-digit activity id out of a LinkedIn post URL and wraps it

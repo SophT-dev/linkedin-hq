@@ -3,7 +3,8 @@ import {
   attachCommentToIntelRow,
   countCommentsPostedToday,
   getConfig,
-  loadLinkedInPostsNeedingComment,
+  loadIntel,
+  IntelRow,
 } from "@/lib/sheets";
 import {
   generateExpertComment,
@@ -18,37 +19,41 @@ export const maxDuration = 60;
 // POST /api/comments/plan
 //
 // Called by n8n AFTER the LinkedIn creator scrape has been ingested via
-// /api/intel/ingest, so the new posts are already sitting in the Intel tab.
-// This route reads the LinkedIn posts that don't yet have a comment, picks
-// the top-engagement ones up to the daily cap, generates a comment for each
-// in Taha's voice, runs the voice quality gate, writes the draft straight
-// into the matching Intel row's comment_* columns, and returns the approved
-// comments to n8n. n8n then iterates and posts each one to LinkedIn.
+// /api/intel/ingest. Reads the Intel tab and decides what to post. Three
+// categories of candidate:
 //
-// No request body needed — everything comes from Intel. Just POST with an
-// empty body or no body at all.
+//   1. STRANDED DRAFTS: Intel rows where comment_status='draft' and the
+//      comment_text is already populated. These are drafts from a prior
+//      run that never made it to LinkedIn (workflow was disconnected,
+//      crashed, hit rate limit, etc.). They get highest priority — we
+//      re-queue them for posting without re-generating, so nothing
+//      stays stuck.
 //
-// Response shape:
-//   {
-//     ok: true,
-//     comments: [{ url, post_urn, comment_text, creator_name, style_preset }],
-//     stats: { candidates, quality_failed, capped, returned },
-//     reason?: "daily cap reached" | "no candidates"
-//   }
+//   2. FRESH CANDIDATES: Intel rows with type='linkedin' and empty
+//      comment_status. These are newly scraped posts we haven't
+//      commented on yet. Sorted by engagement score desc.
+//
+//   3. CAPPED: anything past the remaining daily cap. Left alone, will
+//      become candidates on a future run.
+//
+// Daily cap: comments_daily_cap config row (default 5). Counted against
+// posted_today only. Stranded drafts count toward cap when they finally
+// post, not when they were originally generated.
 
 export async function POST() {
   try {
     const stats = {
-      candidates: 0,
+      stranded_drafts: 0,
+      fresh_candidates: 0,
       quality_failed: 0,
       capped: 0,
       returned: 0,
     };
 
-    const [config, postedToday, linkedInRows] = await Promise.all([
+    const [config, postedToday, allIntel] = await Promise.all([
       getConfig(),
       countCommentsPostedToday(),
-      loadLinkedInPostsNeedingComment(),
+      loadIntel(),
     ]);
 
     const dailyCap = parseInt(config["comments_daily_cap"] || "5", 10);
@@ -66,22 +71,44 @@ export async function POST() {
       });
     }
 
-    // Apply engagement filter (already sorted by score desc inside the helper)
-    const aboveThreshold = linkedInRows.filter((r) => r.score >= minEngagement);
-    stats.candidates = aboveThreshold.length;
+    // Split Intel rows into two buckets.
+    const linkedInRows = allIntel.filter((r) => r.type === "linkedin");
 
-    if (aboveThreshold.length === 0) {
+    // Stranded drafts — have comment_status='draft' and a populated
+    // comment_text. These are pending from a previous run. Oldest first
+    // so they clear out predictably.
+    const strandedDrafts = linkedInRows
+      .filter(
+        (r) =>
+          r.comment_status === "draft" &&
+          r.comment_text &&
+          r.comment_text.trim().length > 0
+      )
+      .sort((a, b) => (a.pulled_at || "").localeCompare(b.pulled_at || ""));
+    stats.stranded_drafts = strandedDrafts.length;
+
+    // Fresh candidates — no comment yet. Sorted by engagement score desc.
+    const freshCandidates = linkedInRows
+      .filter((r) => !r.comment_status)
+      .filter((r) => r.score >= minEngagement)
+      .sort((a, b) => b.score - a.score);
+    stats.fresh_candidates = freshCandidates.length;
+
+    // Prioritize stranded drafts, then fresh candidates. Cap to remaining
+    // daily slots.
+    const remaining = dailyCap - postedToday;
+    const combined: IntelRow[] = [...strandedDrafts, ...freshCandidates];
+    const selected = combined.slice(0, remaining);
+    stats.capped = combined.length - selected.length;
+
+    if (selected.length === 0) {
       return NextResponse.json({
         ok: true,
         comments: [],
         stats,
-        reason: "no candidates without comments",
+        reason: "no candidates",
       });
     }
-
-    const remaining = dailyCap - postedToday;
-    const candidates = aboveThreshold.slice(0, remaining);
-    stats.capped = aboveThreshold.length - candidates.length;
 
     const approved: Array<{
       url: string;
@@ -91,18 +118,8 @@ export async function POST() {
       style_preset: string;
     }> = [];
 
-    for (const row of candidates) {
-      // The Intel row's title field holds the first 80 chars of the LinkedIn
-      // post text — for richer generation we use the summary which holds 500
-      // chars. Either is OK as the model input; summary is better.
-      const post: CandidatePost = {
-        url: row.url,
-        text: row.summary || row.title,
-        creator_name: row.source || "linkedin",
-        reactions: row.score, // score is already reactions+comments*2
-      };
-
-      const post_urn = extractPostUrn(post.url);
+    for (const row of selected) {
+      const post_urn = extractPostUrn(row.url);
       if (!post_urn) {
         await attachCommentToIntelRow(row.url, {
           comment_status: "quality_failed",
@@ -111,6 +128,32 @@ export async function POST() {
         stats.quality_failed++;
         continue;
       }
+
+      // Stranded draft — reuse the existing comment_text, don't re-generate.
+      // This preserves the comment exactly as it was first written, which
+      // is what the user expected when they first saw it as a draft.
+      if (
+        row.comment_status === "draft" &&
+        row.comment_text &&
+        row.comment_text.trim().length > 0
+      ) {
+        approved.push({
+          url: row.url,
+          post_urn,
+          comment_text: row.comment_text,
+          creator_name: row.source || "linkedin",
+          style_preset: row.comment_style || "agree_add",
+        });
+        continue;
+      }
+
+      // Fresh candidate — generate a new comment.
+      const post: CandidatePost = {
+        url: row.url,
+        text: row.summary || row.title,
+        creator_name: row.source || "linkedin",
+        reactions: row.score,
+      };
 
       let generated;
       try {
