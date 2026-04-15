@@ -47,7 +47,7 @@ export const STYLE_PRESETS: Record<StylePreset, PresetSpec> = {
   agree_witty: {
     id: "agree_witty",
     instruction:
-      "write a genuinely funny, sharp reaction in 1-20 words. this is the humor slot — do NOT play it safe. the energy is 'the one funny friend at the table who finally says the real thing'. pick whichever technique fits the post best:\n\n1. **SPECIFIC ABSURD DETAIL** — zoom in on one ridiculous concrete thing the post mentioned. e.g. 'the guy who personalized with literally {first_name} still in the brackets'\n2. **UNEXPECTED COMPARISON** — compare the thing to something completely unrelated that makes it feel obvious. e.g. 'cold email is like asking someone out, the first line decides the whole thing'\n3. **MATTER-OF-FACT ABSURDITY** — deliver something wild in a deadpan 'obviously' tone. ALWAYS end this technique with 😂 so readers know it's a joke and not a real claim. e.g. 'the fix was always just turning it off and on again 😂', 'yeah the secret was caring about the person you were emailing, wild 😂'\n4. **PLAYFUL OBSERVATIONAL** — Taha's actual style. e.g. 'everyone in cold email is either shipping 10x or posting about not shipping', 'the villa energy is real'\n\nthe humor MUST reference something SPECIFIC from the post. no generic jokes, no dad-jokes, no puns, no 'lol so relatable'. sharp, conversational, a little irreverent. the 😂 emoji is ONLY for technique #3 (matter-of-fact absurdity) so the reader doesn't mistake the joke for a real take. the other techniques should generally be plain text unless the allowEmoji flag from the system says otherwise.\n\nNO client stories, NO 'we ran a test', NO flexes. pure observational comedy plus agreement.",
+      "write a genuinely funny, sharp reaction in 1-20 words. this is the humor slot — do NOT play it safe. the energy is 'the one funny friend at the table who finally says the real thing'. you have TWO techniques available. pick whichever fits the post best:\n\n1. **UNEXPECTED COMPARISON** — compare the thing in the post to something from a completely different world. the gap between the domains is where the humor lives. examples (copy the shape, not the content): 'cold email deliverability is the flossing of B2B, everyone knows they should, nobody does', 'comment bait is just linkedin's version of a costco sample table', 'personalization tokens are the linkedin equivalent of a waiter remembering your name'.\n\n2. **COUNTER-INTUITIVE FLIP** — state a sharp observation the post author didn't make, often by flipping the obvious reading or naming something darker the post implies. examples: 'the most engaged audience on linkedin right now might be people trying to get free PDFs', 'half convinced linkedin is held together by lead magnet comments and the other half is bots applauding them', 'cold email stopped being a numbers game the second everyone started using the same tool, now it is a boredom game'.\n\nCRITICAL NO-MIRRORING RULES (these apply to every witty comment):\n- do NOT copy any 4-or-more-word span verbatim from the post. ever.\n- do NOT mirror the post's sentence structure. if the post says \"nobody is X-ing Y\", your comment can't say \"nobody is A-ing B\".\n- the joke must originate OUTSIDE the post. reference a completely different domain (costco, flossing, waiter) or a sharp observation the author didn't make. NEVER a remix of what they said.\n- specificity beats cleverness. a concrete comparison or sharp observation > any abstract quip.\n- if you can't be original within 1-20 words, GO SHORTER. 'spot on!' beats a mirrored 20-word joke.\n\nNO client stories, NO 'we ran a test', NO flexes, NO self-deprecation, NO dad-jokes, NO puns, NO 'lol so relatable'. pure observational comedy via an unexpected angle, agreement implicit.",
   },
   agree_curious: {
     id: "agree_curious",
@@ -135,6 +135,25 @@ Natural casing (mixed case, lowercase, caps — whatever feels right). Contracti
 ## THE LENGTH RULE
 1 to 20 words. That's the whole range. Some posts deserve a "Cool" or "spot on!" and nothing more. Others deserve a real domain insight. NEVER go over 20 words. If you find yourself writing two full sentences, cut one.
 
+## NO MIRRORING — the most important rule
+Never parrot the post. Never copy phrases from it. Never mirror its sentence shape. Your comment must come from YOUR angle, not a remix of theirs.
+
+Concrete rules:
+- No 4-or-more-word span from the post may appear in your comment verbatim.
+- No echoing the post's sentence shape. If the post says "nobody is commenting on X", you can't say "nobody is replying to Y".
+- The angle of your comment must originate OUTSIDE the post. Your own observation, an unrelated domain comparison, a sharper observation the author didn't make. Never a rewording of what they said.
+- Specificity beats cleverness. Concrete numbers / scenarios / domain comparisons > abstract quips.
+- If you can't be original within 1-20 words, GO SHORTER. "spot on!" beats a mirrored 20-word joke.
+
+BAD example (the bot-like pattern we're fixing):
+- Post says: "nobody is commenting on '5 tips for better marketing.'"
+- BAD comment: "nobody is commenting on '5 tips for better marketing' but they WILL type a word for a PDF"
+- Why it's bad: copies 7 words verbatim, mirrors sentence shape, adds a cheap punchline. Reads as automated.
+
+GOOD example (same post, outside angle):
+- GOOD comment: "comment bait is just linkedin's version of a costco sample table"
+- Why it works: completely different angle, zero verbatim copy, comparison from outside the post's world.
+
 ## WHAT GOOD LOOKS LIKE (these are Taha's actual voice)
 These are real examples. Match this energy:
 
@@ -201,14 +220,13 @@ Rules:
 - Only when the user-prompt directive says this slot is allowed to use one — otherwise none.
 - NEVER use any other decorative emoji. No 🙌, no 💯, no 🔥, no ✨, no 🐐, no hearts, no faces.
 
-### Joke-marker emoji (always allowed, for humor safety)
-The 😂 (laughing face) is a joke marker, not a decoration. It signals "i'm joking" to the reader when you deliver a deadpan absurd claim that could otherwise be mistaken for a real take.
+### Joke-marker emoji (rare, for humor safety only)
+The 😂 (laughing face) is a joke marker, not a decoration. It exists as a safety net: if a deadpan wild claim could be mistaken for a real take, 😂 signals "i'm joking". Almost every witty comment should NOT end in 😂 — let the joke land on its own.
 
 Rules:
-- 😂 is ALWAYS allowed, in ANY comment, regardless of slot.
-- Use it ONLY for the matter-of-fact-absurdity humor technique (deadpan wild claim). Put it at the END of the comment.
-- Do NOT use 😂 for ordinary agreement or praise — it's a JOKE marker, not a "this is funny haha" marker. If nothing wild is being claimed, skip it.
-- Example: "the fix was always just turning it off and on again 😂"
+- 😂 is allowed in any comment but should be RARE. Default is NO 😂.
+- Only use it when a reader might genuinely mistake the comment for a serious claim and you need the safety signal. If the joke is clearly a joke, skip it.
+- Do NOT use 😂 as a "this is supposed to be funny" crutch. If the comment needs 😂 to read as funny, the comment isn't funny — rewrite it.
 - Do NOT use any other laughing/face emoji (no 🤣, 😅, 😆, 🙃 — only 😂).
 
 ## HARD RULES (non-negotiable)
@@ -255,8 +273,8 @@ export async function generateExpertComment(
   const preset = STYLE_PRESETS[stylePreset];
 
   const emojiDirective = allowEmoji
-    ? "This slot IS allowed to use ONE decorative emoji from the whitelist (👑 👏 🚀 👍) if it's genuinely earned by the post content. Skip the emoji if nothing fits. Separately: 😂 is ALWAYS allowed in this comment if you're using the matter-of-fact-absurdity humor technique — it signals 'i'm joking' to the reader."
-    : "DO NOT use any decorative emoji in this comment (no 👑 👏 🚀 👍). The ONLY exception: if the comment uses the matter-of-fact-absurdity humor technique (deadpan wild claim), you MAY and SHOULD end it with 😂 so the reader knows it's a joke, not a real take.";
+    ? "This slot IS allowed to use ONE decorative emoji from the whitelist (👑 👏 🚀 👍) if it's genuinely earned by the post content. Skip the emoji if nothing fits. Separately: 😂 is allowed but should be RARE — only use it as a safety signal if a deadpan absurd claim might otherwise read as serious. Default is no 😂."
+    : "DO NOT use any decorative emoji in this comment (no 👑 👏 🚀 👍). 😂 is allowed but only as a rare safety signal for deadpan absurd claims that might otherwise read as serious — default to NO 😂 and let the joke land on its own.";
 
   const userPrompt = `LinkedIn post by ${post.creator_name}:
 
