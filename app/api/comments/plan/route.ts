@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import {
   attachCommentToIntelRow,
+  countAuthorCommentsLastNDays,
   countCommentsPostedToday,
   getConfig,
   loadIntel,
@@ -46,6 +47,7 @@ export async function POST() {
       stranded_drafts: 0,
       fresh_candidates: 0,
       quality_failed: 0,
+      skipped_per_profile_cap: 0,
       capped: 0,
       returned: 0,
       emoji_slots: 0,
@@ -60,6 +62,14 @@ export async function POST() {
     const dailyCap = parseInt(config["comments_daily_cap"] || "5", 10);
     const minEngagement = parseInt(
       config["comments_min_engagement"] || "0",
+      10
+    );
+    const perProfileCap = parseInt(
+      config["comments_per_profile_weekly_cap"] || "2",
+      10
+    );
+    const perProfileWindowDays = parseInt(
+      config["comments_per_profile_window_days"] || "7",
       10
     );
 
@@ -89,11 +99,34 @@ export async function POST() {
     stats.stranded_drafts = strandedDrafts.length;
 
     // Fresh candidates — no comment yet. Sorted by engagement score desc.
-    const freshCandidates = linkedInRows
+    const freshCandidatesRaw = linkedInRows
       .filter((r) => !r.comment_status)
       .filter((r) => r.score >= minEngagement)
       .sort((a, b) => b.score - a.score);
-    stats.fresh_candidates = freshCandidates.length;
+    stats.fresh_candidates = freshCandidatesRaw.length;
+
+    // Per-profile weekly rate limiter. Keeps us from looking like a bot by
+    // commenting on every post from the same creator. Walks fresh
+    // candidates in score order and skips any whose author has already hit
+    // the cap in the rolling window. Increments the in-memory count as we
+    // go so a single batch with 3 high-score posts from one creator only
+    // picks the top 2. Stranded drafts are NOT filtered — they were
+    // already approved in a prior run and deserve to clear out.
+    const authorCounts = countAuthorCommentsLastNDays(
+      allIntel,
+      perProfileWindowDays
+    );
+    const freshCandidates: IntelRow[] = [];
+    for (const row of freshCandidatesRaw) {
+      const author = row.source || "";
+      const count = authorCounts.get(author) || 0;
+      if (author && count >= perProfileCap) {
+        stats.skipped_per_profile_cap++;
+        continue;
+      }
+      freshCandidates.push(row);
+      if (author) authorCounts.set(author, count + 1);
+    }
 
     // Prioritize stranded drafts, then fresh candidates. Cap to remaining
     // daily slots.

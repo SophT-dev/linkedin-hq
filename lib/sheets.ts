@@ -196,6 +196,36 @@ export async function countCommentsPostedToday(): Promise<number> {
   }).length;
 }
 
+// Counts how many comments each LinkedIn creator has received in the last
+// N days, so /api/comments/plan can enforce a per-profile weekly cap and
+// avoid looking like a bot to any single person. Walks a pre-loaded Intel
+// array (the plan route already has it in memory) instead of re-fetching.
+// Matches on `source` column — creator_name string, not a URL. Small
+// collision risk if two creators share a name; accepted for simplicity.
+// Day comparison uses the same PKT-prefix trick as countCommentsPostedToday
+// with an ISO fallback for legacy rows.
+export function countAuthorCommentsLastNDays(
+  rows: IntelRow[],
+  days: number
+): Map<string, number> {
+  const now = new Date();
+  const cutoffDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+  const cutoffDay = karachiDay(cutoffDate);
+  const counts = new Map<string, number>();
+  for (const r of rows) {
+    if (r.type !== "linkedin") continue;
+    if (r.comment_status !== "posted" || !r.comment_posted_at) continue;
+    if (!r.source) continue;
+    const raw = r.comment_posted_at.trim();
+    const day = raw.endsWith("PKT")
+      ? raw.slice(0, 10)
+      : karachiDay(new Date(raw));
+    if (!day || day < cutoffDay) continue;
+    counts.set(r.source, (counts.get(r.source) || 0) + 1);
+  }
+  return counts;
+}
+
 // Returns YYYY-MM-DD for a Date as observed in Asia/Karachi (UTC+5, no DST).
 function karachiDay(d: Date): string {
   if (isNaN(d.getTime())) return "";
