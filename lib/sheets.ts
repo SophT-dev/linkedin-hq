@@ -322,14 +322,14 @@ export async function appendIntel(
     | "comment_style"
   >[]
 ) {
-  if (items.length === 0) return { ingested: 0, skipped: 0 };
+  if (items.length === 0) return { ingested: 0, skipped: 0, new_urls: [] as string[] };
 
   // Dedupe against existing URLs
   const existing = await loadIntel();
   const existingUrls = new Set(existing.map((r) => r.url));
 
   const fresh = items.filter((it) => it.url && !existingUrls.has(it.url));
-  if (fresh.length === 0) return { ingested: 0, skipped: items.length };
+  if (fresh.length === 0) return { ingested: 0, skipped: items.length, new_urls: [] as string[] };
 
   const auth = getAuth();
   const sheets = google.sheets({ version: "v4", auth });
@@ -350,7 +350,11 @@ export async function appendIntel(
     valueInputOption: "USER_ENTERED",
     requestBody: { values },
   });
-  return { ingested: fresh.length, skipped: items.length - fresh.length };
+  return {
+    ingested: fresh.length,
+    skipped: items.length - fresh.length,
+    new_urls: fresh.map((f) => f.url),
+  };
 }
 
 export async function toggleIntelStar(rowIndex: number, starred: boolean) {

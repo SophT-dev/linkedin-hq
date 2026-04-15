@@ -21,10 +21,13 @@ export const dynamic = "force-dynamic";
 //   }]
 // }
 //
-// returns: { ingested, skipped, filtered }
+// returns: { ingested, skipped, filtered, new_urls }
 //   ingested: rows actually written
 //   skipped:  dupes caught by appendIntel URL dedup
 //   filtered: items dropped by the relevance keyword gate
+//   new_urls: URLs of the fresh rows (passed to /api/comments/plan as
+//             only_urls so we only comment on posts from THIS run, never
+//             old ones stranded in Intel from prior scrapes)
 
 interface IncomingItem {
   creator_url?: string;
@@ -54,7 +57,13 @@ export async function POST(req: NextRequest) {
     const body = (await req.json()) as { items?: IncomingItem[] };
     const items = Array.isArray(body.items) ? body.items : [];
     if (items.length === 0) {
-      return NextResponse.json({ ok: true, ingested: 0, skipped: 0, filtered: 0 });
+      return NextResponse.json({
+        ok: true,
+        ingested: 0,
+        skipped: 0,
+        filtered: 0,
+        new_urls: [],
+      });
     }
 
     // pulled_at is written in Asia/Karachi local time (ISO with +05:00
@@ -104,6 +113,7 @@ export async function POST(req: NextRequest) {
       ingested: result.ingested,
       skipped: result.skipped,
       filtered,
+      new_urls: result.new_urls,
     });
   } catch (e) {
     return NextResponse.json(

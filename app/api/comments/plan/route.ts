@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import {
   attachCommentToIntelRow,
   countAuthorCommentsLastNDays,
@@ -20,29 +20,43 @@ export const maxDuration = 60;
 // POST /api/comments/plan
 //
 // Called by n8n AFTER the LinkedIn creator scrape has been ingested via
-// /api/intel/ingest. Reads the Intel tab and decides what to post. Three
-// categories of candidate:
+// /api/intel/ingest.
 //
-//   1. STRANDED DRAFTS: Intel rows where comment_status='draft' and the
-//      comment_text is already populated. These are drafts from a prior
-//      run that never made it to LinkedIn (workflow was disconnected,
-//      crashed, hit rate limit, etc.). They get highest priority — we
-//      re-queue them for posting without re-generating, so nothing
-//      stays stuck.
+// Request body (optional): { only_urls: string[] }
+//   When provided, ONLY the Intel rows whose url is in this list are
+//   eligible for commenting. This is how n8n enforces "only comment on
+//   posts that came in during this run" — the ingest step returns the
+//   fresh URLs it wrote to the sheet, and those are passed straight to
+//   this route. Old posts stranded in Intel from previous runs are never
+//   reconsidered.
 //
-//   2. FRESH CANDIDATES: Intel rows with type='linkedin' and empty
-//      comment_status. These are newly scraped posts we haven't
-//      commented on yet. Sorted by engagement score desc.
+//   When omitted (e.g., manual curl testing), the legacy behavior applies:
+//   all linkedin rows with empty comment_status are candidates.
 //
-//   3. CAPPED: anything past the remaining daily cap. Left alone, will
-//      become candidates on a future run.
+// Fresh candidates: Intel rows with type='linkedin', empty comment_status,
+// url in only_urls (if provided). Sorted by engagement score desc.
 //
-// Daily cap: comments_daily_cap config row (default 5). Counted against
-// posted_today only. Stranded drafts count toward cap when they finally
-// post, not when they were originally generated.
+// Stranded drafts (comment_status='draft' with populated comment_text from
+// a prior run) are ONLY processed when only_urls is NOT provided. In the
+// n8n "only new posts" mode they're ignored — "no old posts" means no
+// old posts, including stranded ones.
+//
+// Daily cap: comments_daily_cap config row (default 5). Counts posted-today
+// rows. Per-profile weekly cap still applies.
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   try {
+    // Parse optional only_urls filter. Missing body / malformed body is
+    // fine — we just fall back to legacy all-candidates mode.
+    let onlyUrlSet: Set<string> | null = null;
+    try {
+      const body = await req.json();
+      if (body && Array.isArray(body.only_urls)) {
+        onlyUrlSet = new Set<string>(body.only_urls.filter((u: unknown) => typeof u === "string"));
+      }
+    } catch {
+      // no body or not JSON — legacy mode
+    }
     const stats = {
       stranded_drafts: 0,
       fresh_candidates: 0,
@@ -51,6 +65,8 @@ export async function POST() {
       capped: 0,
       returned: 0,
       emoji_slots: 0,
+      only_urls_mode: onlyUrlSet !== null,
+      only_urls_count: onlyUrlSet?.size ?? 0,
     };
 
     const [config, postedToday, allIntel] = await Promise.all([
@@ -86,22 +102,34 @@ export async function POST() {
     const linkedInRows = allIntel.filter((r) => r.type === "linkedin");
 
     // Stranded drafts — have comment_status='draft' and a populated
-    // comment_text. These are pending from a previous run. Oldest first
-    // so they clear out predictably.
-    const strandedDrafts = linkedInRows
-      .filter(
-        (r) =>
-          r.comment_status === "draft" &&
-          r.comment_text &&
-          r.comment_text.trim().length > 0
-      )
-      .sort((a, b) => (a.pulled_at || "").localeCompare(b.pulled_at || ""));
+    // comment_text. These are pending from a previous run.
+    //
+    // ONLY processed when only_urls is NOT set. In the n8n "only new
+    // posts from this run" mode, stranded drafts are deliberately
+    // ignored — "no old posts" includes stranded ones. Legacy curl-
+    // testing mode (no body on the request) still retries them.
+    const strandedDrafts =
+      onlyUrlSet === null
+        ? linkedInRows
+            .filter(
+              (r) =>
+                r.comment_status === "draft" &&
+                r.comment_text &&
+                r.comment_text.trim().length > 0
+            )
+            .sort((a, b) =>
+              (a.pulled_at || "").localeCompare(b.pulled_at || "")
+            )
+        : [];
     stats.stranded_drafts = strandedDrafts.length;
 
     // Fresh candidates — no comment yet. Sorted by engagement score desc.
+    // When only_urls is set, restrict to URLs that came in during THIS run
+    // so we never comment on stale posts stranded in Intel from prior runs.
     const freshCandidatesRaw = linkedInRows
       .filter((r) => !r.comment_status)
       .filter((r) => r.score >= minEngagement)
+      .filter((r) => (onlyUrlSet ? onlyUrlSet.has(r.url) : true))
       .sort((a, b) => b.score - a.score);
     stats.fresh_candidates = freshCandidatesRaw.length;
 
