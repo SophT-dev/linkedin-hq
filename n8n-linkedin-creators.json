@@ -150,9 +150,7 @@
             }
           ]
         },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ only_urls: $('POST to /api/intel/ingest').item.json.new_urls || [] }) }}",
+        "sendBody": false,
         "options": {
           "response": {
             "response": {

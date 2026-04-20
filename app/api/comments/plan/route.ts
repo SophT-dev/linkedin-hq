@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import {
   attachCommentToIntelRow,
   countAuthorCommentsLastNDays,
@@ -20,53 +20,33 @@ export const maxDuration = 60;
 // POST /api/comments/plan
 //
 // Called by n8n AFTER the LinkedIn creator scrape has been ingested via
-// /api/intel/ingest.
+// /api/intel/ingest. No request body needed.
 //
-// Request body (optional): { only_urls: string[] }
-//   When provided, ONLY the Intel rows whose url is in this list are
-//   eligible for commenting. This is how n8n enforces "only comment on
-//   posts that came in during this run" — the ingest step returns the
-//   fresh URLs it wrote to the sheet, and those are passed straight to
-//   this route. Old posts stranded in Intel from previous runs are never
-//   reconsidered.
+// Recency window: only considers LinkedIn posts whose posted_at is within
+// the last 24 hours. This means each daily midnight run picks up all posts
+// from the previous day, regardless of when they were ingested. Posts older
+// than 24 hours are ignored — no commenting on stale week-old posts.
 //
-//   When omitted (e.g., manual curl testing), the legacy behavior applies:
-//   all linkedin rows with empty comment_status are candidates.
-//
-// Fresh candidates: Intel rows with type='linkedin', empty comment_status,
-// url in only_urls (if provided). Sorted by engagement score desc.
-//
-// Stranded drafts (comment_status='draft' with populated comment_text from
-// a prior run) are ONLY processed when only_urls is NOT provided. In the
-// n8n "only new posts" mode they're ignored — "no old posts" means no
-// old posts, including stranded ones.
+// Stranded drafts (comment_status='draft') within the 24-hour window are
+// retried without regeneration.
 //
 // Daily cap: comments_daily_cap config row (default 5). Counts posted-today
 // rows. Per-profile weekly cap still applies.
 
-export async function POST(req: NextRequest) {
+export async function POST() {
   try {
-    // Parse optional only_urls filter. Missing body / malformed body is
-    // fine — we just fall back to legacy all-candidates mode.
-    let onlyUrlSet: Set<string> | null = null;
-    try {
-      const body = await req.json();
-      if (body && Array.isArray(body.only_urls)) {
-        onlyUrlSet = new Set<string>(body.only_urls.filter((u: unknown) => typeof u === "string"));
-      }
-    } catch {
-      // no body or not JSON — legacy mode
-    }
+    // 24-hour recency cutoff — only consider posts published in the last day.
+    const recencyCutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
     const stats = {
       stranded_drafts: 0,
       fresh_candidates: 0,
       quality_failed: 0,
       skipped_per_profile_cap: 0,
+      skipped_too_old: 0,
       capped: 0,
       returned: 0,
       emoji_slots: 0,
-      only_urls_mode: onlyUrlSet !== null,
-      only_urls_count: onlyUrlSet?.size ?? 0,
     };
 
     const [config, postedToday, allIntel] = await Promise.all([
@@ -98,38 +78,35 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Split Intel rows into two buckets.
+    // Only consider LinkedIn posts published within the last 24 hours.
     const linkedInRows = allIntel.filter((r) => r.type === "linkedin");
+    const recentRows = linkedInRows.filter((r) => {
+      if (!r.posted_at) return false;
+      const postedDate = new Date(r.posted_at);
+      if (isNaN(postedDate.getTime())) return false;
+      return postedDate >= recencyCutoff;
+    });
+    stats.skipped_too_old = linkedInRows.length - recentRows.length;
 
     // Stranded drafts — have comment_status='draft' and a populated
-    // comment_text. These are pending from a previous run.
-    //
-    // ONLY processed when only_urls is NOT set. In the n8n "only new
-    // posts from this run" mode, stranded drafts are deliberately
-    // ignored — "no old posts" includes stranded ones. Legacy curl-
-    // testing mode (no body on the request) still retries them.
-    const strandedDrafts =
-      onlyUrlSet === null
-        ? linkedInRows
-            .filter(
-              (r) =>
-                r.comment_status === "draft" &&
-                r.comment_text &&
-                r.comment_text.trim().length > 0
-            )
-            .sort((a, b) =>
-              (a.pulled_at || "").localeCompare(b.pulled_at || "")
-            )
-        : [];
+    // comment_text from a prior run. Only within the 24-hour window.
+    const strandedDrafts = recentRows
+      .filter(
+        (r) =>
+          r.comment_status === "draft" &&
+          r.comment_text &&
+          r.comment_text.trim().length > 0
+      )
+      .sort((a, b) =>
+        (a.pulled_at || "").localeCompare(b.pulled_at || "")
+      );
     stats.stranded_drafts = strandedDrafts.length;
 
-    // Fresh candidates — no comment yet. Sorted by engagement score desc.
-    // When only_urls is set, restrict to URLs that came in during THIS run
-    // so we never comment on stale posts stranded in Intel from prior runs.
-    const freshCandidatesRaw = linkedInRows
+    // Fresh candidates — no comment yet, within 24-hour window.
+    // Sorted by engagement score desc.
+    const freshCandidatesRaw = recentRows
       .filter((r) => !r.comment_status)
       .filter((r) => r.score >= minEngagement)
-      .filter((r) => (onlyUrlSet ? onlyUrlSet.has(r.url) : true))
       .sort((a, b) => b.score - a.score);
     stats.fresh_candidates = freshCandidatesRaw.length;
 
