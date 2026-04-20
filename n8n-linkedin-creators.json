@@ -178,12 +178,23 @@
     },
     {
       "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [1040, 0],
+      "id": "loop-comments",
+      "name": "Loop comments"
+    },
+    {
+      "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "// Cumulative wait: spreads comments across MINUTES, not seconds.\n//\n// Background: n8n runs all items in parallel through the Wait node, so\n// 'wait 30-90s per item' ends up spreading 11 items across a single\n// ~60s window (they all start at the same wall-clock time). That looks\n// nothing like a human commenting.\n//\n// Fix: make item N wait (N+1) * random(45-120) seconds. All items still\n// start at t=0, but they FINISH spaced out — item 0 posts ~80s later,\n// item 1 posts ~160s later, item 2 ~240s later, and so on. With 11\n// items that's ~15-20 minutes of natural drift, which is what a human\n// scrolling LinkedIn on and off would look like.\nconst base = 45 + Math.floor(Math.random() * 75); // 45-120s per slot\nconst slot = $itemIndex + 1;\nconst seconds = slot * base;\nreturn { json: { ...$json, wait_seconds: seconds, slot_index: $itemIndex } };"
+        "jsCode": "// Random wait between 45-120 seconds per comment.\n// Items are processed one at a time via the Loop node,\n// so each comment genuinely waits before the next starts.\nconst seconds = 45 + Math.floor(Math.random() * 75);\nreturn { json: { ...$json, wait_seconds: seconds } };"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1040, 0],
+      "position": [1264, 0],
       "id": "calc-wait",
       "name": "Calculate random wait"
     },
@@ -194,10 +205,9 @@
       },
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
-      "position": [1264, 0],
+      "position": [1488, 0],
       "id": "wait-random",
-      "name": "Wait (humanize cadence)",
-      "webhookId": "linkedin-hq-comment-wait"
+      "name": "Wait (humanize cadence)"
     },
     {
       "parameters": {
@@ -232,7 +242,7 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1488, 0],
+      "position": [1712, 0],
       "id": "post-comment",
       "name": "POST comment to LinkedIn",
       "credentials": {
@@ -249,7 +259,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1712, 0],
+      "position": [1936, 0],
       "id": "analyze-response",
       "name": "Analyze LinkedIn response"
     },
@@ -332,7 +342,7 @@
       },
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
-      "position": [1936, 0],
+      "position": [2160, 0],
       "id": "branch-response",
       "name": "Branch on response"
     },
@@ -369,7 +379,7 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [2160, 80],
+      "position": [2384, 80],
       "id": "retry-post",
       "name": "Retry POST with correct URN",
       "credentials": {
@@ -386,7 +396,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [2384, 80],
+      "position": [2608, 80],
       "id": "analyze-retry",
       "name": "Analyze retry response"
     },
@@ -416,7 +426,7 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [2608, 80],
+      "position": [2832, 80],
       "id": "check-retry",
       "name": "Was retry 201?"
     },
@@ -446,7 +456,7 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [2832, -80],
+      "position": [3056, -80],
       "id": "log-success",
       "name": "Log posted"
     },
@@ -476,7 +486,7 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [2832, 160],
+      "position": [3056, 160],
       "id": "log-failure",
       "name": "Log failed"
     },
@@ -497,7 +507,7 @@
       },
       "type": "n8n-nodes-base.slack",
       "typeVersion": 2.3,
-      "position": [3056, -80],
+      "position": [3280, -80],
       "id": "slack-success",
       "name": "Slack notify (posted)",
       "webhookId": "linkedin-hq-slack-success",
@@ -525,7 +535,7 @@
       },
       "type": "n8n-nodes-base.slack",
       "typeVersion": 2.3,
-      "position": [3056, 160],
+      "position": [3280, 160],
       "id": "slack-failure",
       "name": "Slack notify (failed)",
       "webhookId": "linkedin-hq-slack-failure",
@@ -575,7 +585,13 @@
       "main": [[{ "node": "Split comments", "type": "main", "index": 0 }]]
     },
     "Split comments": {
-      "main": [[{ "node": "Calculate random wait", "type": "main", "index": 0 }]]
+      "main": [[{ "node": "Loop comments", "type": "main", "index": 0 }]]
+    },
+    "Loop comments": {
+      "main": [
+        [],
+        [{ "node": "Calculate random wait", "type": "main", "index": 0 }]
+      ]
     },
     "Calculate random wait": {
       "main": [[{ "node": "Wait (humanize cadence)", "type": "main", "index": 0 }]]
@@ -601,6 +617,12 @@
           { "node": "Slack notify (failed)", "type": "main", "index": 0 }
         ]
       ]
+    },
+    "Log posted": {
+      "main": [[{ "node": "Loop comments", "type": "main", "index": 0 }]]
+    },
+    "Log failed": {
+      "main": [[{ "node": "Loop comments", "type": "main", "index": 0 }]]
     },
     "Retry POST with correct URN": {
       "main": [[{ "node": "Analyze retry response", "type": "main", "index": 0 }]]
