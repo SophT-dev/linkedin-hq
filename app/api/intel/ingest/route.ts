@@ -102,8 +102,12 @@ export async function POST(req: NextRequest) {
         };
       });
 
-    // Relevance gate. Drop anything that doesn't match the shared keyword list.
-    const relevant = mapped.filter((m) => isIntelRelevant(m.title, m.summary));
+    // Relevance gate. LinkedIn creator posts skip the keyword filter —
+    // those creators were hand-picked in the Config tab so we trust the
+    // curation. Reddit/news items still get filtered by keyword.
+    const relevant = mapped.filter(
+      (m) => m.type === "linkedin" || isIntelRelevant(m.title, m.summary)
+    );
     const filtered = mapped.length - relevant.length;
 
     const result = await appendIntel(relevant);
