@@ -47,7 +47,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const rows = items.map(i => i.json);\nconst config = {};\nfor (const r of rows) {\n  const key = r.key || r.A;\n  const val = r.value !== undefined ? r.value : r.B;\n  if (key) config[key] = val == null ? '' : String(val);\n}\nconst raw = config['linkedin_creators'] || '';\nconst perCreator = parseInt(config['linkedin_posts_per_creator'] || '5', 10);\nconst urls = raw\n  .split('\\n')\n  .map(s => s.trim())\n  .filter(s => s.length > 0 && s.startsWith('http'));\nif (urls.length === 0) {\n  throw new Error('linkedin_creators is empty in the linkedin-hq Config tab.');\n}\nreturn [\n  {\n    json: {\n      targetUrls: urls,\n      maxPosts: perCreator,\n    },\n  },\n];"
+        "jsCode": "const rows = items.map(i => i.json);\nconst config = {};\nfor (const r of rows) {\n  const key = r.key || r.A;\n  const val = r.value !== undefined ? r.value : r.B;\n  if (key) config[key] = val == null ? '' : String(val);\n}\nconst raw = config['linkedin_creators'] || '';\nconst perCreator = parseInt(config['linkedin_posts_per_creator'] || '5', 10);\nconst urls = raw\n  .split('\\n')\n  .map(s => s.trim())\n  .filter(s => s.length > 0 && s.startsWith('http'));\nif (urls.length === 0) {\n  throw new Error('linkedin_creators is empty in the linkedin-hq Config tab.');\n}\nreturn urls.map(url => ({\n  json: {\n    targetUrl: url,\n    maxPosts: perCreator,\n  },\n}));"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -74,7 +74,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"maxComments\": 5,\n  \"maxPosts\": {{ $json.maxPosts }},\n  \"maxReactions\": 5,\n  \"postedLimit\": \"week\",\n  \"scrapeComments\": false,\n  \"scrapeReactions\": false,\n  \"targetUrls\": {{ JSON.stringify($json.targetUrls) }}\n}",
+        "jsonBody": "={\n  \"maxComments\": 5,\n  \"maxPosts\": {{ $json.maxPosts }},\n  \"maxReactions\": 5,\n  \"postedLimit\": \"week\",\n  \"scrapeComments\": false,\n  \"scrapeReactions\": false,\n  \"targetUrls\": [\"{{ $json.targetUrl }}\"]\n}",
         "options": {
           "redirect": {
             "redirect": {}
@@ -550,7 +550,7 @@
     }
   ],
   "connections": {
-    "Every 4h starting midnight PKT": {
+    "Daily midnight PKT": {
       "main": [[{ "node": "Read linkedin-hq Config", "type": "main", "index": 0 }]]
     },
     "Read linkedin-hq Config": {
