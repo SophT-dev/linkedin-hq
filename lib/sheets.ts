@@ -100,6 +100,9 @@ export type IntelType = "linkedin" | "reddit" | "news";
 export type CommentStatus =
   | ""
   | "draft"
+  | "pending_review"
+  | "approved"
+  | "rejected"
   | "quality_failed"
   | "posted"
   | "post_failed"

@@ -13,6 +13,7 @@ import {
   extractPostUrn,
   CandidatePost,
 } from "@/lib/comments";
+import { sendReviewMessage } from "@/lib/slack";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -194,21 +195,36 @@ export async function POST() {
         continue;
       }
 
-      // Stranded draft — reuse the existing comment_text, don't re-generate.
-      // This preserves the comment exactly as it was first written, which
-      // is what the user expected when they first saw it as a draft.
+      // Stranded draft — send for review with existing text.
       if (
         row.comment_status === "draft" &&
         row.comment_text &&
         row.comment_text.trim().length > 0
       ) {
+        const preview = buildPreview(row.summary || row.title);
+        let slackTs = "";
+        try {
+          slackTs = await sendReviewMessage({
+            creator_name: row.source || "linkedin",
+            post_preview: preview,
+            url: row.url,
+            comment_text: row.comment_text,
+            style_preset: row.comment_style || "agree_add",
+          });
+        } catch {
+          // Slack failed — keep as draft
+        }
+        await attachCommentToIntelRow(row.url, {
+          comment_status: "pending_review",
+          comment_posted_at: slackTs,
+        });
         approved.push({
           url: row.url,
           post_urn,
           comment_text: row.comment_text,
           creator_name: row.source || "linkedin",
           style_preset: row.comment_style || "agree_add",
-          post_preview: buildPreview(row.summary || row.title),
+          post_preview: preview,
         });
         continue;
       }
@@ -248,9 +264,26 @@ export async function POST() {
         continue;
       }
 
+      const preview = buildPreview(row.summary || row.title);
+
+      // Send to Slack for human review instead of returning for auto-post.
+      let slackTs = "";
+      try {
+        slackTs = await sendReviewMessage({
+          creator_name: post.creator_name,
+          post_preview: preview,
+          url: row.url,
+          comment_text: generated.comment_text,
+          style_preset: generated.style_preset,
+        });
+      } catch {
+        // Slack send failed — still save draft so it's not lost.
+      }
+
       await attachCommentToIntelRow(row.url, {
         comment_text: generated.comment_text,
-        comment_status: "draft",
+        comment_status: "pending_review",
+        comment_posted_at: slackTs, // store Slack ts for thread reply lookup
         comment_style: generated.style_preset,
       });
 
@@ -260,15 +293,18 @@ export async function POST() {
         comment_text: generated.comment_text,
         creator_name: post.creator_name,
         style_preset: generated.style_preset,
-        post_preview: buildPreview(row.summary || row.title),
+        post_preview: preview,
       });
     }
 
     stats.returned = approved.length;
 
+    // Return empty comments array — n8n no longer posts directly.
+    // Approved comments are posted by the second phase after human review.
     return NextResponse.json({
       ok: true,
-      comments: approved,
+      comments: [],
+      sent_for_review: approved.length,
       stats,
     });
   } catch (e) {

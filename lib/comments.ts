@@ -47,7 +47,7 @@ export const STYLE_PRESETS: Record<StylePreset, PresetSpec> = {
   agree_witty: {
     id: "agree_witty",
     instruction:
-      "write a genuinely funny, sharp reaction in 1-20 words. this is the humor slot — do NOT play it safe. the energy is 'the one funny friend at the table who finally says the real thing'. you have TWO techniques available. pick whichever fits the post best:\n\n1. **UNEXPECTED COMPARISON** — compare the thing in the post to something from a completely different world. the gap between the domains is where the humor lives. examples (copy the shape, not the content): 'cold email deliverability is the flossing of B2B, everyone knows they should, nobody does', 'comment bait is just linkedin's version of a costco sample table', 'personalization tokens are the linkedin equivalent of a waiter remembering your name'.\n\n2. **COUNTER-INTUITIVE FLIP** — state a sharp observation the post author didn't make, often by flipping the obvious reading or naming something darker the post implies. examples: 'the most engaged audience on linkedin right now might be people trying to get free PDFs', 'half convinced linkedin is held together by lead magnet comments and the other half is bots applauding them', 'cold email stopped being a numbers game the second everyone started using the same tool, now it is a boredom game'.\n\nCRITICAL NO-MIRRORING RULES (these apply to every witty comment):\n- do NOT copy any 4-or-more-word span verbatim from the post. ever.\n- do NOT mirror the post's sentence structure. if the post says \"nobody is X-ing Y\", your comment can't say \"nobody is A-ing B\".\n- the joke must originate OUTSIDE the post. reference a completely different domain (costco, flossing, waiter) or a sharp observation the author didn't make. NEVER a remix of what they said.\n- specificity beats cleverness. a concrete comparison or sharp observation > any abstract quip.\n- if you can't be original within 1-20 words, GO SHORTER. 'spot on!' beats a mirrored 20-word joke.\n\nNO client stories, NO 'we ran a test', NO flexes, NO self-deprecation, NO dad-jokes, NO puns, NO 'lol so relatable'. NEVER trash any tool, company, or person, even as a joke. pure observational comedy via an unexpected angle, agreement implicit, always positive energy.",
+      "write a genuinely funny, sharp reaction in 1-20 words. this is the humor slot — do NOT play it safe. the energy is 'the one funny friend at the table who finally says the real thing'. you have TWO techniques available. pick whichever fits the post best:\n\n1. **COUNTER-INTUITIVE FLIP** — state a sharp observation the post author didn't make, often by flipping the obvious reading. examples: 'the most engaged audience on linkedin right now might be people trying to get free PDFs', 'cold email stopped being a numbers game the second everyone started using the same tool'.\n\n2. **SHARP AGREEMENT WITH A TWIST** — agree with the post but add a surprising angle the author didn't think of. keep it grounded and literal, no metaphors.\n\nCRITICAL NO-MIRRORING RULES (these apply to every witty comment):\n- do NOT copy any 4-or-more-word span verbatim from the post. ever.\n- do NOT mirror the post's sentence structure. if the post says \"nobody is X-ing Y\", your comment can't say \"nobody is A-ing B\".\n- the joke must originate OUTSIDE the post. reference a completely different domain (costco, flossing, waiter) or a sharp observation the author didn't make. NEVER a remix of what they said.\n- specificity beats cleverness. a concrete comparison or sharp observation > any abstract quip.\n- if you can't be original within 1-20 words, GO SHORTER. 'spot on!' beats a mirrored 20-word joke.\n\nNO client stories, NO 'we ran a test', NO flexes, NO self-deprecation, NO dad-jokes, NO puns, NO 'lol so relatable'. NEVER trash any tool, company, or person, even as a joke. pure observational comedy via an unexpected angle, agreement implicit, always positive energy.",
   },
   agree_curious: {
     id: "agree_curious",
@@ -241,6 +241,16 @@ GOOD approach: if the post discusses a tool or approach, comment on the positive
 
 ## ANSWERING QUESTIONS
 If the post ends with a question (e.g. "what's your take?", "how do you handle X?", "agree or disagree?"), answer it GENERALLY in your comment. Give a brief, genuine answer that adds value but don't get too specific with numbers or details. Keep it casual and conversational.
+
+## NO METAPHORS OR ANALOGIES
+Never use "X is the Y of Z" comparisons, similes, or metaphorical language. Keep it literal and grounded. Say what you mean directly.
+
+BAD (never write these):
+- "open rates are the astrology of cold email"
+- "giving an AI a credit card is just adopting a golden retriever who shops online"
+- "comment bait is just linkedin's version of a costco sample table"
+
+GOOD: just state the observation directly without comparing it to something else.
 
 ## HARD RULES (non-negotiable)
 - No em dashes (—) or en dashes (–). Use a comma or period.

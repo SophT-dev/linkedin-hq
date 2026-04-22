@@ -557,6 +557,60 @@
       "typeVersion": 1,
       "id": "doc-note",
       "name": "Documentation"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 10 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [-960, 400],
+      "id": "trigger-post",
+      "name": "Post approved 10am PKT"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://linkedin-hq.vercel.app/api/comments/check-reviews",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-ingest-token",
+              "value": "REPLACE_WITH_INGEST_TOKEN"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": false,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-528, 400],
+      "id": "check-reviews",
+      "name": "Check Slack reviews"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "comments",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [-304, 400],
+      "id": "split-approved",
+      "name": "Split approved"
     }
   ],
   "connections": {
@@ -617,6 +671,15 @@
           { "node": "Slack notify (failed)", "type": "main", "index": 0 }
         ]
       ]
+    },
+    "Post approved 10am PKT": {
+      "main": [[{ "node": "Check Slack reviews", "type": "main", "index": 0 }]]
+    },
+    "Check Slack reviews": {
+      "main": [[{ "node": "Split approved", "type": "main", "index": 0 }]]
+    },
+    "Split approved": {
+      "main": [[{ "node": "Loop comments", "type": "main", "index": 0 }]]
     },
     "Log posted": {
       "main": [[{ "node": "Loop comments", "type": "main", "index": 0 }]]
