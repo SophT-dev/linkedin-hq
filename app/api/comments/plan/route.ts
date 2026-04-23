@@ -206,7 +206,7 @@ export async function POST() {
         try {
           slackTs = await sendReviewMessage({
             creator_name: row.source || "linkedin",
-            post_preview: preview,
+            post_text: row.summary || row.title,
             url: row.url,
             comment_text: row.comment_text,
             style_preset: row.comment_style || "agree_add",
@@ -271,7 +271,7 @@ export async function POST() {
       try {
         slackTs = await sendReviewMessage({
           creator_name: post.creator_name,
-          post_preview: preview,
+          post_text: row.summary || row.title,
           url: row.url,
           comment_text: generated.comment_text,
           style_preset: generated.style_preset,

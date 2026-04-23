@@ -3,7 +3,7 @@ import {
   loadIntel,
   attachCommentToIntelRow,
 } from "@/lib/sheets";
-import { getThreadReplies } from "@/lib/slack";
+import { getThreadReplies, getReactions } from "@/lib/slack";
 import { extractPostUrn } from "@/lib/comments";
 
 export const dynamic = "force-dynamic";
@@ -66,23 +66,35 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
+      // Check emoji reactions first (one-click approve/skip),
+      // then thread replies (for edits).
+      let reactions;
       let replies;
       try {
-        replies = await getThreadReplies(slackTs);
+        [reactions, replies] = await Promise.all([
+          getReactions(slackTs),
+          getThreadReplies(slackTs),
+        ]);
       } catch {
         still_pending++;
         continue;
       }
 
-      if (replies.length === 0) {
+      const hasApproveReaction = reactions.some(
+        (r) => r.name === "white_check_mark" || r.name === "heavy_check_mark"
+      );
+      const hasRejectReaction = reactions.some(
+        (r) => r.name === "x" || r.name === "negative_squared_cross_mark"
+      );
+      const editReply = replies.length > 0 ? replies[0].text.trim() : null;
+
+      // Priority: thread reply (edit) > ❌ reaction > ✅ reaction
+      if (!editReply && !hasApproveReaction && !hasRejectReaction) {
         still_pending++;
         continue;
       }
 
-      // Use the first human reply as the decision.
-      const reply = replies[0].text.trim();
-
-      if (reply.includes("❌")) {
+      if (hasRejectReaction && !editReply && !hasApproveReaction) {
         await attachCommentToIntelRow(row.url, {
           comment_status: "rejected",
         });
@@ -90,10 +102,9 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      // ✅ or contains ✅ → approve with original text.
-      // Any other text → approve with that text as the edited comment.
-      const isApproveAsIs = reply === "✅" || (reply.includes("✅") && reply.length < 10);
-      const finalText = isApproveAsIs ? row.comment_text : reply;
+      // Thread reply = approve with edited text.
+      // ✅ reaction (no reply) = approve with original text.
+      const finalText = editReply || row.comment_text;
 
       const post_urn = extractPostUrn(row.url);
       if (!post_urn) {
