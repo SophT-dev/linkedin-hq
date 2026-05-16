@@ -362,15 +362,16 @@ function formatIntelTab(ss) {
     if (width) sheet.setColumnWidth(i + 1, width);
   }
 
-  // Clip all text in the data area instead of wrapping
-  var lastRow = Math.max(sheet.getLastRow(), 2);
-  var dataRange = sheet.getRange(1, 1, lastRow, lastCol);
-  dataRange.setWrapStrategy(SpreadsheetApp.WrapStrategy.CLIP);
-  dataRange.setVerticalAlignment("middle");
+  // Clip ALL rows in the sheet (including empties) so new rows added by
+  // n8n inherit CLIP instead of the default Wrap + Fit-to-data.
+  var maxRow = sheet.getMaxRows();
+  var allRange = sheet.getRange(1, 1, maxRow, lastCol);
+  allRange.setWrapStrategy(SpreadsheetApp.WrapStrategy.CLIP);
+  allRange.setVerticalAlignment("middle");
 
-  // Fixed single-line row height for every data row (skip the header)
-  if (lastRow > 1) {
-    sheet.setRowHeights(2, lastRow - 1, 24);
+  // Fixed single-line row height for every row below the header
+  if (maxRow > 1) {
+    sheet.setRowHeights(2, maxRow - 1, 21);
   }
 
   // Freeze the header row so it stays visible while scrolling
