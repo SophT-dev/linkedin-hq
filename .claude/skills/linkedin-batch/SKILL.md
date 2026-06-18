@@ -301,6 +301,46 @@ Cold email is a stack of 6 layers. No two posts in the same batch from the same 
 
 **ADJACENT** (≥1 post per batch must come from here, not the 6 layers): claude code / cursor / AI coding tools used to build cold email automation, using claude/gpt/agent SDKs for sequences or scoring, prompt engineering for sales, n8n workflows + internal dashboards + side projects, the AI agent stack (computer use, tool use, **managed agents**) applied to outbound, CRMs (hubspot, attio, close, pipedrive), enrichment infra (apify, clay tables, custom scrapers), b2b GTM trends (PLG, signal-led, RevOps), contrarian takes from outside the niche.
 
+## hook bank (starting points for phase 4 — adapt, never copy verbatim)
+
+Replace [thing] / [ICP] / [outcome] with actual specifics from the WinsLog row or starred Intel item you're writing from. Never use the template as-is.
+
+**stat-first openers**
+- "we sent [N] emails last [period]. [specific result]. here's the one thing we changed."
+- "100% of [B2B founders] track [metric]. 90% are tracking the wrong one."
+- "client just reported [specific result]. here's the exact playbook we ran."
+- "in the last [N] days i talked to [N] founders who all said the same thing: [statement]."
+- "[N] [cold email things] i'm seeing go wrong constantly right now:"
+
+**contrarian / fight openers**
+- "i said it before. i'll say it again. [specific thing] beats [mainstream thing] every time."
+- "time to call out [N] pieces of bad [cold email / deliverability / outbound] advice:"
+- "harsh truth. your best [subject line / list / sequence] is getting you fewer replies than it used to."
+- "top [N] least useful [things] i'm seeing in outbound right now:"
+- "how to get [outcome]. in 2 words: [answer]."
+
+**ICP empathy openers**
+- "a [B2B founder / SaaS operator] asked me why they're not getting [replies / meetings]. here's what i told them."
+- "just got off a call with a founder who does [revenue figure] and can't get a cold email reply."
+- "if you run outbound and feel like it's getting harder, you're not imagining it."
+- "i hope everyone in [cold email / outbound] is paying attention to this shift. most aren't."
+
+**story openers**
+- "[day]. [thing happened]. by [later day], [outcome]. here's the full breakdown."
+- "we lost a [$X/month] client in [month]. here's exactly where things broke."
+- "we got [specific outcome]. here's the blueprint, beginning to end."
+
+**pattern interrupt openers**
+- "never open a cold email with [common opener]. here's why it's killing your reply rate."
+- "your [reply rate] is down because your [infrastructure / list / copy] let you down. [N] ways to fix it."
+- "feel like calling something out today. let's talk about [specific cold email myth]."
+- "are you being [passive / sloppy / lazy] with your [subject lines / list / infrastructure]?"
+
+**negative bias openers** (these consistently outperform positive framing)
+- "the [N] worst [cold email things] i keep seeing. none of these are controversial."
+- "[N] things to stop doing in cold email. i'm holding back nothing."
+- "your [thing] is probably costing you [outcome]. here's the test."
+
 ## immediately actionable
 Every post needs at least one specific tactic the reader can apply today. Not "rethink your ICP" — "open last week's sent folder and count how many emails started with 'i hope this finds you well'".
 
