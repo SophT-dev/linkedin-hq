@@ -37,6 +37,8 @@
 | Enzo Carasso | LinkedIn | Psychology-first, Morning Leads, practical campaign insights |
 | Michel Lieben | LinkedIn | ColdIQ — best integrated GTM + LinkedIn content strategy in the space |
 | LGJ | LinkedIn | (confirm profile) |
+| Diandra Escobar | LinkedIn | Founder of Distinctiva, 30K+ followers. Content-led growth strategist (LinkedIn + newsletter + YouTube). Follow for CONTENT strategy + personal-brand growth, not cold-email tactics. linkedin.com/in/diandraescobar |
+| Adam Robinson | LinkedIn | Founder of RB2B + Retention.com. Build-in-public / founder-led GTM at scale, transparent revenue. Also our Level-3 stack tool. Follow for founder-brand + B2B GTM. |
 | r/coldemail | Reddit | Real practitioners venting about what's breaking RIGHT NOW |
 | r/sales | Reddit | Actual B2B founders asking naive questions = content gold |
 | r/entrepreneur | Reddit | Founders pre-cold email stage = TOFU content ideas |

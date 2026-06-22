@@ -8,6 +8,16 @@ Taha Anwar's (Bleed AI) personal LinkedIn operating system. Mobile-first Next.js
 - GitHub: https://github.com/SophT-dev/linkedin-hq
 - Vercel project owner: sophiya136-2634
 
+## Content & strategy files (this is the home for ALL LinkedIn work — not COOKED)
+- `content/` — produced assets: post visuals (`toolstack-*.html`), rendered GIFs, logo/photo assets in `content/assets/` (`bleedai-logo-white.png`, `bleedai-drop.png`, `taha.jpg`), and `make-gif.cjs`.
+  - **Render any visual → LinkedIn-ready GIF:** `cd content && node make-gif.cjs <input.html> <output.gif> [width] [fps] [recMs] [winStart] [winLen]`. Uses bundled `ffmpeg-static` + puppeteer (no screen recording). One shared palette + bayer dither = smooth, no flicker. Ship GIF only (delete MP4s; Sophiya doesn't want MP4).
+- `FORMAT-LIBRARY.md` — living swipe file, 9 proven formats (F1-F9) w/ real engagement + source links. **I keep this current.**
+- `INSIDER-COLD-EMAIL-2026.md` — 28 sourced insider findings = content fuel (each line ≈ a post).
+- `MICHEL_LIEBEN_PLAYBOOK.md` — decoded ColdIQ growth playbook (dual-brand play).
+- `Bleed_AI_LinkedIn_Strategy_v2.md` · `LINKEDIN_AUTHORITY_PLAYBOOK.md` · `RESOURCES.md` — strategy + resources.
+- **Brand (all assets):** `../Bleed AI Branding/BRAND.md` is the master — dark `#07070d` + red `#b1130f`/`#ff3d38`, Inter + Instrument Serif + JetBrains Mono, the droplet. Never invent brand colors per-file.
+- **Content rules:** approval-first (pitch idea-pairs → Sophiya approves → THEN write; saves API/agency). Every post ships a lead magnet + a 1080×1350 visual. Weekly batches. Tag the tool brands in posts. Verify any price live before quoting. Sophiya's comments = short, warm, teammate-casual, no cost/bill talk.
+
 ## Architecture (v2, post 2026-04-13 refactor)
 On 2026-04-13 batch generation moved out of the Vercel app and into a Claude Code skill. The Vercel app is now a thin data+intel host. The skill is where posts and lead magnets are actually written.
 

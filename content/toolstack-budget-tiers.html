@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bleed AI — Tool Stack by Budget</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#000;display:flex;justify-content:center;align-items:flex-start;font-family:'Inter',sans-serif;min-height:100vh}
+  .hint{position:fixed;top:6px;left:50%;transform:translateX(-50%);color:#666;font:11px 'JetBrains Mono',monospace;z-index:99}
+  .controls{position:fixed;top:6px;right:12px;z-index:99}
+  .controls button{font:11px 'JetBrains Mono',monospace;background:#141420;color:#ccc;border:1px solid #2a2a3e;border-radius:6px;padding:5px 10px;cursor:pointer}
+
+  .stage{width:1080px;height:1350px;background:#07070d;position:relative;overflow:hidden;flex:none;transform-origin:top center}
+  /* one calm breathing glow — nothing else in the background */
+  .stage .glow{position:absolute;inset:0;z-index:0;
+    background:radial-gradient(760px 520px at 82% -8%,rgba(255,61,56,.16),transparent 58%),
+              radial-gradient(620px 480px at 8% 106%,rgba(177,19,15,.11),transparent 58%);
+    animation:breathe 8s ease-in-out infinite}
+  @keyframes breathe{0%,100%{opacity:.82}50%{opacity:1}}
+
+  .layer{position:absolute;inset:0;z-index:2;padding:76px 70px;display:flex;flex-direction:column}
+
+  .top{display:flex;align-items:center;justify-content:space-between}
+  .top img.logo{height:48px;width:auto;filter:drop-shadow(0 2px 12px rgba(255,61,56,.4));animation:bob 5.5s ease-in-out infinite}
+  .kick{font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:3px;text-transform:uppercase;color:#9099b8}
+
+  .ttl{margin-top:34px;margin-bottom:10px}
+  .ttl h1{font-weight:900;font-size:72px;line-height:.98;letter-spacing:-2.6px;color:#f5f5f7}
+  .ttl h1 em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-1px;
+    background:linear-gradient(100deg,#ff5a3c,#ff3d38 50%,#b1130f);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .ttl p{margin-top:14px;font-size:22px;line-height:1.4;color:#9099b8;font-weight:500;max-width:840px}
+  .ttl p b{color:#eaeef8;font-weight:700}
+
+  .tiers{margin-top:30px;display:flex;flex-direction:column;gap:20px}
+  .tier{position:relative;background:#101018;border:1px solid #1f1f30;border-radius:22px;padding:26px 30px;
+    opacity:0;transform:translateY(24px);animation:rise .7s cubic-bezier(.2,.8,.3,1) forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .tier.t2{border-color:#3a2024}
+  .tier.t3{border-color:#5a1620;background:linear-gradient(120deg,#1a0c0e,#101018 60%)}
+  /* selected state (driven by the touring cursor) */
+  .tier{transition:transform .45s cubic-bezier(.2,.8,.3,1),box-shadow .45s ease,border-color .45s ease}
+  .tier.sel{transform:translateY(-5px) scale(1.014);border-color:#ff5a3c;box-shadow:0 0 0 1px #ff5a3c,0 20px 55px rgba(255,61,56,.28)}
+
+  /* touring cursor */
+  .cursor{position:absolute;left:0;top:0;z-index:20;width:30px;height:30px;pointer-events:none;
+    transition:transform 1s cubic-bezier(.5,0,.2,1);filter:drop-shadow(0 3px 6px rgba(0,0,0,.6))}
+  .cursor svg{width:100%;height:100%;display:block;transition:transform .2s ease}
+  .cursor.click svg{transform:scale(.82)}
+  .cursor .ring{position:absolute;left:-6px;top:-6px;width:24px;height:24px;border-radius:50%;border:2px solid #ff3d38;opacity:0;transform:scale(.4)}
+  .cursor.click .ring{animation:ripple .55s ease-out}
+  @keyframes ripple{0%{opacity:.85;transform:scale(.3)}100%{opacity:0;transform:scale(2.3)}}
+  .accent{position:absolute;left:0;top:22px;bottom:22px;width:4px;border-radius:0 4px 4px 0}
+  .tier.t1 .accent{background:#4a4e63}
+  .tier.t2 .accent{background:linear-gradient(#ff5a3c,#b1130f)}
+  .tier.t3 .accent{background:linear-gradient(#ff8a5c,#ff3d38 60%,#b1130f);box-shadow:0 0 22px rgba(255,61,56,.4)}
+
+  .trow{display:flex;align-items:center;gap:26px}
+  .lvl{flex:none;width:210px}
+  .lvl .lv-k{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#6a6f86;margin-bottom:6px}
+  .lvl .lv-n{font-weight:900;font-size:34px;letter-spacing:-1px;color:#f5f5f7;line-height:1}
+  .tier.t1 .lv-n{color:#c4c8da}
+  .tier.t3 .lv-n{background:linear-gradient(100deg,#ff8a5c,#ff3d38);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lvl .lv-p{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;color:#ff6b67;margin-top:8px}
+  .tier.t1 .lv-p{color:#9099b8}
+
+  /* logos: clean static row, gentle staggered bob, soft glow */
+  .logos{flex:1;display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+  .lchip{display:flex;flex-direction:column;align-items:center;gap:8px;
+    opacity:0;transform:translateY(10px) scale(.85);animation:appear .5s ease forwards}
+  @keyframes appear{to{opacity:1;transform:none}}
+  .lchip .box{width:78px;height:78px;border-radius:18px;background:#fff;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 8px 22px rgba(0,0,0,.45);animation:bob 3.6s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .lchip .box img{width:48px;height:48px;object-fit:contain}
+  .lchip .box .fb{font-weight:900;font-size:24px;color:#07070d}
+  .lchip .lname{font-size:13px;color:#9099b8;font-weight:600;white-space:nowrap}
+
+  .tag{font-size:16px;color:#9099b8;line-height:1.45;border-top:1px solid #1f1f30;margin-top:20px;padding-top:15px}
+  .tag b{color:#eaeef8;font-weight:700}
+  .tier.t3 .tag{border-top-color:#3a1418}
+
+  .foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;padding-top:18px;border-top:1px solid #1f1f30}
+  .foot .by{display:flex;align-items:center;gap:13px}
+  .foot .ava{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,61,56,.55);box-shadow:0 0 16px rgba(255,61,56,.3)}
+  .foot .byt b{display:block;font-size:18px;color:#f5f5f7;font-weight:800;letter-spacing:-.3px}
+  .foot .byt span{font-family:'JetBrains Mono',monospace;font-size:12px;color:#9099b8}
+  .foot .save{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:14px;color:#ff6b67;font-weight:600}
+  .foot .save .bm{width:18px;height:18px;fill:#ff6b67;animation:bmk 2.4s ease-in-out infinite}
+
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  @keyframes bmk{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+</style>
+</head>
+<body>
+<div class="hint">1080×1350 · clean + gentle motion — screen-record the dark canvas → GIF (ScreenToGif).</div>
+<div class="controls"><button onclick="location.reload()">↻ replay</button></div>
+
+<div class="stage" id="stage">
+  <div class="glow"></div>
+  <div class="cursor" id="cursor">
+    <div class="ring"></div>
+    <svg viewBox="0 0 24 24"><path d="M4 2l5 16 2.5-6.5L18 9 4 2z" fill="#fff" stroke="#07070d" stroke-width="1.4" stroke-linejoin="round"/></svg>
+  </div>
+  <div class="layer">
+    <div class="top">
+      <img class="logo" src="assets/bleedai-logo-white.png" alt="Bleed AI">
+    </div>
+
+    <div class="ttl">
+      <h1>Pick your stack by <em>budget.</em></h1>
+      <p>You don't need the $1k/mo setup to start. Here's the same engine at <b>three budget levels</b>.</p>
+    </div>
+
+    <div class="tiers">
+      <div class="tier t1" style="animation-delay:.1s">
+        <div class="accent"></div>
+        <div class="trow">
+          <div class="lvl">
+            <div class="lv-k">level 1 · bootstrap</div>
+            <div class="lv-n">~$80/mo</div>
+            <div class="lv-p">just get sending</div>
+          </div>
+          <div class="logos" data-tier="1"></div>
+        </div>
+        <div class="tag"><b>Zoho inboxes + Apify scrapers + Smartlead.</b> Build lists cheap, send clean. No Clay yet, you don't need it to land your first meetings.</div>
+      </div>
+
+      <div class="tier t2" style="animation-delay:.3s">
+        <div class="accent"></div>
+        <div class="trow">
+          <div class="lvl">
+            <div class="lv-k">level 2 · operator</div>
+            <div class="lv-n">~$300/mo</div>
+            <div class="lv-p">the real working stack</div>
+          </div>
+          <div class="logos" data-tier="2"></div>
+        </div>
+        <div class="tag"><b>Clay (own API keys plugged in) + Prospeo + Findymail + Instantly.</b> The BYOK trick cuts Clay's enrichment cost a lot. What most agencies actually run.</div>
+      </div>
+
+      <div class="tier t3" style="animation-delay:.5s">
+        <div class="accent"></div>
+        <div class="trow">
+          <div class="lvl">
+            <div class="lv-k">level 3 · signal-first</div>
+            <div class="lv-n">$1k+/mo</div>
+            <div class="lv-p">scale + intent</div>
+          </div>
+          <div class="logos" data-tier="3"></div>
+        </div>
+        <div class="tag"><b>Clay Growth + Claygent, RB2B, Common Room + Trigify.</b> Signal-triggered emails reply far above the list average. This is the edge.</div>
+      </div>
+    </div>
+
+    <div class="foot">
+      <div class="by">
+        <img class="ava" src="assets/taha.jpg" alt="Taha Anwar">
+        <div class="byt"><b>Taha Anwar</b><span>Founder, Bleed AI · in/taha-coldemail</span></div>
+      </div>
+      <div class="save"><svg class="bm" viewBox="0 0 24 24"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg>save this</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const TOKEN='pk_B57uSsdGS1qjphsKZfUpcw';
+  const url=d=>`https://img.logo.dev/${d}?token=${TOKEN}&size=160&format=png`;
+  const tiers={
+    1:[['zoho.com','Zoho'],['apify.com','Apify'],['smartlead.ai','Smartlead']],
+    2:[['clay.com','Clay'],['prospeo.io','Prospeo'],['findymail.com','Findymail'],['instantly.ai','Instantly']],
+    3:[['clay.com','Clay'],['rb2b.com','RB2B'],['commonroom.io','Common Room'],['trigify.io','Trigify'],['unifygtm.com','Unify']]
+  };
+  Object.entries(tiers).forEach(([t,list])=>{
+    const box=document.querySelector(`.logos[data-tier="${t}"]`);
+    list.forEach(([d,name],i)=>{
+      const c=document.createElement('div');c.className='lchip';
+      c.style.animationDelay=(0.2*t+0.1*i+0.2)+'s';
+      const b=document.createElement('div');b.className='box';
+      const img=document.createElement('img');img.src=url(d);img.alt=name;
+      img.onerror=()=>{const s=document.createElement('div');s.className='fb';s.textContent=name[0];img.replaceWith(s);};
+      // gentle staggered bob so logos move in a soft wave, not in sync
+      b.style.animationDelay=(i*0.35)+'s';
+      const nm=document.createElement('div');nm.className='lname';nm.textContent=name;
+      b.appendChild(img);c.appendChild(b);c.appendChild(nm);box.appendChild(c);
+    });
+  });
+  let SCALE=1;
+  const stage=document.getElementById('stage');
+  function fit(){const s=Math.min((window.innerHeight-50)/1350,(window.innerWidth-30)/1080,1);SCALE=s;stage.style.transform='scale('+s+')';document.body.style.height=(1350*s+40)+'px';}
+  fit();window.addEventListener('resize',fit);
+
+  // touring cursor: visits each tier in turn, selects it, pauses, loops
+  const cursor=document.getElementById('cursor');
+  const tierEls=[...document.querySelectorAll('.tier')];
+  function relPos(el){const sr=stage.getBoundingClientRect();const r=el.getBoundingClientRect();return {x:(r.left-sr.left)/SCALE,y:(r.top-sr.top)/SCALE};}
+  let idx=0;
+  function step(){
+    const t=tierEls[idx];const p=relPos(t);
+    // hover the cursor over the price area of the tier
+    cursor.style.transform=`translate(${p.x+158}px,${p.y+58}px)`;
+    setTimeout(()=>{
+      tierEls.forEach(e=>e.classList.remove('sel'));
+      t.classList.add('sel');
+      cursor.classList.add('click');
+      setTimeout(()=>cursor.classList.remove('click'),320);
+    },1000);
+    idx=(idx+1)%tierEls.length;
+    setTimeout(step,2900);
+  }
+  // start the tour after the cards have animated in
+  setTimeout(step,1100);
+</script>
+</body>
+</html>
