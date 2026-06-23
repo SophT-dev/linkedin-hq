@@ -58,15 +58,15 @@ Each post has this exact shape:
 
 ```
 ### post [N] — [authenticity_tag]
-hook: [one lowercase line]
-body: [4-12 short lowercase paragraphs, paragraphs separated by blank lines]
+hook: [one line, proper grammar]
+body: [4-12 short paragraphs, proper grammar, separated by blank lines]
 format: text | carousel | story | listicle
 funnel_stage: TOFU | MOFU | BOFU
-visual_brief: [2-3 lowercase sentences describing what to film or photograph]
+visual_brief: [2-3 sentences describing what to film or photograph]
 lead_magnet:
-  name: [4-8 lowercase words]
-  value_prop: [one lowercase line, ≤120 chars]
-  cta: [one lowercase CTA line the user can paste at the end of the post]
+  name: [4-8 words]
+  value_prop: [one line, ≤120 chars]
+  cta: [one CTA line the user can paste at the end of the post]
 sources_used: [list of urls or wins:client:campaign refs]
 ```
 
@@ -120,19 +120,19 @@ Keep a running list of notes while you research.
 **8b. Draft outline.** Write a markdown outline:
 
 ```markdown
-# [title — lowercase, 6-10 words, evocative]
+# [title — proper grammar, 6-10 words, evocative]
 
 ## hero
-[one lowercase line, the hook for the landing page, ≤20 words]
+[one line, the hook for the landing page, ≤20 words]
 
 ## what you get
-- [value prop 1, lowercase, ≤15 words]
+- [value prop 1, ≤15 words]
 - [value prop 2]
 - [value prop 3]
 - [value prop 4 optional]
 
 ## cta
-[one lowercase line, the button copy]
+[one line, the button copy]
 
 ## outline
 ### section 1 — [heading]
@@ -146,7 +146,7 @@ Keep a running list of notes while you research.
 (5-8 sections total)
 ```
 
-Voice rules apply — lowercase, no em dashes, no banned words, no rhetorical questions.
+Voice rules apply: proper grammar, no em dashes, no banned words, no rhetorical questions.
 
 Show the outline to the user and say:
 
@@ -241,8 +241,8 @@ Modern. Every stat, tool, or event reference must be from this year. No "back in
 
 Friendly. You just opened your phone and decided to post. You're not preparing a keynote, not building a personal brand on purpose. You had a thought, it felt true, you typed it, you hit publish. That energy.
 
-## lowercase (non-negotiable)
-Every character lowercase. Hooks, body, lead magnet name, visual brief, outline headings, lead magnet body, everything. Only exception: URLs and proper nouns inside URLs. No capital letters anywhere else. Ever.
+## proper grammar (non-negotiable)
+Write posts in **proper grammar** — normal capitalization, complete sentences, proper punctuation. Capitalize sentence starts, "I", and proper nouns (Claude, Clay, Instantly, Bleed AI). Proper grammar does NOT mean formal or corporate — keep the casual, warm, friend-advising tone. (Sophiya's standing instruction, 2026-06-23.) The all-lowercase style is **only** for the auto-comment bot (`lib/comments.ts` / `lib/voice-rules.ts`), never for posts. See [[feedback_posts_proper_grammar]].
 
 ## banned characters
 No em dashes (—). No en dashes (–). Use a comma or a period instead. This is automatic grounds for rewriting the post.
@@ -345,17 +345,17 @@ Replace [thing] / [ICP] / [outcome] with actual specifics from the WinsLog row o
 Every post needs at least one specific tactic the reader can apply today. Not "rethink your ICP" — "open last week's sent folder and count how many emails started with 'i hope this finds you well'".
 
 ## visual brief
-For each post, 2-3 sentences describing what to film or photograph plus any caption overlay (lowercase). Example: "phone screen recording of your inbox scrolling past four reply notifications. caption overlay: 'monday 9am. four replies in twelve minutes. here's the subject line.'"
+For each post, 2-3 sentences describing what to film or photograph plus any caption overlay. Example: "Phone screen recording of your inbox scrolling past four reply notifications. Caption overlay: 'Monday 9am. Four replies in twelve minutes. Here's the subject line.'"
 
 ## lead magnet (proposed during post generation, built later)
-- **name:** lowercase, 4-8 words, evocative
-- **value_prop:** lowercase, plain english, ≤120 chars
-- **cta:** lowercase end-of-post line ("comment 'inbox' and i'll dm it")
+- **name:** 4-8 words, evocative
+- **value_prop:** plain english, ≤120 chars
+- **cta:** end-of-post line ("comment 'inbox' and i'll dm it")
 
 ## final checklist before showing a post to the user
 Tick every item. If any fails, rewrite that post before showing it.
 
-- [ ] everything lowercase
+- [ ] proper grammar throughout (capitalized sentences, NOT lowercase; casual tone, not formal)
 - [ ] zero em dashes or en dashes
 - [ ] zero banned words
 - [ ] zero banned phrases
