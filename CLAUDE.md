@@ -9,12 +9,18 @@ Taha Anwar's (Bleed AI) personal LinkedIn operating system. Mobile-first Next.js
 - Vercel project owner: sophiya136-2634
 
 ## Content & strategy files (this is the home for ALL LinkedIn work — not COOKED)
-- `content/` — produced assets: post visuals (`toolstack-*.html`), rendered GIFs, logo/photo assets in `content/assets/` (`bleedai-logo-white.png`, `bleedai-drop.png`, `taha.jpg`), and `make-gif.cjs`.
-  - **Render any visual → LinkedIn-ready GIF:** `cd content && node make-gif.cjs <input.html> <output.gif> [width] [fps] [recMs] [winStart] [winLen]`. Uses bundled `ffmpeg-static` + puppeteer (no screen recording). One shared palette + bayer dither = smooth, no flicker. Ship GIF only (delete MP4s; Sophiya doesn't want MP4).
-- `FORMAT-LIBRARY.md` — living swipe file, 9 proven formats (F1-F9) w/ real engagement + source links. **I keep this current.**
-- `INSIDER-COLD-EMAIL-2026.md` — 28 sourced insider findings = content fuel (each line ≈ a post).
-- `MICHEL_LIEBEN_PLAYBOOK.md` — decoded ColdIQ growth playbook (dual-brand play).
-- `Bleed_AI_LinkedIn_Strategy_v2.md` · `LINKEDIN_AUTHORITY_PLAYBOOK.md` · `RESOURCES.md` — strategy + resources.
+
+**Two folders hold our stuff** (the rest is the Next.js app): `playbook/` (all the thinking) + `content/` (the render workshop). Everything is consolidated — one strategy doc, one playbook doc, no duplicates.
+
+- **`playbook/` — all knowledge, 5 flat files:**
+  - `STRATEGY.md` — the **WHY & WHO**: positioning, USP, dual-brand (Taha+Sophiya), profile, 90-day roadmap, the rules.
+  - `PLAYBOOK.md` — the **HOW**: 9 experts' lessons, 10 principles, Michel Lieben's operating manual, creative formats, pre-batch checklist. (Merged from the old Authority + Michel playbooks.)
+  - `FORMAT-LIBRARY.md` — living swipe file, 9 proven formats (F1-F9) w/ real engagement + links. **I keep this current.**
+  - `INSIDER-RESEARCH.md` — 28 sourced insider findings = content fuel (each line ≈ a post).
+  - `RESOURCES.md` — external links/resources.
+- **`content/` — the render workshop only** (see `content/README.md`): `make-gif.cjs` + `assets/` (brand images) + `toolstack-*.html` (editable source visuals). Finished work does **not** pile up here.
+  - **Render any visual → LinkedIn GIF:** `cd content && node make-gif.cjs <input.html> <output.gif> [width] [fps] [recMs] [winStart] [winLen]`. Bundled `ffmpeg-static` + puppeteer, one shared palette + bayer dither = no flicker. Ship GIF only (no MP4).
+- **The record lives in Notion, not the repo.** Every post, its lead magnet, its GIF, its stats, and did-it-work live in the **Bleed AI Notion "Content Command Center"**, written by [`../bleed-ai-brain/scripts/`](../bleed-ai-brain/scripts/). The old `content/REGISTRY.md` is retired in favor of it.
 - **Brand (all assets):** `../Bleed AI Branding/BRAND.md` is the master — dark `#07070d` + red `#b1130f`/`#ff3d38`, Inter + Instrument Serif + JetBrains Mono, the droplet. Never invent brand colors per-file.
 - **Content rules:** approval-first (pitch idea-pairs → Sophiya approves → THEN write; saves API/agency). Every post ships a lead magnet + a 1080×1350 visual. Weekly batches. Tag the tool brands in posts. Verify any price live before quoting. Sophiya's comments = short, warm, teammate-casual, no cost/bill talk.
 
