@@ -289,10 +289,16 @@ export interface GeneratedComment {
 // write (most comments have zero emojis).
 export async function generateExpertComment(
   post: CandidatePost,
-  opts: { allowEmoji?: boolean } = {}
+  opts: { allowEmoji?: boolean; forcePreset?: StylePreset; model?: string } = {}
 ): Promise<GeneratedComment> {
   const allowEmoji = opts.allowEmoji ?? false;
-  const stylePreset = pickStylePreset(post.text);
+  // Caller can override the model (the inline suggest endpoint uses Haiku for
+  // cost; the auto-comment bot keeps the default). Defaults to MODEL.
+  const model = opts.model ?? MODEL;
+  // forcePreset lets callers (e.g. the inline suggest endpoint) request a
+  // specific style so they can offer the user 2-3 varied suggestions per post
+  // instead of three near-identical ones. When omitted, the heuristic picks.
+  const stylePreset = opts.forcePreset ?? pickStylePreset(post.text);
   const preset = STYLE_PRESETS[stylePreset];
 
   const emojiDirective = allowEmoji
@@ -313,7 +319,7 @@ Write the comment now. 1-20 words. Natural casing. No quotes around it, no pream
 
   const client = getClient();
   const res = await client.messages.create({
-    model: MODEL,
+    model,
     max_tokens: 400,
     system: COMMENT_SYSTEM_PROMPT,
     messages: [{ role: "user", content: userPrompt }],
