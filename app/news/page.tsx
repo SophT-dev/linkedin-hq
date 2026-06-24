@@ -1,71 +1,50 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { RefreshCw } from "lucide-react";
-import NewsItem, { NewsItemData } from "@/components/NewsItem";
+import { RefreshCw, Zap, ArrowUpRight } from "lucide-react";
+import NewsItem, { NewsItemData, catFor } from "@/components/NewsItem";
 
-const SOURCE_FILTERS = [
-  { key: "all", label: "all" },
-  { key: "linkedin", label: "linkedin" },
-  { key: "reddit", label: "reddit" },
-  { key: "news", label: "news" },
+// Topic categories (mapped from Intel `type`). "all" + "saved" are virtual.
+const CATEGORIES = [
+  { key: "all", label: "All", emoji: "✨" },
+  { key: "tools", label: "Tool Updates", emoji: "🛠️" },
+  { key: "linkedin", label: "Creators", emoji: "👀" },
+  { key: "news", label: "News", emoji: "📰" },
+  { key: "reddit", label: "Community", emoji: "💬" },
+  { key: "saved", label: "Saved", emoji: "⭐" },
 ];
 
-type WindowMode = "1h" | "24h" | "week" | "all";
-
+type WindowMode = "24h" | "week" | "all";
 const WINDOWS: { key: WindowMode; label: string; ms: number | null }[] = [
-  { key: "1h", label: "past hour", ms: 60 * 60 * 1000 },
-  { key: "24h", label: "past 24h", ms: 24 * 60 * 60 * 1000 },
-  { key: "week", label: "past week", ms: 7 * 24 * 60 * 60 * 1000 },
-  { key: "all", label: "all time", ms: null },
+  { key: "24h", label: "24h", ms: 24 * 60 * 60 * 1000 },
+  { key: "week", label: "Week", ms: 7 * 24 * 60 * 60 * 1000 },
+  { key: "all", label: "All time", ms: null },
 ];
 
-function nextWiderWindow(current: WindowMode): WindowMode | null {
-  const idx = WINDOWS.findIndex((w) => w.key === current);
-  if (idx < 0 || idx >= WINDOWS.length - 1) return null;
-  return WINDOWS[idx + 1].key;
-}
-
-type SortMode = "latest" | "popular" | "freshest";
-
+type SortMode = "latest" | "popular";
 const SORTS: { key: SortMode; label: string }[] = [
-  { key: "latest", label: "latest" },
-  { key: "popular", label: "most popular" },
-  { key: "freshest", label: "just pulled" },
+  { key: "latest", label: "Latest" },
+  { key: "popular", label: "Top" },
 ];
-
-// Order in which the type groups are rendered.
-const GROUP_ORDER: { key: string; label: string }[] = [
-  { key: "reddit", label: "reddit" },
-  { key: "news", label: "news" },
-  { key: "linkedin", label: "linkedin" },
-];
-
-const PER_GROUP_INITIAL = 5;
-const PER_GROUP_INCREMENT = 5;
 
 function tsOrZero(iso: string): number {
   const t = Date.parse(iso);
   return isNaN(t) ? 0 : t;
 }
-
-// The "post age" of an item — what we filter the time window against.
-// Falls back to pulled_at when posted_at is missing so it never lies.
 function postAge(item: NewsItemData): number {
   return tsOrZero(item.posted_at) || tsOrZero(item.pulled_at);
 }
 
 export default function NewsPage() {
   const [items, setItems] = useState<NewsItemData[]>([]);
-  const [filter, setFilter] = useState<string>("all");
+  const [cat, setCat] = useState<string>("all");
   const [windowMode, setWindowMode] = useState<WindowMode>("week");
   const [sort, setSort] = useState<SortMode>("latest");
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [refreshMsg, setRefreshMsg] = useState<string | null>(null);
   const [lastSeen, setLastSeen] = useState<number>(0);
-  // Per-group "show more" state — number of items to render in each group.
-  const [groupShowCount, setGroupShowCount] = useState<Record<string, number>>({});
+  const [showCount, setShowCount] = useState(12);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -82,14 +61,13 @@ export default function NewsPage() {
     const stored = Number(localStorage.getItem("news.lastSeen") || "0");
     setLastSeen(stored);
     load().then(() => {
-      const now = Date.now();
-      localStorage.setItem("news.lastSeen", String(now));
+      localStorage.setItem("news.lastSeen", String(Date.now()));
     });
   }, [load]);
 
   const refresh = async () => {
     setRefreshing(true);
-    setRefreshMsg("researching... 30-60s");
+    setRefreshMsg("Pulling the latest… 30-60s");
     try {
       const res = await fetch("/api/intel/refresh", { method: "POST" });
       const data = await res.json();
@@ -97,321 +75,214 @@ export default function NewsPage() {
       const skipped = (data.skipped ?? 0) as number;
       if (data.ok || data.fetched > 0) {
         setRefreshMsg(
-          added > 0
-            ? `+${added} new (${skipped} already in feed)`
-            : `nothing new (${skipped} already in feed)`
+          added > 0 ? `+${added} new (${skipped} already here)` : `Nothing new (${skipped} already here)`
         );
       } else {
-        setRefreshMsg(
-          `error: ${(data.errors || ["unknown"]).slice(0, 1).join("; ")}`
-        );
+        setRefreshMsg(`Error: ${(data.errors || ["unknown"]).slice(0, 1).join("; ")}`);
       }
       setLastSeen(Date.now() - 1);
       await load();
-      const now = Date.now();
-      setTimeout(() => {
-        localStorage.setItem("news.lastSeen", String(now));
-      }, 500);
+      setTimeout(() => localStorage.setItem("news.lastSeen", String(Date.now())), 500);
     } catch (e) {
-      setRefreshMsg(`error: ${e instanceof Error ? e.message : String(e)}`);
+      setRefreshMsg(`Error: ${e instanceof Error ? e.message : String(e)}`);
     } finally {
       setRefreshing(false);
       setTimeout(() => setRefreshMsg(null), 8000);
     }
   };
 
-  // Pipeline: source filter → window filter → sort. Grouping comes after.
+  // At-a-glance: top 5 of the last 24h by score, then recency. Falls back to
+  // top-by-score all-time if nothing landed in 24h. Pure sorting — no AI cost.
+  const topToday = useMemo(() => {
+    const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+    const recent = items.filter((i) => postAge(i) >= cutoff);
+    const pool = recent.length > 0 ? recent : items;
+    return [...pool]
+      .sort((a, b) => (b.score || 0) - (a.score || 0) || postAge(b) - postAge(a))
+      .slice(0, 5)
+      .map((i) => ({ item: i, fresh: recent.length > 0 }));
+  }, [items]);
+
+  const counts = useMemo(() => {
+    const c: Record<string, number> = { all: items.length, saved: 0 };
+    for (const it of items) {
+      c[it.type] = (c[it.type] || 0) + 1;
+      if (it.starred) c.saved += 1;
+    }
+    return c;
+  }, [items]);
+
   const visible = useMemo(() => {
     const cutoffMs = WINDOWS.find((w) => w.key === windowMode)?.ms ?? null;
     const cutoffTs = cutoffMs ? Date.now() - cutoffMs : 0;
 
-    let list = filter === "all" ? items : items.filter((i) => i.type === filter);
+    let list =
+      cat === "all" ? items : cat === "saved" ? items.filter((i) => i.starred) : items.filter((i) => i.type === cat);
 
-    if (cutoffTs) {
-      list = list.filter((i) => {
-        const age = postAge(i);
-        // Items with no parseable date are excluded from windowed views.
-        return age > 0 && age >= cutoffTs;
-      });
-    }
+    if (cutoffTs) list = list.filter((i) => postAge(i) >= cutoffTs);
 
     list = [...list];
     if (sort === "popular") {
-      list.sort((a, b) => {
-        const sd = (b.score || 0) - (a.score || 0);
-        if (sd !== 0) return sd;
-        return postAge(b) - postAge(a);
-      });
-    } else if (sort === "freshest") {
-      list.sort((a, b) => tsOrZero(b.pulled_at) - tsOrZero(a.pulled_at));
+      list.sort((a, b) => (b.score || 0) - (a.score || 0) || postAge(b) - postAge(a));
     } else {
       list.sort((a, b) => postAge(b) - postAge(a));
     }
     return list;
-  }, [items, filter, windowMode, sort]);
+  }, [items, cat, windowMode, sort]);
 
-  // Group visible items by type, preserving each group's sort order.
-  const grouped = useMemo(() => {
-    const map: Record<string, NewsItemData[]> = {};
-    for (const it of visible) {
-      const key = it.type || "news";
-      if (!map[key]) map[key] = [];
-      map[key].push(it);
-    }
-    return map;
-  }, [visible]);
+  useEffect(() => setShowCount(12), [cat, windowMode, sort]);
 
-  // Counts for the source filter chips (across ALL items, ignoring source filter).
-  const totalByType: Record<string, number> = {};
-  for (const it of items) totalByType[it.type] = (totalByType[it.type] || 0) + 1;
-
-  const showCountFor = (groupKey: string) =>
-    groupShowCount[groupKey] ?? PER_GROUP_INITIAL;
-
-  const expandGroup = (groupKey: string) => {
-    setGroupShowCount((prev) => ({
-      ...prev,
-      [groupKey]: (prev[groupKey] ?? PER_GROUP_INITIAL) + PER_GROUP_INCREMENT,
-    }));
-  };
-
-  const wider = nextWiderWindow(windowMode);
   const isEmpty = !loading && visible.length === 0;
 
-  // When source filter is "all", render the grouped layout.
-  // When source filter is a single type, render a flat list (no grouping needed).
-  const renderGrouped = filter === "all";
-
   return (
-    <div className="min-h-dvh px-4 pt-6 pb-24 max-w-2xl mx-auto">
-      <header className="flex items-center justify-between mb-4">
-        <div>
-          <h1 className="text-xl font-bold lowercase">news</h1>
-          <p className="text-xs text-muted-foreground lowercase">
-            your personalized cold email intel feed
-          </p>
-        </div>
-        <button
-          onClick={refresh}
-          disabled={refreshing}
-          className="flex items-center gap-2 text-xs px-3 py-2 rounded-lg border transition-colors disabled:opacity-50"
-          style={{
-            background: "var(--surface-2)",
-            borderColor: "var(--border-accent)",
-            color: "var(--color-accent)",
-          }}
-        >
-          <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
-          {refreshing ? "refreshing" : "refresh"}
-        </button>
-      </header>
+    <div className="min-h-dvh bg-[#f6f6f7] text-gray-900">
+      <div className="mx-auto max-w-2xl px-4 pb-28 pt-6">
+        {/* Header */}
+        <header className="mb-4 flex items-end justify-between">
+          <div>
+            <h1 className="text-[26px] font-bold tracking-tight text-gray-900">Newsfeed</h1>
+            <p className="text-[13px] text-gray-500">Your cold email intel, at a glance.</p>
+          </div>
+          <button
+            onClick={refresh}
+            disabled={refreshing}
+            className="flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-[13px] font-medium text-[#b1130f] shadow-sm ring-1 ring-gray-200 transition hover:ring-gray-300 disabled:opacity-50"
+          >
+            <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
+            {refreshing ? "Refreshing" : "Refresh"}
+          </button>
+        </header>
 
-      {refreshMsg && (
-        <div
-          className="mb-3 px-3 py-2 rounded-lg text-xs"
-          style={{
-            background: "var(--surface-2)",
-            color: "var(--color-accent)",
-          }}
-        >
-          {refreshMsg}
-        </div>
-      )}
+        {refreshMsg && (
+          <div className="mb-3 rounded-xl bg-[#b1130f]/8 px-3 py-2 text-[12px] font-medium text-[#b1130f]">
+            {refreshMsg}
+          </div>
+        )}
 
-      {/* Source chips */}
-      <div className="flex gap-2 overflow-x-auto pb-3 -mx-4 px-4 scrollbar-none">
-        {SOURCE_FILTERS.map((f) => {
-          const count = f.key === "all" ? items.length : totalByType[f.key] || 0;
-          const active = filter === f.key;
-          return (
-            <button
-              key={f.key}
-              onClick={() => setFilter(f.key)}
-              className="shrink-0 text-xs px-3 py-1.5 rounded-full border transition-all"
-              style={{
-                background: active ? "var(--color-accent)" : "var(--surface-1)",
-                borderColor: active ? "var(--color-accent)" : "var(--border-subtle)",
-                color: active ? "white" : "var(--foreground)",
-              }}
-            >
-              {f.label} {count > 0 && <span className="opacity-60">{count}</span>}
-            </button>
-          );
-        })}
-      </div>
+        {/* At-a-glance */}
+        {!loading && topToday.length > 0 && (
+          <section className="mb-5 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-200/80">
+            <div className="mb-2.5 flex items-center gap-2">
+              <Zap size={16} className="text-[#b1130f]" fill="#b1130f" />
+              <h2 className="text-[14px] font-bold text-gray-900">Today&apos;s Top Updates</h2>
+              <span className="text-[11px] text-gray-400">
+                {topToday[0].fresh ? "last 24h" : "latest"}
+              </span>
+            </div>
+            <ol className="space-y-1">
+              {topToday.map(({ item }, i) => {
+                const { color, label } = catFor(item.type);
+                return (
+                  <li key={`${item.url}-${i}`}>
+                    <button
+                      onClick={() => window.open(item.url, "_blank", "noopener,noreferrer")}
+                      className="group flex w-full items-start gap-2.5 rounded-lg px-2 py-1.5 text-left transition hover:bg-gray-50"
+                    >
+                      <span className="mt-0.5 text-[12px] font-bold text-gray-300">{i + 1}</span>
+                      <span className="flex-1 text-[13.5px] font-medium leading-snug text-gray-800 group-hover:text-[#b1130f]">
+                        {item.title}
+                      </span>
+                      <span
+                        className="mt-0.5 shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-semibold"
+                        style={{ background: `${color}14`, color }}
+                      >
+                        {label}
+                      </span>
+                      <ArrowUpRight size={14} className="mt-0.5 shrink-0 text-gray-300 group-hover:text-[#b1130f]" />
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
+        )}
 
-      {/* Window chips */}
-      <div className="flex items-center gap-2 mb-2 mt-1">
-        <span className="text-[10px] uppercase tracking-wider text-muted-foreground shrink-0">
-          when
-        </span>
-        <div className="flex gap-2 overflow-x-auto -mx-4 px-4 scrollbar-none">
-          {WINDOWS.map((w) => {
-            const active = windowMode === w.key;
+        {/* Category tabs */}
+        <div className="mb-3 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {CATEGORIES.map((c) => {
+            const active = cat === c.key;
+            const n = counts[c.key] || 0;
             return (
+              <button
+                key={c.key}
+                onClick={() => setCat(c.key)}
+                className={`shrink-0 rounded-full px-3.5 py-1.5 text-[13px] font-medium transition ${
+                  active
+                    ? "bg-gray-900 text-white shadow-sm"
+                    : "bg-white text-gray-600 ring-1 ring-gray-200 hover:ring-gray-300"
+                }`}
+              >
+                <span className="mr-1">{c.emoji}</span>
+                {c.label}
+                {n > 0 && <span className={active ? "ml-1.5 opacity-60" : "ml-1.5 text-gray-400"}>{n}</span>}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Window + sort */}
+        <div className="mb-4 flex items-center gap-3 text-[12px]">
+          <div className="flex gap-1">
+            {WINDOWS.map((w) => (
               <button
                 key={w.key}
                 onClick={() => setWindowMode(w.key)}
-                className="shrink-0 text-[11px] px-2.5 py-1 rounded-md border transition-all"
-                style={{
-                  background: active ? "var(--surface-3)" : "transparent",
-                  borderColor: active ? "var(--border-accent)" : "var(--border-subtle)",
-                  color: active ? "var(--color-accent)" : "var(--muted-foreground, #888)",
-                }}
+                className={`rounded-md px-2 py-1 font-medium transition ${
+                  windowMode === w.key ? "bg-white text-gray-900 shadow-sm ring-1 ring-gray-200" : "text-gray-400 hover:text-gray-600"
+                }`}
               >
                 {w.label}
               </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Sort chips */}
-      <div className="flex items-center gap-2 mb-4">
-        <span className="text-[10px] uppercase tracking-wider text-muted-foreground shrink-0">
-          sort
-        </span>
-        <div className="flex gap-2 overflow-x-auto -mx-4 px-4 scrollbar-none">
-          {SORTS.map((s) => {
-            const active = sort === s.key;
-            return (
+            ))}
+          </div>
+          <span className="text-gray-300">·</span>
+          <div className="flex gap-1">
+            {SORTS.map((s) => (
               <button
                 key={s.key}
                 onClick={() => setSort(s.key)}
-                className="shrink-0 text-[11px] px-2.5 py-1 rounded-md border transition-all"
-                style={{
-                  background: active ? "var(--surface-3)" : "transparent",
-                  borderColor: active ? "var(--border-accent)" : "var(--border-subtle)",
-                  color: active ? "var(--color-accent)" : "var(--muted-foreground, #888)",
-                }}
+                className={`rounded-md px-2 py-1 font-medium transition ${
+                  sort === s.key ? "bg-white text-gray-900 shadow-sm ring-1 ring-gray-200" : "text-gray-400 hover:text-gray-600"
+                }`}
               >
                 {s.label}
               </button>
-            );
-          })}
+            ))}
+          </div>
         </div>
-      </div>
 
-      {loading ? (
-        <div className="space-y-3">
-          {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="h-24 rounded-xl animate-pulse"
-              style={{ background: "var(--surface-1)" }}
-            />
-          ))}
-        </div>
-      ) : isEmpty ? (
-        <div
-          className="text-center py-10 px-4 rounded-xl border"
-          style={{
-            background: "var(--surface-1)",
-            borderColor: "var(--border-subtle)",
-          }}
-        >
-          <p className="text-sm text-muted-foreground mb-3">
-            {items.length === 0
-              ? "no intel yet. click refresh to pull the latest."
-              : `no ${filter === "all" ? "" : filter + " "}posts in the ${WINDOWS.find((w) => w.key === windowMode)?.label}.`}
-          </p>
-          {wider && items.length > 0 && (
-            <button
-              onClick={() => setWindowMode(wider)}
-              className="text-xs px-4 py-2 rounded-lg border transition-colors"
-              style={{
-                background: "var(--surface-2)",
-                borderColor: "var(--border-accent)",
-                color: "var(--color-accent)",
-              }}
-            >
-              expand to {WINDOWS.find((w) => w.key === wider)?.label}
-            </button>
-          )}
-        </div>
-      ) : renderGrouped ? (
-        <div className="space-y-6">
-          {GROUP_ORDER.filter((g) => (grouped[g.key] || []).length > 0).map((g) => {
-            const groupItems = grouped[g.key] || [];
-            const showCount = showCountFor(g.key);
-            const visibleSlice = groupItems.slice(0, showCount);
-            const hasMore = groupItems.length > showCount;
-            return (
-              <section key={g.key}>
-                <header className="flex items-center gap-2 mb-2 px-1">
-                  <h2 className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">
-                    {g.label}
-                  </h2>
-                  <span className="text-[10px] text-muted-foreground opacity-70">
-                    {visibleSlice.length} of {groupItems.length}
-                  </span>
-                </header>
-                <div className="space-y-3">
-                  {visibleSlice.map((item, i) => {
-                    const itemTs = tsOrZero(item.pulled_at);
-                    const isNew = lastSeen > 0 && itemTs > lastSeen;
-                    return (
-                      <div
-                        key={`${item.url}-${i}`}
-                        style={
-                          isNew
-                            ? {
-                                outline: "1px solid var(--color-accent)",
-                                borderRadius: "12px",
-                              }
-                            : undefined
-                        }
-                      >
-                        <NewsItem item={item} />
-                      </div>
-                    );
-                  })}
-                </div>
-                {hasMore && (
-                  <button
-                    onClick={() => expandGroup(g.key)}
-                    className="mt-2 w-full text-xs py-2 rounded-lg border transition-colors hover:bg-white/5"
-                    style={{
-                      borderColor: "var(--border-subtle)",
-                      color: "var(--color-accent)",
-                    }}
-                  >
-                    show {Math.min(PER_GROUP_INCREMENT, groupItems.length - showCount)} more
-                  </button>
-                )}
-              </section>
-            );
-          })}
-        </div>
-      ) : (
-        // Single source selected — flat list, capped at 20.
-        <div className="space-y-3">
-          {visible.slice(0, 20).map((item, i) => {
-            const itemTs = tsOrZero(item.pulled_at);
-            const isNew = lastSeen > 0 && itemTs > lastSeen;
-            return (
-              <div
-                key={`${item.url}-${i}`}
-                style={
-                  isNew
-                    ? {
-                        outline: "1px solid var(--color-accent)",
-                        borderRadius: "12px",
-                      }
-                    : undefined
-                }
-              >
-                <NewsItem item={item} />
-              </div>
-            );
-          })}
-          {visible.length > 20 && (
-            <p className="text-center text-xs text-muted-foreground py-2">
-              showing 20 of {visible.length}. narrow with the time window above.
+        {/* Feed */}
+        {loading ? (
+          <div className="space-y-3">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-28 animate-pulse rounded-2xl bg-gray-200/60" />
+            ))}
+          </div>
+        ) : isEmpty ? (
+          <div className="rounded-2xl bg-white px-4 py-12 text-center ring-1 ring-gray-200/80">
+            <p className="text-[14px] text-gray-500">
+              {items.length === 0
+                ? "No intel yet. Tap Refresh to pull the latest."
+                : `Nothing in ${cat === "all" ? "this view" : CATEGORIES.find((c) => c.key === cat)?.label} for the ${WINDOWS.find((w) => w.key === windowMode)?.label}.`}
             </p>
-          )}
-        </div>
-      )}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {visible.slice(0, showCount).map((item, i) => {
+              const isNew = lastSeen > 0 && tsOrZero(item.pulled_at) > lastSeen;
+              return <NewsItem key={`${item.url}-${i}`} item={item} isNew={isNew} />;
+            })}
+            {visible.length > showCount && (
+              <button
+                onClick={() => setShowCount((c) => c + 12)}
+                className="w-full rounded-xl bg-white py-3 text-[13px] font-medium text-gray-600 ring-1 ring-gray-200 transition hover:ring-gray-300"
+              >
+                Show more ({visible.length - showCount} left)
+              </button>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
