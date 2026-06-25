@@ -8,6 +8,7 @@ import {
   MessageCircle,
   Newspaper,
   Wrench,
+  Youtube,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -33,6 +34,7 @@ export const CATEGORY_META: Record<
   reddit: { label: "Community", color: "#ff4500", Icon: MessageCircle },
   news: { label: "News", color: "#dc2626", Icon: Newspaper },
   tools: { label: "Tool Update", color: "#7c3aed", Icon: Wrench },
+  youtube: { label: "YouTube", color: "#ff0000", Icon: Youtube },
 };
 
 export function catFor(type: string) {

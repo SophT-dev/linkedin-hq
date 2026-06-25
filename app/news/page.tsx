@@ -8,8 +8,9 @@ import DailyReport from "@/components/DailyReport";
 // Topic categories (mapped from Intel `type`). "all" + "saved" are virtual.
 const CATEGORIES = [
   { key: "all", label: "All", emoji: "✨" },
-  { key: "tools", label: "Tool Updates", emoji: "🛠️" },
   { key: "linkedin", label: "Creators", emoji: "👀" },
+  { key: "youtube", label: "YouTube", emoji: "▶️" },
+  { key: "tools", label: "Tool Updates", emoji: "🛠️" },
   { key: "news", label: "News", emoji: "📰" },
   { key: "reddit", label: "Community", emoji: "💬" },
   { key: "saved", label: "Saved", emoji: "⭐" },

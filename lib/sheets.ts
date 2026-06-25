@@ -171,7 +171,7 @@ export async function saveDailyReport(date: string, report_md: string) {
 // as "not yet commented" and is free to comment on them.
 // ============================================================
 
-export type IntelType = "linkedin" | "reddit" | "news" | "tools";
+export type IntelType = "linkedin" | "reddit" | "news" | "tools" | "youtube";
 export type CommentStatus =
   | ""
   | "draft"

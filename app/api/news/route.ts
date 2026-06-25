@@ -23,13 +23,17 @@ const NAME_FIX: Record<string, string> = {
 
 export async function GET() {
   try {
-    const all = await loadIntel({ sinceDays: 60 });
-    const cutoff = Date.now() - POST_MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+    const all = await loadIntel({ sinceDays: 90 });
     const age = (it: { posted_at: string; pulled_at: string }) =>
       Date.parse(it.posted_at) || Date.parse(it.pulled_at) || 0;
+    // YouTube channels post less often, so allow older videos than text posts.
+    const maxAgeDays = (it: { type: string }) =>
+      it.type === "youtube" ? 75 : POST_MAX_AGE_DAYS;
+    const fresh = (it: { type: string; posted_at: string; pulled_at: string }) =>
+      age(it) >= Date.now() - maxAgeDays(it) * 24 * 60 * 60 * 1000;
 
     const items = all
-      .filter((it) => age(it) >= cutoff)
+      .filter(fresh)
       .sort((a, b) => age(b) - age(a))
       .slice(0, MAX_ITEMS)
       .map((it) => ({ ...it, source: NAME_FIX[it.source] || it.source }));
