@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { RefreshCw, Zap, ArrowUpRight } from "lucide-react";
 import NewsItem, { NewsItemData, catFor } from "@/components/NewsItem";
+import DailyReport from "@/components/DailyReport";
 
 // Topic categories (mapped from Intel `type`). "all" + "saved" are virtual.
 const CATEGORIES = [
@@ -45,6 +46,7 @@ export default function NewsPage() {
   const [refreshMsg, setRefreshMsg] = useState<string | null>(null);
   const [lastSeen, setLastSeen] = useState<number>(0);
   const [showCount, setShowCount] = useState(12);
+  const [view, setView] = useState<"feed" | "glance">("feed");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -103,15 +105,6 @@ export default function NewsPage() {
       .map((i) => ({ item: i, fresh: recent.length > 0 }));
   }, [items]);
 
-  const counts = useMemo(() => {
-    const c: Record<string, number> = { all: items.length, saved: 0 };
-    for (const it of items) {
-      c[it.type] = (c[it.type] || 0) + 1;
-      if (it.starred) c.saved += 1;
-    }
-    return c;
-  }, [items]);
-
   const visible = useMemo(() => {
     const cutoffMs = WINDOWS.find((w) => w.key === windowMode)?.ms ?? null;
     const cutoffTs = cutoffMs ? Date.now() - cutoffMs : 0;
@@ -159,6 +152,28 @@ export default function NewsPage() {
           </div>
         )}
 
+        {/* View toggle: Feed vs At-a-Glance daily report */}
+        <div className="mb-4 inline-flex rounded-full bg-gray-200/70 p-1">
+          {([
+            { key: "feed", label: "📰 Feed" },
+            { key: "glance", label: "⚡ At a Glance" },
+          ] as const).map((v) => (
+            <button
+              key={v.key}
+              onClick={() => setView(v.key)}
+              className={`rounded-full px-4 py-1.5 text-[13px] font-semibold transition ${
+                view === v.key ? "bg-white text-gray-900 shadow-sm" : "text-gray-500"
+              }`}
+            >
+              {v.label}
+            </button>
+          ))}
+        </div>
+
+        {view === "glance" && <DailyReport />}
+
+        {view === "feed" && (
+          <>
         {/* At-a-glance */}
         {!loading && topToday.length > 0 && (
           <section className="mb-5 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-200/80">
@@ -201,7 +216,6 @@ export default function NewsPage() {
         <div className="mb-3 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {CATEGORIES.map((c) => {
             const active = cat === c.key;
-            const n = counts[c.key] || 0;
             return (
               <button
                 key={c.key}
@@ -214,7 +228,6 @@ export default function NewsPage() {
               >
                 <span className="mr-1">{c.emoji}</span>
                 {c.label}
-                {n > 0 && <span className={active ? "ml-1.5 opacity-60" : "ml-1.5 text-gray-400"}>{n}</span>}
               </button>
             );
           })}
@@ -281,6 +294,8 @@ export default function NewsPage() {
               </button>
             )}
           </div>
+        )}
+          </>
         )}
       </div>
     </div>

@@ -84,6 +84,81 @@ export async function getConfig(): Promise<Record<string, string>> {
 }
 
 // ============================================================
+// DailyReports tab — one at-a-glance report per day.
+// Schema: date (YYYY-MM-DD) | generated_at (ISO) | report_md
+// ============================================================
+const REPORTS_TAB = "DailyReports";
+
+async function ensureTab(title: string) {
+  const auth = getAuth();
+  const sheets = google.sheets({ version: "v4", auth });
+  const meta = await sheets.spreadsheets.get({ spreadsheetId: SHEET_ID });
+  const exists = meta.data.sheets?.some((s) => s.properties?.title === title);
+  if (!exists) {
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId: SHEET_ID,
+      requestBody: { requests: [{ addSheet: { properties: { title } } }] },
+    });
+  }
+}
+
+export interface DailyReport {
+  date: string;
+  generated_at: string;
+  report_md: string;
+}
+
+export async function listReportDates(): Promise<string[]> {
+  try {
+    const rows = await readSheet(REPORTS_TAB, "A:A");
+    return rows
+      .map((r) => r[0])
+      .filter((d) => d && /^\d{4}-\d{2}-\d{2}$/.test(d))
+      .sort()
+      .reverse();
+  } catch {
+    return [];
+  }
+}
+
+export async function getDailyReport(date: string): Promise<DailyReport | null> {
+  try {
+    const rows = await readSheet(REPORTS_TAB, "A:C");
+    const row = rows.find((r) => r[0] === date);
+    if (!row) return null;
+    return { date: row[0], generated_at: row[1] || "", report_md: row[2] || "" };
+  } catch {
+    return null;
+  }
+}
+
+export async function saveDailyReport(date: string, report_md: string) {
+  await ensureTab(REPORTS_TAB);
+  const auth = getAuth();
+  const sheets = google.sheets({ version: "v4", auth });
+  const generated_at = new Date().toISOString();
+  const existing = await readSheet(REPORTS_TAB, "A:A");
+  const idx = existing.findIndex((r) => r[0] === date); // 0-based incl header
+  const values = [[date, generated_at, report_md]];
+  if (idx >= 0) {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: SHEET_ID,
+      range: `${REPORTS_TAB}!A${idx + 1}:C${idx + 1}`,
+      valueInputOption: "USER_ENTERED",
+      requestBody: { values },
+    });
+  } else {
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: SHEET_ID,
+      range: `${REPORTS_TAB}!A1`,
+      valueInputOption: "USER_ENTERED",
+      requestBody: { values },
+    });
+  }
+  return { date, generated_at, report_md };
+}
+
+// ============================================================
 // Intel tab — unified news feed (extended with comment fields)
 // Schema: pulled_at | posted_at | type | source | title | url | summary |
 //         score | starred | comment_text | comment_status |
