@@ -26,18 +26,23 @@ export async function GET() {
     const all = await loadIntel({ sinceDays: 90 });
     const age = (it: { posted_at: string; pulled_at: string }) =>
       Date.parse(it.posted_at) || Date.parse(it.pulled_at) || 0;
-    // YouTube items are already just the latest few videos per followed channel
-    // (RSS returns ~5), so always show them regardless of age. Text posts use
-    // the recency window.
-    const fresh = (it: { type: string; posted_at: string; pulled_at: string }) =>
-      it.type === "youtube" ||
-      age(it) >= Date.now() - POST_MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+    const cutoff = Date.now() - POST_MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
 
-    const items = all
-      .filter(fresh)
+    // YouTube = the latest few videos per followed channel (channels post
+    // rarely), so include ALL of them, outside the recency cap that the
+    // high-volume text posts use.
+    const yt = all
+      .filter((it) => it.type === "youtube")
+      .sort((a, b) => age(b) - age(a));
+    const text = all
+      .filter((it) => it.type !== "youtube" && age(it) >= cutoff)
       .sort((a, b) => age(b) - age(a))
-      .slice(0, MAX_ITEMS)
-      .map((it) => ({ ...it, source: NAME_FIX[it.source] || it.source }));
+      .slice(0, MAX_ITEMS);
+
+    const items = [...text, ...yt].map((it) => ({
+      ...it,
+      source: NAME_FIX[it.source] || it.source,
+    }));
 
     return NextResponse.json({ items });
   } catch (e) {
