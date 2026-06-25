@@ -12,7 +12,8 @@ const NAV_ITEMS: { href: string; icon: typeof Newspaper; label: string; enabled:
   { href: "/capture", icon: Mic, label: "capture", enabled: false },
 ];
 
-const ACTIVE_COLOR = "var(--color-accent)";
+const ACTIVE_COLOR = "#b1130f";
+const INACTIVE_COLOR = "#9ca3af";
 
 export default function BottomNav() {
   const pathname = usePathname();
@@ -26,9 +27,8 @@ export default function BottomNav() {
     <nav
       className="fixed bottom-0 left-0 right-0 z-50 border-t"
       style={{
-        background: "var(--nav-bg)",
-        backdropFilter: "blur(12px)",
-        borderColor: "var(--border-accent)",
+        background: "#ffffff",
+        borderColor: "#ececec",
         paddingBottom: "env(safe-area-inset-bottom)",
       }}
     >
@@ -42,7 +42,8 @@ export default function BottomNav() {
             return (
               <span
                 key={href}
-                className={`${className} text-muted-foreground opacity-40 cursor-not-allowed`}
+                className={`${className} opacity-40 cursor-not-allowed`}
+                style={{ color: INACTIVE_COLOR }}
                 title="coming soon"
               >
                 <Icon size={22} strokeWidth={1.8} />

@@ -93,8 +93,8 @@ export default function QuickCaptureButton() {
           onClick={() => setOpen(true)}
           className="fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-95"
           style={{
-            background: "oklch(0.488 0.243 264.376)",
-            boxShadow: "0 4px 24px oklch(0.488 0.243 264.376 / 50%)",
+            background: "#b1130f",
+            boxShadow: "0 4px 24px rgba(177, 19, 15, 0.4)",
           }}
           aria-label="Quick Capture"
         >
