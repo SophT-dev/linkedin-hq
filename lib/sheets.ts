@@ -96,7 +96,7 @@ export async function getConfig(): Promise<Record<string, string>> {
 // as "not yet commented" and is free to comment on them.
 // ============================================================
 
-export type IntelType = "linkedin" | "reddit" | "news";
+export type IntelType = "linkedin" | "reddit" | "news" | "tools";
 export type CommentStatus =
   | ""
   | "draft"
