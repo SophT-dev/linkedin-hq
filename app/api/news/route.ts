@@ -26,11 +26,12 @@ export async function GET() {
     const all = await loadIntel({ sinceDays: 90 });
     const age = (it: { posted_at: string; pulled_at: string }) =>
       Date.parse(it.posted_at) || Date.parse(it.pulled_at) || 0;
-    // YouTube channels post less often, so allow older videos than text posts.
-    const maxAgeDays = (it: { type: string }) =>
-      it.type === "youtube" ? 75 : POST_MAX_AGE_DAYS;
+    // YouTube items are already just the latest few videos per followed channel
+    // (RSS returns ~5), so always show them regardless of age. Text posts use
+    // the recency window.
     const fresh = (it: { type: string; posted_at: string; pulled_at: string }) =>
-      age(it) >= Date.now() - maxAgeDays(it) * 24 * 60 * 60 * 1000;
+      it.type === "youtube" ||
+      age(it) >= Date.now() - POST_MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
 
     const items = all
       .filter(fresh)
