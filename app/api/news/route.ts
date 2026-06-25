@@ -3,15 +3,37 @@ import { loadIntel } from "@/lib/sheets";
 
 export const dynamic = "force-dynamic";
 
+// Show only genuinely recent posts (by when they were POSTED, not when we
+// pulled them) and cap the payload so the phone loads fast even when the sheet
+// holds thousands of scraped rows.
+const POST_MAX_AGE_DAYS = 21;
+const MAX_ITEMS = 200;
+
+// Cosmetic: older scrapes stored truncated/slug source names. Correct them for
+// display. (The scraper now stores proper names going forward.)
+const NAME_FIX: Record<string, string> = {
+  Outboundphd: "Eric Nowoslawski",
+  Nick: "Nick Abraham",
+  Michel: "Michel Lieben",
+  Richard: "Richard Illingworth",
+  Charlestenot: "Charles Tenot",
+  Atishay: "Atishay (Hyperke)",
+  "Nikita Maildoso": "Nikita (Maildoso)",
+};
+
 export async function GET() {
   try {
-    const items = await loadIntel({ sinceDays: 14 });
-    // Newest first
-    items.sort((a, b) => {
-      const ta = Date.parse(a.pulled_at) || 0;
-      const tb = Date.parse(b.pulled_at) || 0;
-      return tb - ta;
-    });
+    const all = await loadIntel({ sinceDays: 60 });
+    const cutoff = Date.now() - POST_MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+    const age = (it: { posted_at: string; pulled_at: string }) =>
+      Date.parse(it.posted_at) || Date.parse(it.pulled_at) || 0;
+
+    const items = all
+      .filter((it) => age(it) >= cutoff)
+      .sort((a, b) => age(b) - age(a))
+      .slice(0, MAX_ITEMS)
+      .map((it) => ({ ...it, source: NAME_FIX[it.source] || it.source }));
+
     return NextResponse.json({ items });
   } catch (e) {
     return NextResponse.json(

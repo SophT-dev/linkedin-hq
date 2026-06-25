@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { fetchIntelFromWeb } from "@/lib/claude";
 import { fetchRedditIntel } from "@/lib/reddit";
-import { fetchChangelogIntel } from "@/lib/changelogs";
 import { appendIntel, IntelType, karachiIso } from "@/lib/sheets";
 
 // Long-running: multiple sequential web search calls + reddit fetches
@@ -21,12 +20,10 @@ async function runRefresh() {
   const startedAt = karachiIso(new Date());
   const errors: string[] = [];
 
-  // Run Reddit (direct fetch), Claude news scouts, and the free changelog
-  // (Google News RSS) source in parallel.
-  const [redditResult, webResult, changelogResult] = await Promise.allSettled([
+  // Run Reddit (direct fetch) and Claude news scouts in parallel.
+  const [redditResult, webResult] = await Promise.allSettled([
     fetchRedditIntel(),
     fetchIntelFromWeb(),
-    fetchChangelogIntel(),
   ]);
 
   const items: Array<{
@@ -82,23 +79,6 @@ async function runRefresh() {
     }
   } else {
     errors.push(`web: ${webResult.reason}`);
-  }
-
-  if (changelogResult.status === "fulfilled") {
-    for (const c of changelogResult.value) {
-      items.push({
-        pulled_at: startedAt,
-        posted_at: toKarachi(c.posted_at),
-        type: "tools",
-        source: c.source,
-        title: c.title,
-        url: c.url,
-        summary: c.summary,
-        score: 0,
-      });
-    }
-  } else {
-    errors.push(`changelogs: ${changelogResult.reason}`);
   }
 
   for (const d of scoutDebug) {
