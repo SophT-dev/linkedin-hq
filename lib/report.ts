@@ -37,8 +37,8 @@ Write a markdown daily report in EXACTLY this shape (omit any section that has n
 
 # Daily Report — ${dateLabel}
 
-## 🎯 Today in one line
-One sentence: the overall theme across everything below.
+## 📌 TLDR
+A tight 3 to 5 sentence catch-up covering EVERYTHING below in plain language: the big themes across the experts' posts, anything notable specific people said, and any tool or product news. Written so she can read ONLY this and be fully caught up on the day. Name names and be concrete. No bullet points here, just a short paragraph.
 
 ## 👀 What the experts posted
 Group by PERSON. One bullet each:
