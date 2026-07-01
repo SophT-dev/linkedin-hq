@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bleed AI — Know your stack (static)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#07070d;font-family:'Inter',sans-serif}
+
+  .stage{width:1080px;height:1350px;background:#07070d;position:relative;overflow:hidden}
+  .stage::before{content:"";position:absolute;inset:0;z-index:0;
+    background:
+      radial-gradient(820px 560px at 84% -6%,rgba(255,61,56,.18),transparent 55%),
+      radial-gradient(680px 520px at 6% 104%,rgba(177,19,15,.14),transparent 55%);}
+  .stage::after{content:"";position:absolute;inset:0;z-index:0;opacity:.5;
+    background-image:radial-gradient(rgba(120,130,170,.06) 1px,transparent 1px);
+    background-size:34px 34px;-webkit-mask-image:radial-gradient(circle at 50% 40%,#000,transparent 80%);mask-image:radial-gradient(circle at 50% 40%,#000,transparent 80%);}
+  .layer{position:absolute;inset:0;z-index:2;padding:70px 68px 60px;display:flex;flex-direction:column}
+
+  /* header */
+  .top{display:flex;align-items:center;justify-content:space-between}
+  .top img.logo{height:44px;width:auto;filter:drop-shadow(0 2px 10px rgba(255,61,56,.35))}
+  .kick{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:#9099b8}
+
+  /* title */
+  .ttl{margin-top:48px}
+  .ttl h1{font-weight:900;font-size:70px;line-height:1;letter-spacing:-2.4px;color:#f5f5f7}
+  .ttl h1 em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-1px;
+    background:linear-gradient(100deg,#ff5a3c,#ff3d38 50%,#b1130f);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .ttl p{margin-top:18px;font-size:23px;line-height:1.42;color:#9099b8;font-weight:500;max-width:900px}
+  .ttl p b{color:#eaeef8;font-weight:700}
+
+  /* section label */
+  .seclab{display:flex;align-items:center;gap:14px;margin:52px 0 26px}
+  .seclab .t{font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:3px;text-transform:uppercase;font-weight:600;white-space:nowrap}
+  .seclab .line{height:1px;flex:1;background:linear-gradient(90deg,currentColor,transparent);opacity:.35}
+  .seclab.base{color:#ff6b67}
+  .seclab.add{color:#7b83a6}
+
+  /* foundation tier — two big pillars */
+  .base-row{display:flex;gap:22px}
+  .pill{flex:1;background:linear-gradient(180deg,#15151f,#101019);border:1px solid #2a2a3e;border-radius:22px;
+    padding:34px 28px;display:flex;align-items:center;gap:22px;position:relative;overflow:hidden}
+  .pill::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,#ff5a3c,#b1130f)}
+  .pill .chip{width:92px;height:92px;border-radius:20px;background:#fff;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 10px 26px rgba(0,0,0,.5)}
+  .pill .chip img{width:60px;height:60px;object-fit:contain}
+  .pill .chip .fb{font-weight:900;font-size:34px;color:#07070d}
+  .pill .meta .role{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#ff6b67;font-weight:600}
+  .pill .meta .nm{font-size:30px;font-weight:900;color:#f5f5f7;letter-spacing:-.6px;margin-top:3px}
+  .pill .meta .nm span{font-size:20px;font-weight:600;color:#9099b8}
+  .pill .meta .job{font-size:16px;color:#9099b8;font-weight:500;margin-top:4px}
+
+  /* supplementary tier — three smaller cards */
+  .add-row{display:flex;gap:18px}
+  .scard{flex:1;background:#101019;border:1px solid #1f1f30;border-radius:18px;padding:30px 22px;display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+  .scard .chip{width:64px;height:64px;border-radius:15px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.45)}
+  .scard .chip img{width:40px;height:40px;object-fit:contain}
+  .scard .chip .fb{font-weight:800;font-size:24px;color:#07070d}
+  .scard .nm{font-size:22px;font-weight:800;color:#f5f5f7;letter-spacing:-.3px}
+  .scard .gap{font-size:15px;line-height:1.35;color:#9099b8;font-weight:500}
+  .scard .gap b{color:#ff6b67;font-weight:700}
+
+  /* takeaway strip */
+  .take{margin-top:52px;background:#0e0e12;border:1px solid #2a2a3e;border-left:4px solid #ff3d38;border-radius:16px;padding:30px 32px}
+  .take p{font-size:24px;line-height:1.38;color:#eaeef8;font-weight:600}
+  .take p em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:#ff6b67}
+
+  /* footer */
+  .foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;padding-top:22px;border-top:1px solid #1f1f30}
+  .foot .by{display:flex;align-items:center;gap:13px}
+  .foot .ava{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,61,56,.55);box-shadow:0 0 16px rgba(255,61,56,.3)}
+  .foot .byt b{display:block;font-size:18px;color:#f5f5f7;font-weight:800;letter-spacing:-.3px}
+  .foot .byt span{font-family:'JetBrains Mono',monospace;font-size:12px;color:#9099b8}
+  .foot .drop{height:44px;width:auto;opacity:.9;filter:drop-shadow(0 0 14px rgba(255,61,56,.5))}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="layer">
+
+    <div class="top">
+      <img class="logo" src="assets/bleedai-logo-white.png" alt="Bleed AI">
+      <div class="kick">cold email systems · 2026</div>
+    </div>
+
+    <div class="ttl">
+      <h1>More tools won't<br>fix your <em>pipeline.</em></h1>
+      <p>Master your <b>main stack</b> first. Then add tools that each earn their place, one clear job at a time.</p>
+    </div>
+
+    <!-- FOUNDATION -->
+    <div class="seclab base"><span class="t">The foundation · learn deeply</span><span class="line"></span></div>
+    <div class="base-row">
+      <div class="pill">
+        <div class="chip"><img data-domain="clay.com"></div>
+        <div class="meta">
+          <div class="role">data + enrichment</div>
+          <div class="nm">Clay</div>
+          <div class="job">Build and enrich the list</div>
+        </div>
+      </div>
+      <div class="pill">
+        <div class="chip"><img data-domain="instantly.ai"></div>
+        <div class="meta">
+          <div class="role">sending</div>
+          <div class="nm">Instantly <span>/ Smartlead</span></div>
+          <div class="job">Send and rotate inboxes</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUPPLEMENTARY -->
+    <div class="seclab add"><span class="t">Add on purpose · one gap each</span><span class="line"></span></div>
+    <div class="add-row">
+      <div class="scard">
+        <div class="chip"><img data-domain="prospeo.io"></div>
+        <div class="nm">Prospeo</div>
+        <div class="gap">Finds the <b>harder emails</b> your main tool misses</div>
+      </div>
+      <div class="scard">
+        <div class="chip"><img data-domain="maildoso.com"></div>
+        <div class="nm">Maildoso</div>
+        <div class="gap">Extra <b>inbox infrastructure</b> to scale sending</div>
+      </div>
+      <div class="scard">
+        <div class="chip"><img data-domain="millionverifier.com"></div>
+        <div class="nm">MillionVerifier</div>
+        <div class="gap">Keeps your <b>list clean</b> so you protect deliverability</div>
+      </div>
+    </div>
+
+    <!-- TAKEAWAY -->
+    <div class="take">
+      <p>The best teams don't own the most tools. They know <em>what each one earns them.</em></p>
+    </div>
+
+    <div class="foot">
+      <div class="by">
+        <img class="ava" src="assets/taha.jpg" alt="Taha Anwar">
+        <div class="byt"><b>Taha Anwar</b><span>Founder, Bleed AI</span></div>
+      </div>
+      <img class="drop" src="assets/bleedai-drop.png" alt="Bleed AI">
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const TOKEN='pk_B57uSsdGS1qjphsKZfUpcw';
+  const url=d=>`https://img.logo.dev/${d}?token=${TOKEN}&size=160&format=png`;
+  document.querySelectorAll('.chip img[data-domain]').forEach(img=>{
+    const d=img.getAttribute('data-domain');
+    img.src=url(d);
+    img.onerror=()=>{const s=document.createElement('div');s.className='fb';s.textContent=d[0].toUpperCase();img.replaceWith(s);};
+  });
+</script>
+</body>
+</html>

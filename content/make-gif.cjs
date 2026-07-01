@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 const BASE = 'c:/Users/sophi/Downloads/SOPH VS Code';
-const puppeteer = require(BASE + '/upwork-sales-agent/node_modules/puppeteer');
+const puppeteer = require(BASE + '/lm-sales-agent/node_modules/puppeteer');
 const ffmpeg = require('ffmpeg-static');
 
 const htmlFile = process.argv[2] || (BASE + '/linkedin-hq/content/toolstack-budget-tiers.html');
