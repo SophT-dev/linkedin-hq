@@ -12,11 +12,12 @@ Taha Anwar's (Bleed AI) personal LinkedIn operating system. Mobile-first Next.js
 
 **Two folders hold our stuff** (the rest is the Next.js app): `playbook/` (all the thinking) + `content/` (the render workshop). Everything is consolidated — one strategy doc, one playbook doc, no duplicates.
 
-- **`playbook/` — all knowledge, 5 flat files:**
+- **`playbook/` — all knowledge, 6 flat files:**
   - `STRATEGY.md` — the **WHY & WHO**: positioning, USP, dual-brand (Taha+Sophiya), profile, 90-day roadmap, the rules.
   - `PLAYBOOK.md` — the **HOW**: 9 experts' lessons, 10 principles, Michel Lieben's operating manual, creative formats, pre-batch checklist. (Merged from the old Authority + Michel playbooks.)
   - `FORMAT-LIBRARY.md` — living swipe file, 9 proven formats (F1-F9) w/ real engagement + links. **I keep this current.**
   - `INSIDER-RESEARCH.md` — 28 sourced insider findings = content fuel (each line ≈ a post).
+  - `COPYWRITING-BIBLE.md` — the master copywriting reference distilled from Ogilvy (*Ogilvy on Advertising*) + Sugarman (*The Adweek Copywriting Handbook*). Principles + mechanics + a big **Swipe File** (Part C: steal-and-adapt hooks, guarantees, ad structures) + a pre-publish checklist. Raid this when writing any hook/post/lead magnet. (Books live as PDFs in `linkedin-hq/`.)
   - `RESOURCES.md` — external links/resources.
 - **`content/` — the render workshop only** (see `content/README.md`): `make-gif.cjs` + `assets/` (brand images) + `toolstack-*.html` (editable source visuals). Finished work does **not** pile up here.
   - **Render any visual → LinkedIn GIF:** `cd content && node make-gif.cjs <input.html> <output.gif> [width] [fps] [recMs] [winStart] [winLen]`. Bundled `ffmpeg-static` + puppeteer, one shared palette + bayer dither = no flicker. Ship GIF only (no MP4).

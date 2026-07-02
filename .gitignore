@@ -44,3 +44,6 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# source books for the copywriting bible (copyrighted, large — keep local only)
+_OceanofPDF.com_*.pdf
