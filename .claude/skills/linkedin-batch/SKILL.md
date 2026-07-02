@@ -52,6 +52,8 @@ If the user's seed brief mentions a specific topic (e.g. "deliverability this we
 If the seed brief is generic or empty, skip this step and work only from WinsLog + starred Intel.
 
 ### Phase 4 — generate the batch
+**Before writing, read `../../playbook/COPYWRITING-BIBLE.md` (Ogilvy + Sugarman) — it is the craft engine behind every post.** Voice = Voice Rules below (single source of truth, non-negotiable). Craft = the Bible: hooks from Part A§3 + B§1 + the Part C swipe file; angles from the 31 triggers (A§6); tighten with A§7. The two never conflict — Voice Rules govern *how it sounds* (lowercase-checks, banned words, tags); the Bible governs *why it pulls* (slippery slide, specificity, story, one clear ask).
+
 Write `count` posts following every voice rule in the **Voice Rules** section at the bottom of this file. No shortcuts. The rules are non-negotiable and every post must pass the final checklist before you show it to the user.
 
 Each post has this exact shape:
@@ -367,6 +369,7 @@ Tick every item. If any fails, rewrite that post before showing it.
 - [ ] at least 1 ADJACENT post in the batch
 - [ ] every post grounded in real wins/intel/fresh-research (never hallucinated stats)
 - [ ] at least one tactic the reader can apply today
+- [ ] hook passes the Bible's opener test (short, specific, benefit/curiosity — forces line 2) and the post ends with ONE clear ask (COPYWRITING-BIBLE.md Part D checklist)
 
 ---
 
