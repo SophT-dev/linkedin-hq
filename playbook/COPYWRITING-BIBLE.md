@@ -417,4 +417,50 @@ When Ogilvy (data) and Sugarman (craft) **independently land on the same rule**,
 
 ---
 
-*Next expansion (per Sophiya): extend this beyond LinkedIn to all channels — cold email, the site, lead magnets, proposals. The principles are channel-agnostic; only the "buying environment" changes. When we do, add a Part E mapping each rule to each channel.*
+*Next expansion (per Sophiya): extend this beyond LinkedIn to all channels — cold email, the site, lead magnets, proposals. The principles are channel-agnostic; only the "buying environment" changes. When we do, add a **Part F** mapping each rule to each channel.*
+
+---
+---
+
+# PART E — GUEST VOICE PACKS (droppable style overlays)
+
+A voice pack changes *how a post sounds*, not the slippery-slide mechanics above. Layer it on top of the craft rules. Always adapt to Bleed AI brand (premium, not hustle-bro): keep the punch + casualness, drop crude profanity.
+
+## E§1 · SAM PARR (The Hustle / My First Million / copythat.com)
+
+**Studied from:** copythat.com (his "copywork" method), The Hustle's internal style guide, MFM, and multiple course breakdowns (sources logged in-session 2026-07-02).
+
+**The origin:** he learned by **copywork** — hand-copying great sales letters ~1 hr/day. Philosophy: learn others' songs, then find your own voice.
+
+**Core beliefs**
+- **First sentence punches you in the face.** Its only job: make you read sentence 2. (He's a Sugarman disciple — pure slippery slide.)
+- **"C+ writing, A+ story/insight."** Never chase pretty prose; chase a wild story or a surprising fact told plainly. Insight > polish.
+- **Write like you talk to a friend.** Conversational, informed, clever-not-forced, data-driven-but-accessible, personal-but-universal.
+
+**Sentence mechanics (steal exactly)**
+- Sentences ≤ ~25 words; often 3–6. One-word lines for punch ("Nuts."). Paragraphs 1–3 lines, tons of white space. 6th–8th grade level.
+- Kill adverbs (-ly) → strong verb instead ("I yelled at the boy" > "angrily yelled").
+- Specific numbers ALWAYS. "$27M," "30 days," "6,000 leads" — never "a lot."
+- Cut the first & last 25% of the draft, then cut ~50% more.
+
+**Signature vocabulary + connectors (his real idiom)**
+- Openers/connectors: **"Here's the deal." · "Ok so…" · "Look…" · "Here's the gist." · "But first." · "I'll explain." · "And boom." · "Long story short."**
+- Color/reactions: **"It's nuts." · "This is wild." · "kinda crazy" · "the crazy part?" · "not gonna lie" · "honestly" · "real talk" · "dude / man" · "(seriously)" · "I'm not joking."**
+- Moves: rhetorical-question hooks · self-deprecation ("why would I do something this stupid?") · parenthetical asides · a curiosity gap held open till later · money/business-nerd framing ("this tiny thing prints $X").
+- **Brand-safe ceiling:** Sam says "I fuck with that guy." We don't — keep the energy, a rare "damn"/"hell" is the max.
+
+**His hook patterns**
+- Bold/absurd confession: *"I went 30 days without food. Here's why."*
+- Dumb-question hook: *"Why would I do something this stupid?"*
+- Surprising number: *"This one-page website makes $40k a month."*
+- Setup + withhold: *"A guy paid me to fix his copy. His copy was fine. The problem was way weirder."*
+- Contrarian gut-punch: *"Cold email isn't dead. Your list is."*
+
+**Do / Don't**
+- **Do:** open with a punch, tell ONE story, real numbers, write like a text to a smart friend, end on one clean line or one clear ask.
+- **Don't:** warm up ("In today's world…"), adverbs/jargon/clichés, long sentences, explaining the joke, sounding like a brand.
+
+**Litmus test:** read it out loud. If it sounds like a LinkedIn "thought leader," kill it. If it sounds like Sam telling you something wild over a beer — with a real number in it — you nailed it.
+
+**⭐ Prompt add-on (paste when generating in this voice):**
+> *Write in Sam Parr's voice: first line punches, sentences under ~15 words, 1–2 line paragraphs, plain 7th-grade English, zero adverbs, one real story, specific numbers, casual connectors ("here's the deal," "ok so," "the crazy part?"), one curiosity gap, self-deprecating, ends on one clean line. Brand-safe premium — the energy of Sam, none of the crude profanity.*
