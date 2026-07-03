@@ -9,7 +9,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.78.0",
     "@base-ui/react": "^1.2.0",
     "@google/generative-ai": "^0.24.1",
     "@notionhq/client": "^5.17.0",
@@ -21,6 +20,7 @@
     "lucide-react": "^0.577.0",
     "nanoid": "^5.1.7",
     "next": "16.1.6",
+    "openai": "^6.45.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "recharts": "^3.8.0",

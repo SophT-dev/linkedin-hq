@@ -1,12 +1,32 @@
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import { isIntelRelevant } from "./intel-filter";
 
-const MODEL = "claude-sonnet-4-6";
-function getClient() { return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }); }
+// Switched from Anthropic to OpenAI 2026-07-03 (Sophiya: don't want to run
+// on a metered Anthropic API key here). gpt-5.4-nano is OpenAI's current
+// cheapest tier and supports the hosted web_search tool + tool calling +
+// structured outputs, which is all this file needs.
+const MODEL = "gpt-5.4-nano";
+function getClient() { return new OpenAI({ apiKey: process.env.OPENAI_API_KEY }); }
+
+// Both the web-search scout and the plain-text helpers below read the
+// Responses API's `output` array the same way: find the `message` block,
+// then its `output_text` content block. (The SDK also exposes an
+// `output_text` convenience getter, but this walks the raw shape so it
+// can't silently break if a future SDK version changes that getter.)
+function extractOutputText(output: OpenAI.Responses.ResponseOutputItem[]): string {
+  for (const block of output) {
+    if (block.type === "message") {
+      for (const c of block.content) {
+        if (c.type === "output_text") return c.text;
+      }
+    }
+  }
+  return "";
+}
 
 // ============================================================
-// Intel fetcher — uses Claude's web search to pull fresh items
-// from general news. Reddit comes from the direct JSON fetcher in
+// Intel fetcher — uses OpenAI's hosted web_search tool to pull fresh
+// items from general news. Reddit comes from the direct JSON fetcher in
 // lib/reddit.ts. LinkedIn comes from the n8n → /api/intel/ingest
 // pipeline.
 // ============================================================
@@ -26,11 +46,6 @@ export interface ScoutDebug {
   count: number;
   error?: string;
   note?: string;
-}
-
-interface ClaudeContentBlock {
-  type: string;
-  text?: string;
 }
 
 // Each scout is a small focused web-search call. Splitting the work into
@@ -115,19 +130,13 @@ async function runScout(
   const debug: ScoutDebug = { scout: scout.source, ok: false, count: 0 };
   const client = getClient();
   try {
-    const res = await client.messages.create({
+    const res = await client.responses.create({
       model: MODEL,
-      max_tokens: 1500,
-      tools: [
-        { type: "web_search_20250305", name: "web_search", max_uses: 1 },
-      ],
-      messages: [{ role: "user", content: buildScoutPrompt(scout) }],
+      tools: [{ type: "web_search" }],
+      input: buildScoutPrompt(scout),
     });
 
-    let finalText = "";
-    for (const block of res.content as ClaudeContentBlock[]) {
-      if (block.type === "text" && block.text) finalText = block.text;
-    }
+    const finalText = extractOutputText(res.output);
     if (!finalText) {
       debug.error = "no text block in response";
       return { items: [], debug };
@@ -224,13 +233,12 @@ export async function fetchIntelFromWeb(): Promise<{
 // ============================================================
 
 async function ask(prompt: string, systemPrompt?: string): Promise<string> {
-  const res = await getClient().messages.create({
+  const res = await getClient().responses.create({
     model: MODEL,
-    max_tokens: 1024,
-    ...(systemPrompt ? { system: systemPrompt } : {}),
-    messages: [{ role: "user", content: prompt }],
+    ...(systemPrompt ? { instructions: systemPrompt } : {}),
+    input: prompt,
   });
-  return res.content[0]?.type === "text" ? res.content[0].text : "";
+  return extractOutputText(res.output);
 }
 
 export const TAHA_SYSTEM_PROMPT = `You are Taha Anwar's LinkedIn and Reddit content AI assistant.
@@ -378,11 +386,10 @@ export async function strategyChat(
   const contextNote = config["strategy_context"] || "";
   const systemPrompt = TAHA_SYSTEM_PROMPT + (contextNote ? `\n\nCURRENT CONTEXT: ${contextNote}` : "");
 
-  const res = await getClient().messages.create({
+  const res = await getClient().responses.create({
     model: MODEL,
-    max_tokens: 1024,
-    system: systemPrompt,
-    messages: messages.map((m) => ({ role: m.role, content: m.content })),
+    instructions: systemPrompt,
+    input: messages.map((m) => ({ role: m.role, content: m.content })),
   });
-  return res.content[0]?.type === "text" ? res.content[0].text : "";
+  return extractOutputText(res.output);
 }

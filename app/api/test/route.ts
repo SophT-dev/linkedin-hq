@@ -1,23 +1,29 @@
 import { NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 
 export async function GET() {
   const results: Record<string, string> = {};
 
-  results.anthropic_key = process.env.ANTHROPIC_API_KEY ? "SET" : "MISSING";
+  results.openai_key = process.env.OPENAI_API_KEY ? "SET" : "MISSING";
   results.sheets_id = process.env.GOOGLE_SHEETS_ID && process.env.GOOGLE_SHEETS_ID !== "your_google_sheet_id_here" ? "SET" : "MISSING or placeholder";
 
   try {
-    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-    const res = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 20,
-      messages: [{ role: "user", content: "Say OK" }],
+    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const res = await client.responses.create({
+      model: "gpt-5.4-nano",
+      input: "Say OK",
     });
-    const text = res.content[0]?.type === "text" ? res.content[0].text : "";
-    results.claude = "OK — " + text.trim();
+    let text = "";
+    for (const block of res.output) {
+      if (block.type === "message") {
+        for (const c of block.content) {
+          if (c.type === "output_text") text = c.text;
+        }
+      }
+    }
+    results.openai = "OK — " + text.trim();
   } catch (err) {
-    results.claude = "FAILED: " + String(err).slice(0, 150);
+    results.openai = "FAILED: " + String(err).slice(0, 150);
   }
 
   try {

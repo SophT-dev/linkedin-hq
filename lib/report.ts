@@ -1,8 +1,9 @@
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import { IntelRow } from "./sheets";
 
 // Cheap model on purpose — one batched call per day over the day's items.
-const MODEL = "claude-haiku-4-5";
+// Switched from Anthropic to OpenAI 2026-07-03, see lib/claude.ts.
+const MODEL = "gpt-5.4-nano";
 
 // Generate a single scannable daily intel report from one day's items.
 // Cost control: ONE call/day, inputs truncated to ~400 chars/item. Typically a
@@ -15,7 +16,7 @@ export async function generateDailyReport(
     return `# Daily Report — ${dateLabel}\n\n_No new intel captured for this day._`;
   }
 
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
   const lines = items
     .map(
@@ -56,12 +57,19 @@ Only include people who actually posted today. One line per person.
 
 Keep it tight and scannable. No links (she has the feed for those).`;
 
-  const res = await client.messages.create({
+  const res = await client.responses.create({
     model: MODEL,
-    max_tokens: 1600,
-    system,
-    messages: [{ role: "user", content: user }],
+    instructions: system,
+    input: user,
   });
 
-  return res.content[0]?.type === "text" ? res.content[0].text.trim() : "";
+  let text = "";
+  for (const block of res.output) {
+    if (block.type === "message") {
+      for (const c of block.content) {
+        if (c.type === "output_text") text = c.text;
+      }
+    }
+  }
+  return text.trim();
 }

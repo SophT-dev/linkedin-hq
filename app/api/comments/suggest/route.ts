@@ -9,9 +9,10 @@ import {
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
-// Cheap model for inline suggestions (cost rule). The auto-comment bot keeps its
-// own default model; only this endpoint is forced to Haiku.
-const SUGGEST_MODEL = "claude-haiku-4-5";
+// Cheap model for inline suggestions (cost rule). Same as lib/comments.ts's
+// own default now that both run on OpenAI's nano tier (2026-07-03 switch),
+// but kept as its own constant in case the bot's default model changes later.
+const SUGGEST_MODEL = "gpt-5.4-nano";
 
 // Fallback shared secret, matched against the extension's baked token. Used when
 // the SUGGEST_TOKEN env var isn't set in Vercel — so the endpoint is protected

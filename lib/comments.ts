@@ -1,13 +1,14 @@
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import {
   BANNED_WORDS,
   BANNED_PHRASES,
   VoiceCheck,
 } from "./voice-rules";
 
-const MODEL = "claude-sonnet-4-6";
+// Switched from Anthropic to OpenAI 2026-07-03, see lib/claude.ts.
+const MODEL = "gpt-5.4-nano";
 function getClient() {
-  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 }
 
 // ============================================================
@@ -318,15 +319,20 @@ ${emojiDirective}
 Write the comment now. 1-20 words. Natural casing. No quotes around it, no preamble.`;
 
   const client = getClient();
-  const res = await client.messages.create({
+  const res = await client.responses.create({
     model,
-    max_tokens: 400,
-    system: COMMENT_SYSTEM_PROMPT,
-    messages: [{ role: "user", content: userPrompt }],
+    instructions: COMMENT_SYSTEM_PROMPT,
+    input: userPrompt,
   });
 
-  const raw =
-    res.content[0]?.type === "text" ? res.content[0].text.trim() : "";
+  let raw = "";
+  for (const block of res.output) {
+    if (block.type === "message") {
+      for (const c of block.content) {
+        if (c.type === "output_text") raw = c.text.trim();
+      }
+    }
+  }
   // Strip surrounding quotes and em/en dashes (always banned). When this
   // slot isn't an emoji slot, also strip every emoji the model may have
   // slipped in — a hard guarantee that the 1-in-4 ratio holds.
