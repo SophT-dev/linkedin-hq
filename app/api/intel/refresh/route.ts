@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { fetchIntelFromWeb } from "@/lib/claude";
 import { fetchRedditIntel } from "@/lib/reddit";
+import { fetchYouTubeIntel } from "@/lib/youtube";
 import { appendIntel, IntelType, karachiIso } from "@/lib/sheets";
 
 // Long-running: multiple sequential web search calls + reddit fetches
@@ -20,10 +21,17 @@ async function runRefresh() {
   const startedAt = karachiIso(new Date());
   const errors: string[] = [];
 
-  // Run Reddit (direct fetch) and Claude news scouts in parallel.
-  const [redditResult, webResult] = await Promise.allSettled([
+  // Run Reddit (direct fetch), Claude news scouts, and YouTube RSS (free,
+  // no LLM) in parallel. YouTube used to be a separate, never-scheduled
+  // endpoint that only ran when someone remembered to curl it by hand —
+  // folded in here so one Refresh tap covers every source this app can
+  // pull on demand. LinkedIn creator posts still come only from the n8n
+  // scrape (POST /api/intel/ingest on its own 4h schedule) since that one
+  // needs the Apify credential n8n holds, not something this route can run.
+  const [redditResult, webResult, youtubeResult] = await Promise.allSettled([
     fetchRedditIntel(),
     fetchIntelFromWeb(),
+    fetchYouTubeIntel(),
   ]);
 
   const items: Array<{
@@ -81,6 +89,25 @@ async function runRefresh() {
     errors.push(`web: ${webResult.reason}`);
   }
 
+  let youtubeCount = 0;
+  if (youtubeResult.status === "fulfilled") {
+    youtubeCount = youtubeResult.value.length;
+    for (const v of youtubeResult.value) {
+      items.push({
+        pulled_at: startedAt,
+        posted_at: toKarachi(v.posted_at),
+        type: "youtube",
+        source: v.source,
+        title: v.title,
+        url: v.url,
+        summary: v.summary,
+        score: v.score,
+      });
+    }
+  } else {
+    errors.push(`youtube: ${youtubeResult.reason}`);
+  }
+
   for (const d of scoutDebug) {
     if (!d.ok && d.error) errors.push(`${d.scout}: ${d.error}`);
   }
@@ -103,7 +130,8 @@ async function runRefresh() {
     finishedAt: new Date().toISOString(),
     fetched: items.length,
     redditCount,
-    newsCount: items.length - redditCount,
+    youtubeCount,
+    newsCount: items.length - redditCount - youtubeCount,
     ingested,
     skipped,
     scoutDebug,

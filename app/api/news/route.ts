@@ -34,12 +34,22 @@ export async function GET() {
     const yt = all
       .filter((it) => it.type === "youtube")
       .sort((a, b) => age(b) - age(a));
-    const text = all
-      .filter((it) => it.type !== "youtube" && age(it) >= cutoff)
+
+    // Reddit/news/tools are low-volume by design (a handful of items per
+    // Refresh tap, hard relevance-gated). LinkedIn creator scraping produces
+    // far more volume, so sorting everything together into one MAX_ITEMS
+    // slice let LinkedIn silently crowd Reddit/news out of the feed entirely.
+    // Give the low-volume sources their own reserved bucket, same pattern as
+    // YouTube above, and only cap LinkedIn.
+    const lowVolume = all
+      .filter((it) => it.type !== "youtube" && it.type !== "linkedin" && age(it) >= cutoff)
+      .sort((a, b) => age(b) - age(a));
+    const linkedin = all
+      .filter((it) => it.type === "linkedin" && age(it) >= cutoff)
       .sort((a, b) => age(b) - age(a))
       .slice(0, MAX_ITEMS);
 
-    const items = [...text, ...yt].map((it) => ({
+    const items = [...lowVolume, ...linkedin, ...yt].map((it) => ({
       ...it,
       source: NAME_FIX[it.source] || it.source,
     }));
