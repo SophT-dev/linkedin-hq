@@ -11,9 +11,12 @@
 // Fallback: Groq. Genuinely free forever — no credit card on file, no paid
 // tier at all, just rate limits (30 RPM / ~1,000 RPD per model). So instead of
 // ever spilling into Gemini's paid tier, a Gemini quota error (HTTP 429) drops
-// straight to Groq, which cannot bill regardless of volume. `groq/compound`
-// has real built-in web search (via Tavily, server-side), so this is a
-// genuine fallback for the search-backed calls too — not a fabricated one.
+// straight to Groq, which cannot bill regardless of volume. A transient 503
+// ("model overloaded, try again") gets a couple of quick retries first —
+// Groq's models are weaker, so it's not worth dropping to them for a
+// half-second Google hiccup. `groq/compound` has real built-in web search
+// (via Tavily, server-side), so this is a genuine fallback for the
+// search-backed calls too — not a fabricated one.
 import { GoogleGenAI, ApiError as GeminiApiError } from "@google/genai";
 import Groq from "groq-sdk";
 
@@ -22,6 +25,9 @@ const GEMINI_SEARCH_MODEL = "gemini-2.5-flash";
 const GROQ_TEXT_MODEL = "llama-3.3-70b-versatile";
 const GROQ_SEARCH_MODEL = "groq/compound";
 
+const MAX_503_RETRIES = 2;
+const RETRY_DELAY_MS = 800;
+
 function getGemini() {
   return new GoogleGenAI({ apiKey: process.env.GOOGLE_AI_KEY });
 }
@@ -29,19 +35,51 @@ function getGroq() {
   return new Groq({ apiKey: process.env.GROQ_API_KEY });
 }
 
-// Only treat a real quota/rate-limit response (429) as "fall back to Groq".
-// Any other error (bad request, auth, etc.) should surface normally — masking
-// it as a silent fallback would hide real bugs.
+function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
 function isQuotaError(err: unknown): boolean {
   return err instanceof GeminiApiError && err.status === 429;
+}
+function isTransientOverload(err: unknown): boolean {
+  return err instanceof GeminiApiError && err.status === 503;
+}
+
+// 429 = real quota exhaustion — fall back to Groq immediately, retrying
+// won't help. 503 = "high demand, try again" — worth a couple of quick
+// retries against Gemini itself before giving up to Groq.
+async function callGeminiWithRetry<T>(fn: () => Promise<T>): Promise<T> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      if (isTransientOverload(err) && attempt < MAX_503_RETRIES) {
+        await sleep(RETRY_DELAY_MS * (attempt + 1));
+        continue;
+      }
+      throw err;
+    }
+  }
+}
+
+function shouldFallbackToGroq(err: unknown): boolean {
+  return isQuotaError(err) || isTransientOverload(err);
+}
+
+function fallbackReasonFor(err: unknown, groqDescription: string): string {
+  const reason = isQuotaError(err)
+    ? "Gemini free-tier quota hit (429)"
+    : "Gemini overloaded (503) after retries";
+  return `${reason} — used ${groqDescription} instead`;
 }
 
 export interface AiResult {
   text: string;
   provider: "gemini" | "groq";
-  // Set only when Groq was used because Gemini's free quota was hit — the
-  // callers below fold this into their existing debug/error reporting so
-  // Sophiya can see it happened instead of it being invisible.
+  // Set only when Groq covered the call because Gemini's free quota was hit
+  // (or stayed overloaded through retries) — callers fold this into their
+  // existing debug/error reporting so it's visible, not silent.
   fallbackReason?: string;
 }
 
@@ -52,14 +90,16 @@ export async function generateText(
   systemPrompt?: string
 ): Promise<AiResult> {
   try {
-    const res = await getGemini().models.generateContent({
-      model: GEMINI_TEXT_MODEL,
-      contents: prompt,
-      ...(systemPrompt ? { config: { systemInstruction: systemPrompt } } : {}),
-    });
+    const res = await callGeminiWithRetry(() =>
+      getGemini().models.generateContent({
+        model: GEMINI_TEXT_MODEL,
+        contents: prompt,
+        ...(systemPrompt ? { config: { systemInstruction: systemPrompt } } : {}),
+      })
+    );
     return { text: res.text ?? "", provider: "gemini" };
   } catch (err) {
-    if (!isQuotaError(err)) throw err;
+    if (!shouldFallbackToGroq(err)) throw err;
     const messages: Array<{ role: "system" | "user"; content: string }> = systemPrompt
       ? [
           { role: "system", content: systemPrompt },
@@ -73,7 +113,7 @@ export async function generateText(
     return {
       text: res.choices[0]?.message?.content ?? "",
       provider: "groq",
-      fallbackReason: `Gemini free-tier quota hit (429) — used Groq's free tier instead`,
+      fallbackReason: fallbackReasonFor(err, "Groq's free tier"),
     };
   }
 }
@@ -89,14 +129,16 @@ export async function generateChat(
       role: m.role === "assistant" ? "model" : "user",
       parts: [{ text: m.content }],
     }));
-    const res = await getGemini().models.generateContent({
-      model: GEMINI_TEXT_MODEL,
-      contents,
-      ...(systemPrompt ? { config: { systemInstruction: systemPrompt } } : {}),
-    });
+    const res = await callGeminiWithRetry(() =>
+      getGemini().models.generateContent({
+        model: GEMINI_TEXT_MODEL,
+        contents,
+        ...(systemPrompt ? { config: { systemInstruction: systemPrompt } } : {}),
+      })
+    );
     return { text: res.text ?? "", provider: "gemini" };
   } catch (err) {
-    if (!isQuotaError(err)) throw err;
+    if (!shouldFallbackToGroq(err)) throw err;
     const groqMessages: Array<{ role: "system" | "user" | "assistant"; content: string }> = [
       ...(systemPrompt ? [{ role: "system" as const, content: systemPrompt }] : []),
       ...messages,
@@ -108,7 +150,7 @@ export async function generateChat(
     return {
       text: res.choices[0]?.message?.content ?? "",
       provider: "groq",
-      fallbackReason: `Gemini free-tier quota hit (429) — used Groq's free tier instead`,
+      fallbackReason: fallbackReasonFor(err, "Groq's free tier"),
     };
   }
 }
@@ -118,14 +160,16 @@ export async function generateChat(
 // Tavily search) on quota trip — not a plain-text guess dressed up as search.
 export async function generateTextWithSearch(prompt: string): Promise<AiResult> {
   try {
-    const res = await getGemini().models.generateContent({
-      model: GEMINI_SEARCH_MODEL,
-      contents: prompt,
-      config: { tools: [{ googleSearch: {} }] },
-    });
+    const res = await callGeminiWithRetry(() =>
+      getGemini().models.generateContent({
+        model: GEMINI_SEARCH_MODEL,
+        contents: prompt,
+        config: { tools: [{ googleSearch: {} }] },
+      })
+    );
     return { text: res.text ?? "", provider: "gemini" };
   } catch (err) {
-    if (!isQuotaError(err)) throw err;
+    if (!shouldFallbackToGroq(err)) throw err;
     const res = await getGroq().chat.completions.create({
       model: GROQ_SEARCH_MODEL,
       messages: [{ role: "user", content: prompt }],
@@ -133,7 +177,7 @@ export async function generateTextWithSearch(prompt: string): Promise<AiResult> 
     return {
       text: res.choices[0]?.message?.content ?? "",
       provider: "groq",
-      fallbackReason: `Gemini free-tier quota hit (429) — used Groq's compound (web search) model instead`,
+      fallbackReason: fallbackReasonFor(err, "Groq's compound (web search) model"),
     };
   }
 }
