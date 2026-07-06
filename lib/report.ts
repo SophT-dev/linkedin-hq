@@ -1,13 +1,9 @@
-import OpenAI from "openai";
+import { generateText } from "./ai";
 import { IntelRow } from "./sheets";
 
-// Cheap model on purpose — one batched call per day over the day's items.
-// Switched from Anthropic to OpenAI 2026-07-03, see lib/claude.ts.
-const MODEL = "gpt-5.4-nano";
-
-// Generate a single scannable daily intel report from one day's items.
-// Cost control: ONE call/day, inputs truncated to ~400 chars/item. Typically a
-// few cents/month total.
+// One batched call per day over the day's items. Runs on the free tier
+// (Gemini primary, Groq fallback — see lib/ai.ts), so this costs nothing at
+// this volume either way.
 export async function generateDailyReport(
   dateLabel: string,
   items: IntelRow[]
@@ -15,8 +11,6 @@ export async function generateDailyReport(
   if (!items.length) {
     return `# Daily Report — ${dateLabel}\n\n_No new intel captured for this day._`;
   }
-
-  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
   const lines = items
     .map(
@@ -57,19 +51,9 @@ Only include people who actually posted today. One line per person.
 
 Keep it tight and scannable. No links (she has the feed for those).`;
 
-  const res = await client.responses.create({
-    model: MODEL,
-    instructions: system,
-    input: user,
-  });
-
-  let text = "";
-  for (const block of res.output) {
-    if (block.type === "message") {
-      for (const c of block.content) {
-        if (c.type === "output_text") text = c.text;
-      }
-    }
-  }
-  return text.trim();
+  const res = await generateText(user, system);
+  const text = res.text.trim();
+  // Surface a Gemini→Groq quota fallback as a visible footer rather than
+  // silently — this report is read once a day, easy to miss otherwise.
+  return res.fallbackReason ? `${text}\n\n_(${res.fallbackReason})_` : text;
 }

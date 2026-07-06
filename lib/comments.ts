@@ -1,15 +1,9 @@
-import OpenAI from "openai";
+import { generateText } from "./ai";
 import {
   BANNED_WORDS,
   BANNED_PHRASES,
   VoiceCheck,
 } from "./voice-rules";
-
-// Switched from Anthropic to OpenAI 2026-07-03, see lib/claude.ts.
-const MODEL = "gpt-5.4-nano";
-function getClient() {
-  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-}
 
 // ============================================================
 // Auto-comment generator for the linkedin-hq creator feed
@@ -277,6 +271,9 @@ export interface GeneratedComment {
   comment_text: string;
   style_preset: StylePreset;
   raw_model_output: string;
+  // Set only when Gemini's free quota was hit and Groq covered this comment
+  // instead (see lib/ai.ts) — surfaced so it isn't silent.
+  fallback_used?: string;
 }
 
 // Generates one comment for one post. Picks a style preset, calls the model,
@@ -290,12 +287,9 @@ export interface GeneratedComment {
 // write (most comments have zero emojis).
 export async function generateExpertComment(
   post: CandidatePost,
-  opts: { allowEmoji?: boolean; forcePreset?: StylePreset; model?: string } = {}
+  opts: { allowEmoji?: boolean; forcePreset?: StylePreset } = {}
 ): Promise<GeneratedComment> {
   const allowEmoji = opts.allowEmoji ?? false;
-  // Caller can override the model (the inline suggest endpoint uses Haiku for
-  // cost; the auto-comment bot keeps the default). Defaults to MODEL.
-  const model = opts.model ?? MODEL;
   // forcePreset lets callers (e.g. the inline suggest endpoint) request a
   // specific style so they can offer the user 2-3 varied suggestions per post
   // instead of three near-identical ones. When omitted, the heuristic picks.
@@ -318,21 +312,8 @@ ${emojiDirective}
 
 Write the comment now. 1-20 words. Natural casing. No quotes around it, no preamble.`;
 
-  const client = getClient();
-  const res = await client.responses.create({
-    model,
-    instructions: COMMENT_SYSTEM_PROMPT,
-    input: userPrompt,
-  });
-
-  let raw = "";
-  for (const block of res.output) {
-    if (block.type === "message") {
-      for (const c of block.content) {
-        if (c.type === "output_text") raw = c.text.trim();
-      }
-    }
-  }
+  const res = await generateText(userPrompt, COMMENT_SYSTEM_PROMPT);
+  const raw = res.text.trim();
   // Strip surrounding quotes and em/en dashes (always banned). When this
   // slot isn't an emoji slot, also strip every emoji the model may have
   // slipped in — a hard guarantee that the 1-in-4 ratio holds.
@@ -357,6 +338,7 @@ Write the comment now. 1-20 words. Natural casing. No quotes around it, no pream
     comment_text: cleaned,
     style_preset: stylePreset,
     raw_model_output: raw,
+    ...(res.fallbackReason ? { fallback_used: res.fallbackReason } : {}),
   };
 }
 

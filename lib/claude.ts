@@ -1,34 +1,11 @@
-import OpenAI from "openai";
 import { isIntelRelevant } from "./intel-filter";
-
-// Switched from Anthropic to OpenAI 2026-07-03 (Sophiya: don't want to run
-// on a metered Anthropic API key here). gpt-5.4-nano is OpenAI's current
-// cheapest tier and supports the hosted web_search tool + tool calling +
-// structured outputs, which is all this file needs.
-const MODEL = "gpt-5.4-nano";
-function getClient() { return new OpenAI({ apiKey: process.env.OPENAI_API_KEY }); }
-
-// Both the web-search scout and the plain-text helpers below read the
-// Responses API's `output` array the same way: find the `message` block,
-// then its `output_text` content block. (The SDK also exposes an
-// `output_text` convenience getter, but this walks the raw shape so it
-// can't silently break if a future SDK version changes that getter.)
-function extractOutputText(output: OpenAI.Responses.ResponseOutputItem[]): string {
-  for (const block of output) {
-    if (block.type === "message") {
-      for (const c of block.content) {
-        if (c.type === "output_text") return c.text;
-      }
-    }
-  }
-  return "";
-}
+import { generateText, generateChat, generateTextWithSearch } from "./ai";
 
 // ============================================================
-// Intel fetcher — uses OpenAI's hosted web_search tool to pull fresh
-// items from general news. Reddit comes from the direct JSON fetcher in
-// lib/reddit.ts. LinkedIn comes from the n8n → /api/intel/ingest
-// pipeline.
+// Intel fetcher — uses Gemini's free-tier google_search grounding (Groq's
+// compound model as fallback, see lib/ai.ts) to pull fresh items from
+// general news. Reddit comes from the direct JSON fetcher in lib/reddit.ts.
+// LinkedIn comes from the n8n → /api/intel/ingest pipeline.
 // ============================================================
 
 export interface FetchedIntelItem {
@@ -128,15 +105,13 @@ async function runScout(
   scout: IntelScout
 ): Promise<{ items: FetchedIntelItem[]; debug: ScoutDebug }> {
   const debug: ScoutDebug = { scout: scout.source, ok: false, count: 0 };
-  const client = getClient();
   try {
-    const res = await client.responses.create({
-      model: MODEL,
-      tools: [{ type: "web_search" }],
-      input: buildScoutPrompt(scout),
-    });
+    const res = await generateTextWithSearch(buildScoutPrompt(scout));
+    const finalText = res.text;
+    // Surface it when Gemini's free quota was hit and Groq covered this
+    // instead — visible in the Refresh button's response, not silent.
+    if (res.fallbackReason) debug.note = res.fallbackReason;
 
-    const finalText = extractOutputText(res.output);
     if (!finalText) {
       debug.error = "no text block in response";
       return { items: [], debug };
@@ -188,7 +163,8 @@ async function runScout(
     debug.ok = true;
     debug.count = items.length;
     if (droppedForRelevance > 0) {
-      debug.note = `dropped ${droppedForRelevance} off-topic item(s)`;
+      const droppedNote = `dropped ${droppedForRelevance} off-topic item(s)`;
+      debug.note = debug.note ? `${debug.note}; ${droppedNote}` : droppedNote;
     }
     return { items, debug };
   } catch (e) {
@@ -233,12 +209,8 @@ export async function fetchIntelFromWeb(): Promise<{
 // ============================================================
 
 async function ask(prompt: string, systemPrompt?: string): Promise<string> {
-  const res = await getClient().responses.create({
-    model: MODEL,
-    ...(systemPrompt ? { instructions: systemPrompt } : {}),
-    input: prompt,
-  });
-  return extractOutputText(res.output);
+  const res = await generateText(prompt, systemPrompt);
+  return res.text;
 }
 
 export const TAHA_SYSTEM_PROMPT = `You are Taha Anwar's LinkedIn and Reddit content AI assistant.
@@ -386,10 +358,6 @@ export async function strategyChat(
   const contextNote = config["strategy_context"] || "";
   const systemPrompt = TAHA_SYSTEM_PROMPT + (contextNote ? `\n\nCURRENT CONTEXT: ${contextNote}` : "");
 
-  const res = await getClient().responses.create({
-    model: MODEL,
-    instructions: systemPrompt,
-    input: messages.map((m) => ({ role: m.role, content: m.content })),
-  });
-  return extractOutputText(res.output);
+  const res = await generateChat(messages, systemPrompt);
+  return res.text;
 }

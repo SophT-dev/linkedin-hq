@@ -9,11 +9,6 @@ import {
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
-// Cheap model for inline suggestions (cost rule). Same as lib/comments.ts's
-// own default now that both run on OpenAI's nano tier (2026-07-03 switch),
-// but kept as its own constant in case the bot's default model changes later.
-const SUGGEST_MODEL = "gpt-5.4-nano";
-
 // Fallback shared secret, matched against the extension's baked token. Used when
 // the SUGGEST_TOKEN env var isn't set in Vercel — so the endpoint is protected
 // out of the box (not an open Haiku faucet) without needing a dashboard change.
@@ -94,7 +89,6 @@ export async function POST(req: Request) {
       generateExpertComment(post, {
         forcePreset: style,
         allowEmoji: i === 0,
-        model: SUGGEST_MODEL,
       })
     )
   );
