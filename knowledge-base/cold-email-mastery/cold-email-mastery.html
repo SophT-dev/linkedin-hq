@@ -1,0 +1,174 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+  @page { size: Letter; margin: 0; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, Arial, sans-serif;
+    color: #27272a;
+    background: #ffffff;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .page { padding: 0.75in 0.85in; min-height: 100vh; page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+
+  .cover { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; min-height: 100vh; background: #ffffff; border-top: 10px solid #dc2626; }
+  .cover .kicker { color: #dc2626; letter-spacing: 0.18em; text-transform: uppercase; font-size: 11px; font-weight: 600; margin-bottom: 18px; }
+  .cover h1 { font-family: Georgia, Cambria, 'Times New Roman', serif; font-size: 46px; line-height: 1.12; color: #18181b; margin: 0 0 18px 0; max-width: 8in; }
+  .cover .sub { font-size: 15px; color: #52525b; max-width: 6.2in; margin-bottom: 40px; }
+  .cover .meta { font-family: Consolas, 'JetBrains Mono', monospace; font-size: 10.5px; color: #71717a; border-top: 1px solid #e4e4e7; padding-top: 16px; width: 100%; }
+
+  .toc h2 { font-family: Georgia, serif; font-size: 22px; color: #18181b; border-bottom: 2px solid #dc2626; padding-bottom: 10px; margin-bottom: 24px; }
+  .toc-list { list-style: none; padding: 0; margin: 0; }
+  .toc-list li { display: flex; align-items: baseline; padding: 9px 0; border-bottom: 1px dotted #d4d4d8; font-size: 13.5px; }
+  .toc-num { color: #dc2626; font-family: Consolas, monospace; width: 28px; flex-shrink: 0; }
+  .toc-title { flex: 1; color: #27272a; }
+  .toc-dots { flex: 1; }
+  .toc-page { color: #71717a; font-family: Consolas, monospace; font-size: 12px; }
+
+  .lesson-header { border-bottom: 2px solid #dc2626; padding-bottom: 14px; margin-bottom: 22px; }
+  .lesson-header .kicker { color: #dc2626; font-family: Consolas, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; }
+  .lesson-header h1 { font-family: Georgia, serif; font-size: 26px; color: #18181b; margin: 6px 0 4px 0; }
+  .lesson-header .sub { color: #52525b; font-size: 13px; }
+
+  h2 { font-family: Georgia, serif; font-size: 17px; color: #b91c1c; margin: 26px 0 10px 0; }
+  h3 { font-size: 14px; color: #dc2626; margin: 18px 0 8px 0; }
+  p { margin: 0 0 11px 0; color: #3f3f46; }
+  p.fine { color: #71717a; font-size: 11.5px; font-style: italic; }
+  strong { color: #18181b; }
+  code { font-family: Consolas, monospace; background: #f4f4f5; color: #b45309; padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+  a { color: #1d4ed8; text-decoration: none; }
+  blockquote { border-left: 3px solid #dc2626; margin: 14px 0; padding: 8px 16px; background: #fef2f2; color: #27272a; font-size: 13px; }
+  hr { border: none; border-top: 1px solid #e4e4e7; margin: 22px 0; }
+  ul, ol { margin: 0 0 12px 0; padding-left: 22px; color: #3f3f46; }
+  li { margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 11.5px; }
+  th { text-align: left; background: #fef2f2; color: #b91c1c; padding: 6px 8px; border: 1px solid #e4e4e7; }
+  td { padding: 6px 8px; border: 1px solid #e4e4e7; color: #3f3f46; }
+</style></head><body>
+    <section class="page cover">
+      <div class="kicker">Bleed AI · Sophiya's Study Guide</div>
+      <h1>Cold Email Mastery</h1>
+      <div class="sub">Built lesson-by-lesson from 6,642 scraped LinkedIn posts across 11 top cold-email &amp; outbound operators (Josh Braun, Richard Illingworth, Nick Abraham, OutboundPhD, Michel Lieben, Charles Tenot, Atishay/Hyperke, Kenny Damian, Nikita/Maildoso, Sacha Martinot, Aidan Collins) — the <code>campaign-master</code> learning-center corpus — plus supplemental 2026 context beyond the corpus.</div>
+      <div class="meta">Every quote below is dated and sourced back to the original post.<br>Regenerated automatically as each lesson is added — this is a living document.</div>
+    </section>
+    <section class="page toc">
+      <h2>Table of Contents</h2>
+      <ul class="toc-list">
+    <li>
+      <span class="toc-num">01</span>
+      <span class="toc-title">List Building & Data Sourcing</span>
+      <span class="toc-dots"></span>
+      <span class="toc-page">3</span>
+    </li>
+    <li>
+      <span class="toc-num">02</span>
+      <span class="toc-title">Deliverability & Infrastructure</span>
+      <span class="toc-dots"></span>
+      <span class="toc-page">7</span>
+    </li></ul>
+    </section>
+    <section class="page lesson" data-lesson="1">
+      <div class="lesson-header">
+        <div class="kicker">Lesson 01</div>
+        <h1>List Building & Data Sourcing</h1>
+        <div class="sub">Your list is 80% of your outcome — everything else is downstream of this</div>
+      </div>
+      <h2>The one rule everything else depends on</h2>
+<blockquote>"Your list is roughly 80% of your outcome with cold email."<br>— Richard Illingworth, 2026-05-23 · <a href="https://www.linkedin.com/posts/richard-illingworth_i-scraped-10000-contacts-off-apollo-for-activity-7463951901026406400-TR-_">source</a></blockquote>
+<p>This is the most important idea in the whole course, which is why we start here instead of with copywriting. Most people who fail at cold email blame the email. Operators who scale blame the list first. Richard: "I'd rather have 100 leads showing intent signals than 10,000 contacts." Volume without relevance is spam with extra steps.</p>
+<h2>Concept 1 — Buying a list vs. building one</h2>
+<p>Two fundamentally different approaches:</p>
+<ul><li><strong>Buying/pulling from a database</strong> (Apollo, ZoomInfo, Sales Nav) — fast, cheap, generic. Everyone else is emailing the same people from the same database.</li><li><strong>Building it yourself</strong> — scraping a primary source (Google Maps, company sites, job boards, tech-stack detectors) so the list contains information nobody else's list has.</li></ul>
+<blockquote>"I scrape the entire United States off Google Maps for $19 a category... you have to build the list yourself."<br>— OutboundPhD, 2026-06-29 · <a href="https://www.linkedin.com/posts/outboundphd_i-scrape-the-entire-united-states-off-google-activity-7477405549056425984-3UVi">source</a></blockquote>
+<blockquote>"We built the whole database ourselves by scraping Google Maps and mining the website for emails." Three levels of personalization, starting with analyzing Google reviews for complaints about a particular service — converted at <strong>1 positive response for every 90 contacts.</strong><br>— OutboundPhD, 2026-06-04 · <a href="https://www.linkedin.com/posts/outboundphd_1-positive-response-for-every-90-contacts-activity-7468374845337026560-bRQP">source</a></blockquote>
+<p>1-in-90 is exceptional for cold email — and it wasn't the copy that did it. The list was pre-qualified around a real, provable pain point.</p>
+<h2>Concept 2 — Quality beats quantity, provably</h2>
+<blockquote>"A 5,000-row Apollo list with 2,000 bad fits performs like a 3,000-row list dragging 2,000 pieces of dead weight."<br>— Atishay (Hyperke), 2026-06-15 · <a href="https://www.linkedin.com/posts/atishay-hyperke_a-5000-row-apollo-list-with-2000-bad-fits-activity-7472305729098407936-Wgas">source</a></blockquote>
+<p>His fix, worth stealing directly: ask an AI (he uses Claude Code) to randomly sample 1% of the list against your ICP definition before sending anything. A high bad-fit rate in the sample means the whole list needs re-qualifying — found out in 20 minutes, not after burning sender reputation.</p>
+<blockquote>"Run ICP validation on the list to remove companies that got miscategorized or don't actually fit."<br>— Nick Abraham, 2026-06-08 · <a href="https://www.linkedin.com/posts/nick-abraham_i-get-at-least-2-cold-emails-per-week-from-activity-7469840681503739904-s8WM">source</a></blockquote>
+<h2>Concept 3 — Signals over static data (the biggest 2026 shift)</h2>
+<p>Static firmographic data (industry, headcount, location) is table stakes. What separates a mediocre list from a great one is <strong>intent signals</strong> — real-time events indicating a company needs what you sell right now.</p>
+<blockquote>"Here are 17 signals you can track to send more relevant emails (and where to find each)."<br>— Atishay (Hyperke), 2026-06-29 · <a href="https://www.linkedin.com/posts/atishay-hyperke_ive-sent-more-than-30-million-cold-emails-activity-7477360261536854016-E3zj">source</a> — tools: Apify, Firecrawl, Prospeo, BuiltWith, Semrush, RB2B, SEC Edgar, SAM.gov</blockquote>
+<blockquote>"Take company domain list and filter for employee start date being within the last 60 days... merge CSVs to add the new hire(s) as a column in your lead list. With this CSV, you can write an email to the CHRO saying [reference the new hire]."<br>— Nick Abraham, 2026-06-04 · <a href="https://www.linkedin.com/posts/nick-abraham_heres-a-very-clever-way-to-make-a-dynamic-activity-7468285354752770048-BMNW">source</a></blockquote>
+<p>A new-hire trigger is one of the cheapest, highest-relevance signals to build — it's an obvious, provable, timely fact, not a guess.</p>
+<blockquote>"Make the list do more of the work... at this point, you're not pushing an idea. You're joining an existing conversation. Let relevance carry the weight."<br>— Josh Braun, 2026-05-28 · <a href="https://www.linkedin.com/posts/josh-braun_heres-how-to-improve-cold-outreach-response-activity-7465741286210273281-XcnE">source</a></blockquote>
+<p>This is the psychological core of why signal-based outbound works — and it is the same principle behind viral LinkedIn hooks (Lesson 3+): join a conversation already happening in the reader's head, don't manufacture one.</p>
+<h2>Concept 4 — Verification is non-negotiable</h2>
+<p>Every high-signal post on list-building mentions verification. Bad emails (bounces, spam-trap hits) are the #1 killer of domain reputation (Lesson 2).</p>
+<blockquote>"Fix: Million Verifier on every list."<br>— Richard Illingworth, 2026-05-23</blockquote>
+<blockquote>"We hit 90%+ email coverage by trusting five enrichment tools, not one... different email finders use different data sources, so Prospeo might find 68% of your list. Stack them together? You're hitting 91%+ coverage."<br>— Kenny Damian, 2026-06-01 · <a href="https://www.linkedin.com/posts/kenny-damian-90aba221a_we-hit-90-email-coverage-by-trusting-five-activity-7467209815841357824-g5lU">source</a> — waterfall: Prospeo → LeadMagic → Wiza → Hunter → FullEnrich, stacked in Clay.</blockquote>
+<h2>Concept 5 — Arbitrage exists, and it moves fast</h2>
+<blockquote>"You run an Apollo URL search, push it through Boomerang, you get a 600% increase for the same price."<br>— Richard Illingworth, 2026-05-25 · <a href="https://www.linkedin.com/posts/richard-illingworth_spoke-with-a-founder-last-week-paying-for-activity-7464676749214408704-7xwi">source</a></blockquote>
+<p>The meta-lesson isn't "use Boomerang" — the specific tools rotate constantly. It's that the smartest operators are always hunting for arbitrage between what a data provider charges and what it's worth, and they combine sources rather than trusting one.</p>
+<blockquote>"Every paid API and every AI call in a pipeline should have to justify why a free, deterministic step couldn't do it first."<br>— OutboundPhD, 2026-05-27 · <a href="https://www.linkedin.com/posts/outboundphd_we-crawled-thousands-of-websites-for-this-activity-7465390129390538752-AxE5">source</a></blockquote>
+<h2>The stack, as it actually exists across these operators</h2>
+<table><thead><tr><th>Step</th><th>Tools mentioned</th><th>Purpose</th></tr></thead><tbody><tr><td>Primary scraping</td><td>Google Maps (Apify/RapidAPI), Firecrawl, ZenRows</td><td>Build a list nobody else has</td></tr><tr><td>Base data</td><td>Apollo, Sales Nav, ZoomInfo, OpenMart</td><td>Firmographic starting point</td></tr><tr><td>Signals/triggers</td><td>RB2B, BuiltWith, Semrush, SEC Edgar, SAM.gov</td><td>Intent + timing</td></tr><tr><td>Enrichment (waterfall)</td><td>Prospeo, LeadMagic, Wiza, Hunter, FullEnrich, Clay</td><td>Stack sources for coverage</td></tr><tr><td>Verification</td><td>Million Verifier, Reoon</td><td>Protect deliverability pre-send</td></tr><tr><td>ICP QA</td><td>Claude/Claude Code + Discolike, sampling</td><td>Catch bad-fit rows before send</td></tr></tbody></table>
+<h2>Key takeaway</h2>
+<p>Spend effort on the list before the copy. A great email to the wrong person gets ignored or reported as spam; a mediocre email to the exact right person at the exact right moment gets a reply. Every operator in this corpus, independently, arrived at the same conclusion.</p>
+<h2>Questions for you (Sophiya)</h2>
+<ol><li>For Bleed AI's own outbound right now — are we buying lists (Apollo/ZoomInfo pulls) or building any of them ourselves from a primary source? If buying, which ICP segment would benefit most from a self-built list?</li><li>Do we currently run any ICP-sampling QA step (the "sample 1%, check against ICP" technique) before a list goes live in a campaign, or does a list go straight from sourcing to send?</li><li>Which intent signal would be cheapest for us to start tracking this month — new-hire triggers, tech-stack detection (BuiltWith), or something industry-specific to our ICPs?</li></ol>
+<h2>Questions you should be asking (that we haven't yet)</h2>
+<ul><li>What's our current email-coverage rate per list (the % of rows where we actually find a verified email), and is it above or below the ~90% waterfall-enrichment benchmark these operators cite?</li><li>Are we single-sourcing verification (one tool) or waterfalling multiple verifiers the way Kenny Damian describes? Single-sourcing is the more common silent failure mode.</li><li>Do we have a "graveyard" of dead/duplicate data sources we're still paying for that a tool-adoption audit (Lesson 8 territory) would catch?</li><li>Should Bleed AI build one proprietary, durable database (the way OutboundPhD keeps ~15M Clay-enriched companies in Supabase) instead of re-pulling fresh lists per client engagement?</li></ul>
+<h2>Beyond the corpus — additional 2026 context</h2>
+<ul><li><strong>The corpus is already remarkably current</strong> (posts through 2026-06-29), so this isn't stale — but a few things worth flagging that sit slightly outside what got tagged high-signal:</li></ul>
+<p>- <strong>First-party signal data (website visitor de-anonymization)</strong> tools like RB2B are graduating from "nice signal" to "table stakes" for anyone selling into companies with meaningful web traffic — worth a direct evaluation against our own site traffic, not just cold lists. - <strong>LLM-based list QA (the Claude Code sampling trick) generalizes beyond ICP-fit</strong> — the same pattern (sample 1%, ask an LLM to score against a rubric, extrapolate) works for flagging duplicate companies, dead domains, and wrong-language contacts before a send, not just ICP mismatch. - <strong>Waterfall enrichment cost is falling faster than the corpus reflects</strong> — new entrants undercutting Prospeo/LeadMagic on price appear every few months; worth a standing quarterly check rather than treating any tool list as fixed (this is exactly what Suggested Action #3 in the learning-center — tool-adoption radar vs our own stack — is built to catch on a recurring basis).</p>
+<hr>
+<p class="fine">Sources: outboundphd, atishay-hyperke, nick-abraham, kenny-damian, richard-illingworth, josh-braun — LinkedIn, scraped 2026-07-04, learning-center corpus (<code>campaign-master</code>).</p>
+
+    </section>
+
+    <section class="page lesson" data-lesson="2">
+      <div class="lesson-header">
+        <div class="kicker">Lesson 02</div>
+        <h1>Deliverability & Infrastructure</h1>
+        <div class="sub">"Delivered != inbox. Most cold-email failure is an infrastructure problem wearing a copy costume."</div>
+      </div>
+      <h2>The distinction that explains 80% of "why isn't this working"</h2>
+<blockquote>"delivered != inbox. positive replies are the offer-market-fit signal."<br>— Richard Illingworth, 2026-06-01 · <a href="https://www.linkedin.com/posts/richard-illingworth_3000-customer-conversations-later-i-can-activity-7467211061373591552--ZzV">source</a></blockquote>
+<blockquote>"i'm pretty sure it's not the infrastructure... and every single time, it's the infrastructure. MOST people don't understand the difference between delivered as an outcome and inbox as an outcome."<br>— Richard Illingworth, 2026-05-29 · <a href="https://www.linkedin.com/posts/richard-illingworth_im-pretty-sure-its-not-the-infrastructure-activity-7466126224726085632-1W6d">source</a></blockquote>
+<p>An email server can accept your message ("delivered") and still drop it straight into spam or a promotions tab. When a campaign underperforms, the instinct is to rewrite the copy. The operators in this corpus rewrite the infrastructure first, and only touch copy once they've confirmed the email actually reached the inbox.</p>
+<h2>Concept 1 — The volume formula</h2>
+<blockquote>"the formula is dead simple: daily volume = domains x inboxes per domain x emails per inbox. everything else is execution."<br>— Richard Illingworth, 2026-06-04 · <a href="https://www.linkedin.com/posts/richard-illingworth_most-people-who-try-to-send-high-volume-cold-activity-7468329242548699136-2kRw">source</a></blockquote>
+<blockquote>"once most people scale past 100 sends, they end up in spam within a WEEK."</blockquote>
+<p>This is the master equation for scaling. You don't scale by cranking one inbox harder — you scale by adding domains and inboxes, each sending a small, safe number per day.</p>
+<blockquote>"Hitting 1,000-10,000+ cold emails per day per account is an infrastructure problem. The moment you scale past 200 sends/day per account, your bottleneck shifts from copy to infrastructure."<br>— Richard Illingworth, 2026-06-25 · <a href="https://www.linkedin.com/posts/richard-illingworth_hitting-1000-10000-cold-emails-per-day-activity-7475904000765272064-F3aJ">source</a></blockquote>
+<blockquote>"Most cold email 'playbooks' on the internet are written for 1 sending tier. 100/day campaigns and 100K/day campaigns play by completely different rules. Your infra requirements change at every tier. So does your copy strategy, and so do the KPIs you should even be tracking."<br>— Atishay (Hyperke), 2026-06-19 · <a href="https://www.linkedin.com/posts/atishay-hyperke_weve-sent-30m-cold-emails-for-clients-targeting-activity-7473730849226518528-7ZzU">source</a></blockquote>
+<p><strong>This matters directly for how we advise Bleed AI clients</strong> — the "right" setup is never one-size-fits-all; it's a function of the target daily volume.</p>
+<h2>Concept 2 — Warmup, done right</h2>
+<blockquote>"start at 8 emails per day. increase by 2 emails per day. we target a 60% reply rate during warmup."<br>— Richard Illingworth, 2026-07-01 · <a href="https://www.linkedin.com/posts/richard-illingworth_in-the-last-24-months-ive-warmed-up-360000-activity-7478142564441784321-Ko5S">source</a></blockquote>
+<blockquote>"Deliverability rules: Clean, validated lists · Multiple domains (not one) · 30-day minimum warm-up · 20 emails per inbox per day max · Proper setup (SPF, DKIM, DMARC). 100 emails/hour from one inbox = straight to spam."<br>— Michel Lieben, 2026-06-23 · <a href="https://www.linkedin.com/posts/michel-lieben_how-the-top-1-actually-run-cold-email-in-activity-7475138338602119169-DtWv">source</a> — reply-rate gap he cites for doing this right: <strong>20-30% vs. 2-3%.</strong></blockquote>
+<blockquote>"Microsoft flags new domains for the first 90 days. Aged inboxes at 6 weeks or older noticeably outperform fresh ones in any high-trust vertical."<br>— Atishay (Hyperke), 2026-06-22 · <a href="https://www.linkedin.com/posts/atishay-hyperke_if-i-could-go-back-to-2021-one-and-hand-my-activity-7474823603209936896-is_9">source</a></blockquote>
+<h2>Concept 3 — Busting the "inboxes only last 2-3 months" myth</h2>
+<blockquote>"inboxes only last 2-3 months — this is the largest SCAM in cold email that people are still psyoping you with. most clients run a single inbox for 8 to 12 months without rebuilding anything."<br>— Richard Illingworth, 2026-06-30 · <a href="https://www.linkedin.com/posts/richard-illingworth_inboxes-only-last-2-3-months-this-is-the-activity-7477724697774952448-9RQP">source</a></blockquote>
+<p>Why this claim persists: infra vendors profit from you believing inboxes burn fast and need constant repurchasing. Richard's push-back is a direct challenge to a common vendor incentive — worth remembering any time a provider pushes "you need to replace this."</p>
+<blockquote>"STOP paying 5-15X more money for cold email inboxes you don't actually need. agencies routinely buy 100s of more cold email infrastructure than their workflow actually requires... most providers will sell you the bigger package. the upsell most people actually need is EDUCATION."<br>— Richard Illingworth, 2026-06-12 · <a href="https://www.linkedin.com/posts/richard-illingworth_stop-paying-5-15x-more-money-for-cold-email-activity-7471199718245736449-CXJr">source</a></blockquote>
+<h2>Concept 4 — Geography is not one-size-fits-all</h2>
+<blockquote>"volume rules are local now. if you're running one global volume rule across all four of those regions, you ARE getting penalized somewhere on this list right now. UK: primary domains that worked for 4 years straight died in spring 2026 with no warning at all."<br>— Richard Illingworth, 2026-06-27 · <a href="https://www.linkedin.com/posts/richard-illingworth_the-geographic-cold-email-rulebook-heres-activity-7476650683421831170-ynxP">source</a></blockquote>
+<blockquote>"most people inherit one daily-send number from a YouTube guide and apply it across every geography they touch."<br>— Richard Illingworth, 2026-06-17 · <a href="https://www.linkedin.com/posts/richard-illingworth_1000-cold-emails-a-day-looks-different-in-activity-7473014075648741376-nM4K">source</a></blockquote>
+<h2>Concept 5 — Provider mix: Outlook vs. Google, diversification vs. insurance</h2>
+<blockquote>"Microsoft Outlook is the worst for deliverability, but prospects on Outlook tend to reply more. When targeting Outlook prospects, use an Outlook sender."<br>— Charles Tenot, 2026-06-18 · <a href="https://www.linkedin.com/posts/charlestenot_microsoft-outlook-is-the-worst-for-deliverability-activity-7473315774049439744-Zp26">source</a></blockquote>
+<blockquote>"STOP splitting your inboxes 50/50 between Google and Outlook. what most people call 50/50 diversification is really just volume confusion. diversification and insurance are two separate problems."<br>— Richard Illingworth, 2026-06-10 · <a href="https://www.linkedin.com/posts/richard-illingworth_stop-splitting-your-inboxes-5050-between-activity-7470482489095000064-xC11">source</a></blockquote>
+<h2>Concept 6 — Spam filters: subject line and template variation beat spintax alone</h2>
+<blockquote>"0 difference between May 21 and May 22 sending... except for changing subject lines, which is a new spam filter hypothesis we are working on... just switching the subject line helped us a lot."<br>— OutboundPhD, 2026-05-25 · <a href="https://www.linkedin.com/posts/outboundphd_0-difference-between-may-21-and-may-22-sending-activity-7464665333078020096-6-a2">source</a></blockquote>
+<blockquote>"Only one of the five changes had anything to do with infrastructure. The rest was strategy. Super spintax: 20 variations in the subject line, the unsubscribe language, and the signature block. Buy domains early — a parked, aged domain beats a fresh one you warmed for two weeks."<br>— OutboundPhD, 2026-06-29 · <a href="https://www.linkedin.com/posts/outboundphd_we-saved-a-client-from-a-041-to-a-334-activity-7477352732056580096-TYJc">source</a> — this specific test moved a client from <strong>0.41% to 3.34% reply rate in 15 days.</strong></blockquote>
+<h2>Concept 7 — Bounce management is a diagnostic tool, not just an on/off switch</h2>
+<blockquote>"Smartlead will auto-pause at something like 5%, but 5% of 10 emails is one bounce — that's not a real issue. You need enough volume for the percentage to actually mean something. A hard bounce means the email doesn't exist — that's a data problem, pause the campaign and clean the list. A sender bounce means your domain reputation is so bad the email is getting rejected entirely — those accounts are done for, delete them and get new ones."<br>— Nick Abraham, 2026-05-22 · <a href="https://www.linkedin.com/posts/nick-abraham_we-manage-cold-email-campaigns-for-300-clients-activity-7463573206386515968-DMhb">source</a></blockquote>
+<blockquote>"When this happens across every domain, it's almost always infrastructure or copy. Send yourself a test email from every domain, make sure SPF, DKIM, and DMARC all pass. Run an inbox placement test with non-cold-email copy like 'Hey Kyle, when are we getting lunch?'"<br>— Nick Abraham, 2026-06-15 · <a href="https://www.linkedin.com/posts/nick-abraham_when-this-happens-across-every-domain-its-activity-7472295632448143360-U0hA">source</a></blockquote>
+<h2>Concept 8 — Picking an inbox provider &amp; automating setup at scale</h2>
+<blockquote>"what separates a good provider from a bad one is whether they have escalation routes when things break... disconnections are a feature of how this channel works. before you give an inbox provider $2,000, score them on these 10 things."<br>— Richard Illingworth, 2026-06-18 · <a href="https://www.linkedin.com/posts/richard-illingworth_before-you-give-an-inbox-provider-2000-activity-7473374091111170048-XEK6">source</a></blockquote>
+<blockquote>"manually setting up 1,000 cold email inboxes takes 40+ hours of straight clicking. I just built a workflow in Claude Code that replaces it... hit ANY one of those [DNS gotchas] and your accounts fail."<br>— Richard Illingworth, 2026-06-15 · <a href="https://www.linkedin.com/posts/richard-illingworth_manually-setting-up-1000-cold-email-inboxes-activity-7472278521311109120-Y6iz">source</a> — stack: Claude Code + Porkbun (domains) + Cloudflare (DNS).</blockquote>
+<h2>The stack, as it actually exists</h2>
+<table><thead><tr><th>Layer</th><th>What it covers</th><th>Tools mentioned</th></tr></thead><tbody><tr><td>Domain registration</td><td>Buy aged/parked domains early</td><td>Porkbun</td></tr><tr><td>DNS / auth</td><td>SPF, DKIM, DMARC, MX records</td><td>Cloudflare</td></tr><tr><td>Inbox provisioning at scale</td><td>Bulk-create + auto-configure inboxes</td><td>Claude Code (custom workflow)</td></tr><tr><td>Warmup</td><td>Ramp schedule + reply-rate monitoring</td><td>Instantly.ai, Zapmail, Hypertide</td></tr><tr><td>Sending / bounce handling</td><td>Volume control, bounce-type triage</td><td>Smartlead, EmailGuard</td></tr><tr><td>Spam-filter testing</td><td>Subject/signature/unsub variation, inbox-placement tests</td><td>Maildoso, manual test sends</td></tr></tbody></table>
+<h2>Key takeaway</h2>
+<p>The volume formula — <strong>domains × inboxes per domain × emails per inbox</strong> — is the master lever, and everything else (warmup schedule, provider mix, geography-specific rules, bounce triage) exists to protect that formula from collapsing. Copy only matters once "delivered" has become "inbox."</p>
+<h2>Questions for you (Sophiya)</h2>
+<ol><li>For our current client campaigns, do we know our actual domains × inboxes × emails-per-inbox number, or are we inheriting whatever setup a provider defaulted us into?</li><li>Are we running one global send-volume rule across all client geographies, or have we already adjusted for region-specific rules the way Richard describes (e.g., different UK/US/EU behavior in 2026)?</li><li>When a campaign's reply rate craters, do we currently have a standard "test every domain for SPF/DKIM/DMARC + send a non-cold-email test email" diagnostic step, or do we jump straight to rewriting copy?</li></ol>
+<h2>Questions you should be asking (that we haven't yet)</h2>
+<ul><li>Are we buying domains fresh right before a campaign, or stockpiling aged/parked domains in advance the way OutboundPhD recommends ("a parked, aged domain beats a fresh one you warmed for two weeks")?</li><li>Do we separate "diversification" from "insurance" in our inbox provider mix, or are we (like most people, per Richard) just doing an undifferentiated 50/50 split?</li><li>Are we scoring our inbox providers against a defined checklist (escalation routes, no-overcharge, etc.) before paying, or picking based on price/habit?</li><li>If a client's campaign is stuck at a low daily volume, do we know whether the actual bottleneck is domain count, inbox count, or per-inbox send limit — or are we guessing?</li></ul>
+<h2>Beyond the corpus — additional 2026 context</h2>
+<ul><li><strong>The "inboxes only last 2-3 months" myth-busting is itself a signal worth tracking</strong>: when a well-followed operator publicly challenges a widely-repeated vendor claim, it usually means enough of the market has quietly figured out the same thing — a good moment to re-audit whether Bleed AI's own infra spend assumes the shorter (and more expensive) replacement cycle.</li><li><strong>Regional deliverability rules are trending toward getting stricter, not looser</strong> — Microsoft/Outlook in particular has been tightening bulk-sender requirements in 2026 in ways that mirror Google's earlier bulk-sender rules (DMARC enforcement, one-click unsubscribe). Any client campaign targeting a majority-Outlook ICP should be treated as its own infra track, not a variant of the Google setup.</li><li><strong>The Claude Code bulk-inbox-provisioning pattern (Richard's workflow) generalizes well beyond cold email</strong> — the same "let an agent handle the repetitive multi-step setup with many silent failure points" pattern is exactly what we already do elsewhere in campaign-master; worth checking whether a similar internal script already exists before treating this as new tooling to build.</li></ul>
+<hr>
+<p class="fine">Sources: richard-illingworth, michel-lieben, atishay-hyperke, outboundphd, nick-abraham, charles-tenot — LinkedIn, scraped 2026-07-04, learning-center corpus (<code>campaign-master</code>).</p>
+
+    </section></body></html>

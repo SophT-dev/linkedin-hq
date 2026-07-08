@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1080px; height: 1180px; overflow: hidden; font-family: Inter, Arial, sans-serif; }
+  #stage {
+    width: 1080px; height: 1180px; position: relative;
+    background-color: #e9e7e0;
+    background-image:
+      radial-gradient(rgba(20,20,20,0.06) 1px, transparent 1px),
+      repeating-linear-gradient(0deg, rgba(20,20,20,0.03) 0px, rgba(20,20,20,0.03) 1px, transparent 1px, transparent 3px);
+    background-size: 5px 5px, 100% 3px;
+  }
+  .hand { font-family: 'Caveat', 'Segoe Print', cursive; font-weight: 700; color: #1a1a1a; }
+  .label-a { position: absolute; top: 20px; left: 540px; width: 280px; font-size: 36px; line-height: 1.15; }
+  .label-b { position: absolute; top: 230px; left: 20px; width: 300px; font-size: 36px; line-height: 1.15; }
+  .cta {
+    position: absolute; top: 1015px; left: 0; width: 1080px; text-align: center;
+    color: #3a3a34; font-family: Georgia, 'Times New Roman', serif; font-style: italic;
+    font-weight: 400; font-size: 24px; letter-spacing: 0.01em;
+  }
+  .cta b { color: #d6362f; font-style: normal; font-weight: 700; }
+  .logo-corner { position: absolute; top: 40px; right: 44px; text-align: right; }
+  .logo-corner img { height: 38px; width: auto; }
+  #people { position: absolute; inset: 0; }
+  #annotate { position: absolute; inset: 0; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="logo-corner"><img src="assets/bleedai-logo-full.png"></div>
+
+  <svg id="people" width="1080" height="1180" viewBox="0 0 1080 1180"></svg>
+
+  <div class="label-a hand">what you think<br>your TAM is</div>
+  <div class="label-b hand">the audience<br>you're missing out on</div>
+
+  <div class="cta">Comment "<b>TAM</b>" and I'll send you all 68 sources</div>
+</div>
+
+<script>
+  // Pictogram / isotype circle: many small person-silhouettes packed into a disc.
+  // The wedge closest to the top (0-74deg clockwise) is pulled out and re-drawn in red,
+  // exploded-pie-chart style, leaving a clean notch in the gray mass behind it.
+  const svg = document.getElementById('people');
+  const NS = 'http://www.w3.org/2000/svg';
+  const cx = 500, cy = 620, R = 320;
+  const step = 30;
+  const rng = (seed => () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; })(42);
+
+  const sliceAngleDeg = 74;
+  const bisectorRad = (sliceAngleDeg / 2) * Math.PI / 180;
+  const dirX = Math.sin(bisectorRad), dirY = -Math.cos(bisectorRad);
+  const gapDist = 205;
+  const offsetX = dirX * gapDist, offsetY = dirY * gapDist;
+  const sliceCx = cx + offsetX, sliceCy = cy + offsetY;
+
+  function personPath(x, y, s, rot) {
+    const g = document.createElementNS(NS, 'g');
+    g.setAttribute('transform', `translate(${x},${y}) rotate(${rot}) scale(${s})`);
+    const head = document.createElementNS(NS, 'circle');
+    head.setAttribute('cx', 0); head.setAttribute('cy', -6.5); head.setAttribute('r', 4.6);
+    const body = document.createElementNS(NS, 'path');
+    body.setAttribute('d', 'M -7.5 9 C -7.5 -1, 7.5 -1, 7.5 9 Z');
+    g.appendChild(head); g.appendChild(body);
+    return g;
+  }
+
+  const mainGroup = document.createElementNS(NS, 'g');
+  const sliceGroup = document.createElementNS(NS, 'g');
+
+  for (let gy = cy - R; gy <= cy + R; gy += step) {
+    for (let gx = cx - R; gx <= cx + R; gx += step) {
+      const jx = gx + (rng() - 0.5) * 10;
+      const jy = gy + (rng() - 0.5) * 10;
+      const dx = jx - cx, dy = jy - cy;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist > R - 10) continue;
+      let ang = Math.atan2(dx, -dy) * 180 / Math.PI;
+      if (ang < 0) ang += 360;
+      const inSlice = ang <= sliceAngleDeg;
+      const s = 0.92 + rng() * 0.28;
+      const rot = (rng() - 0.5) * 20;
+
+      if (inSlice) {
+        const p = personPath(jx + offsetX, jy + offsetY, s, rot);
+        p.setAttribute('fill', '#d6362f');
+        p.setAttribute('opacity', 0.94);
+        sliceGroup.appendChild(p);
+      } else {
+        const p = personPath(jx, jy, s, rot);
+        p.setAttribute('fill', '#2b2b2b');
+        p.setAttribute('opacity', 0.55 + rng() * 0.25);
+        mainGroup.appendChild(p);
+      }
+    }
+  }
+
+  // ---- clean, professional outline -- true circular arc + straight cut edges, no jitter ----
+  function wedgeOutlinePath(ox, oy, r, aStartDeg, aEndDeg) {
+    const rad1 = aStartDeg * Math.PI / 180, rad2 = aEndDeg * Math.PI / 180;
+    const p1 = [ox + Math.sin(rad1) * r, oy - Math.cos(rad1) * r];
+    const p2 = [ox + Math.sin(rad2) * r, oy - Math.cos(rad2) * r];
+    const largeArc = Math.abs(aEndDeg - aStartDeg) > 180 ? 1 : 0;
+    return `M ${ox.toFixed(1)} ${oy.toFixed(1)} L ${p1[0].toFixed(1)} ${p1[1].toFixed(1)} A ${r} ${r} 0 ${largeArc} 1 ${p2[0].toFixed(1)} ${p2[1].toFixed(1)} Z`;
+  }
+
+  const outlineLayer = document.createElementNS(NS, 'g');
+  [
+    wedgeOutlinePath(cx, cy, R + 14, sliceAngleDeg, 360),
+    wedgeOutlinePath(sliceCx, sliceCy, R + 14, 0, sliceAngleDeg),
+  ].forEach((d) => {
+    const p = document.createElementNS(NS, 'path');
+    p.setAttribute('d', d);
+    p.setAttribute('fill', 'none');
+    p.setAttribute('stroke', '#1a1a1a');
+    p.setAttribute('stroke-width', 3);
+    p.setAttribute('stroke-linecap', 'round');
+    p.setAttribute('stroke-linejoin', 'round');
+    outlineLayer.appendChild(p);
+  });
+
+  svg.appendChild(outlineLayer);
+  svg.appendChild(mainGroup);
+  svg.appendChild(sliceGroup);
+</script>
+</body>
+</html>
