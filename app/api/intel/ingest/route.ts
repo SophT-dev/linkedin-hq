@@ -38,6 +38,7 @@ interface IncomingItem {
   reactions?: number;
   comments?: number;
   type?: IntelType;
+  image_url?: string; // Stage 15 — the post's image/GIF, same Apify field the corpus's posts.json uses
 }
 
 export async function POST(req: NextRequest) {
@@ -99,6 +100,7 @@ export async function POST(req: NextRequest) {
           url: it.url!,
           summary,
           score,
+          image_url: it.image_url || "",
         };
       });
 

@@ -240,6 +240,21 @@ Ogilvy's tested rules — apply to every visual we design:
 - **Don't assume what interests you interests them** (Ogilvy's chef photos flopped with housewives). Test.
 - **Editorial > "ad-looking."** (See B§5 — this is the biggest one for LinkedIn.)
 
+**Format reach multipliers** (cross-checked against an external LinkedIn content-system guide,
+2026-07-08) — pick the format deliberately, it changes reach by multiples:
+
+| Format | Reach multiplier |
+|---|---|
+| Carousel (PDF) | 2.5-3.5x |
+| Native video | 1.2-2x |
+| Text-only | 1x (baseline) |
+| External link in the post body | 0.3-0.6x — kills reach |
+
+**Rule, no exceptions: never put a URL in the post body.** The link always goes in the first
+comment, posted immediately after the post goes live. This is why the lead-magnet CTA is phrased
+as "comment [keyword] and I'll send it" rather than "link below" — the mechanic already routes
+around this correctly, but it's worth stating explicitly as a hard rule for every future post.
+
 ## B§5 · Layout & Typography — "make it look editorial, not like an ad"
 
 **Ogilvy's most transferable insight for a social feed:** *"There is no law that advertisements have to look like advertisements. If you make them look like editorial pages, you'll attract more readers."* ~6× as many people read the average article as the average ad.
@@ -399,6 +414,7 @@ When Ogilvy (data) and Sugarman (craft) **independently land on the same rule**,
 ## Our LinkedIn pre-publish checklist (run every post/hook against this)
 
 - [ ] **First line** — short, specific, benefit or curiosity? Would it stop *our ICP* mid-scroll? Does it force line 2?
+- [ ] **Hook fits before "...see more" truncation** — LinkedIn cuts the post preview at roughly 140 characters on mobile (range 140-210 depending on screen size) and roughly 200-250 on desktop (~210 most commonly cited). Neither number is LinkedIn's own official spec — both are third-party observed and could shift — so treat **120-130 visible characters as the hard ceiling for the hook**, conservative enough to survive the tightest mobile fold. Count every space, line break, and emoji: standard emoji cost ~2 characters, flag/skin-tone emoji 4-7. A hook that's fine in the editor can still get chopped mid-word on a small phone if it's packed with emoji. Sources: authoredup.com, linkedhelper.com, taplio.com, postory.io, connectsafely.ai (checked 2026-07-08).
 - [ ] **Concept, not product** — is there a Big Idea/angle, or am I just listing a tool/feature?
 - [ ] **One person** — "you/I/me," conversational, not "you all"?
 - [ ] **Yes-ladder** — do the first lines earn agreement/relatability?
@@ -414,6 +430,7 @@ When Ogilvy (data) and Sugarman (craft) **independently land on the same rule**,
 - [ ] **The ask** — ONE clear CTA, easy to act on?
 - [ ] **Cure not prevention** — am I talking to people who feel the pain now?
 - [ ] **Honesty** — true, no fake urgency, flaws acknowledged?
+- [ ] **No link in the body** — is the URL in the first comment, not the post text? (see B§4)
 
 ---
 
@@ -464,3 +481,66 @@ A voice pack changes *how a post sounds*, not the slippery-slide mechanics above
 
 **⭐ Prompt add-on (paste when generating in this voice):**
 > *Write in Sam Parr's voice: first line punches, sentences under ~15 words, 1–2 line paragraphs, plain 7th-grade English, zero adverbs, one real story, specific numbers, casual connectors ("here's the deal," "ok so," "the crazy part?"), one curiosity gap, self-deprecating, ends on one clean line. Brand-safe premium — the energy of Sam, none of the crude profanity.*
+
+---
+---
+
+# PART F — HORMOZI + MRBEAST: ATTENTION & CURIOSITY ENGINEERING
+
+**Added 2026-07-08** after Sophiya flagged a hook as flat/uncompelling and asked for the actual
+psychology behind grabbing attention, not just craft mechanics. **No Hormozi book or the "Mr.
+Beast leaked document" she referenced exist anywhere in this repo** — this section is built from
+public research (his published $100M Leads framework, interviews, and reporting on MrBeast's
+process), not those specific sources. If she supplies either document, extract it properly and
+fold it in here rather than relying on secondhand summaries.
+
+## F§1 · Hormozi's Hook → Retain → Reward framework
+
+Every piece of content does three jobs, in order:
+1. **Hook — grab attention.** Pick a topic from one of 5 angles (**Far Past, Recent Past,
+   Present, Trending, Manufactured**) and frame it with one of 7 proven headline formulas:
+   **Recency** ("just happened"), **Relevancy** (ties to something the reader already cares
+   about), **Celebrity** (a known name/brand), **Proximity** (close to home/their world),
+   **Conflict** (two things in tension — "X says this, but actually..."), **Unusual** (breaks a
+   pattern/expectation), **Ongoing** (a story already in motion, "part 2 of...").
+2. **Retain — hold attention through curiosity**, via one of 3 devices: **Lists** (numbered,
+   explicit count — "7 places your TAM is hiding"), **Steps** (ordered actions toward a goal),
+   **Stories** (real events with a withheld lesson). This is why S1/S3's numbered-section
+   structures work — they ARE the retain mechanism, not just formatting.
+3. **Reward — actually deliver** on what the hook promised. A hook that doesn't pay off in the
+   body is the single fastest way to burn trust — never open a gap you don't close.
+
+**For us:** the **Conflict** formula (a trusted number/tool vs. the real truth) and **Unusual**
+(the number goes the opposite direction from what people assume) are the two most reusable
+angles for cold-email/data topics — most of our content is "here's what everyone assumes, here's
+what's actually true."
+
+## F§2 · MrBeast: the curiosity gap, weaponized
+
+MrBeast writes the **title before making the video** — if the title doesn't create a gap, nothing
+else matters. Grounded in George Loewenstein's information-gap theory (1994): curiosity is a felt
+*deprivation* between what you know and what you want to know, and it peaks with a **small amount
+of information, not zero and not too much**. Practical rules that transfer directly to a LinkedIn
+hook:
+- **State the gap, withhold the resolution.** Don't explain why yet — just make the gap
+  undeniable ("Most of your TAM isn't where you're looking. Here's where it actually is.").
+- **Specific and short beats clever.** MrBeast's titles are short and immediately state a
+  concrete stake — no wordplay, no double meaning (same as Ogilvy's "avoid tricky headlines,"
+  B§1 — both land on this independently, which makes it law per Part D).
+- **Match the hook to the payoff.** He explicitly matches title/thumbnail to what happens in the
+  first 5 seconds — the gap has to be immediately confirmed as real, or the reader bails.
+
+## F§3 · The curiosity-gap test — run every hook against this before showing it
+
+- [ ] **Is there an actual gap?** Does the hook state something is true/false/missing WITHOUT yet
+  explaining why — leaving one specific, answerable question hanging?
+- [ ] **Does it use Conflict or Unusual** (a trusted assumption vs. a specific contradicting
+  fact), not just a flat statement of the topic?
+- [ ] **Is the gap closeable in the body, immediately** — no bait-and-switch, the very next lines
+  start resolving it?
+- [ ] **Second person, specific, short** — "you," a real number, ≤130 characters (see the
+  pre-publish checklist above).
+- A hook that merely *describes* the topic ("here's a fact about X") has zero gap and reads flat.
+  A hook that **contradicts an assumption the reader already holds** ("Apollo's number isn't your
+  real TAM") forces the "wait, what?" reaction — that's the difference between informative and
+  gripping.

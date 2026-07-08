@@ -84,8 +84,12 @@ export async function getConfig(): Promise<Record<string, string>> {
 }
 
 // ============================================================
-// DailyReports tab — one at-a-glance report per day.
-// Schema: date (YYYY-MM-DD) | generated_at (ISO) | report_md
+// DailyReports tab — the Daily TLDR archive. Revamped 2026-07-08 (Sophiya:
+// the old one-blob-per-day shape was "messy and unstructured") from
+// `date | generated_at | report_md` to one row per digest item, matching
+// every other tab built this cycle (Template Library, Post Ideas, Visual
+// Swipe are all one-row-per-item — a markdown wall was the outlier).
+// Schema: date | category | headline | summary | source_type | source_name | url
 // ============================================================
 const REPORTS_TAB = "DailyReports";
 
@@ -102,52 +106,70 @@ async function ensureTab(title: string) {
   }
 }
 
-export interface DailyReport {
-  date: string;
-  generated_at: string;
-  report_md: string;
+export interface DailyReportItem {
+  date: string; // YYYY-MM-DD
+  category: string; // e.g. "LinkedIn", "Reddit", "Newsletter", "Tool Update"
+  headline: string;
+  summary: string;
+  source_type: string; // "linkedin" | "reddit" | "newsletter" | "news"
+  source_name: string; // person/subreddit/publication
+  url: string;
 }
 
 export async function listReportDates(): Promise<string[]> {
   try {
     const rows = await readSheet(REPORTS_TAB, "A:A");
-    return rows
-      .map((r) => r[0])
-      .filter((d) => d && /^\d{4}-\d{2}-\d{2}$/.test(d))
-      .sort()
-      .reverse();
+    const dates = new Set(
+      rows.map((r) => r[0]).filter((d) => d && /^\d{4}-\d{2}-\d{2}$/.test(d))
+    );
+    return [...dates].sort().reverse();
   } catch {
     return [];
   }
 }
 
-export async function getDailyReport(date: string): Promise<DailyReport | null> {
+export async function getDailyReportItems(date: string): Promise<DailyReportItem[]> {
   try {
-    const rows = await readSheet(REPORTS_TAB, "A:C");
-    const row = rows.find((r) => r[0] === date);
-    if (!row) return null;
-    return { date: row[0], generated_at: row[1] || "", report_md: row[2] || "" };
+    const rows = await readSheet(REPORTS_TAB, "A:G");
+    return rows
+      .filter((r) => r[0] === date)
+      .map((r) => ({
+        date: r[0],
+        category: r[1] || "",
+        headline: r[2] || "",
+        summary: r[3] || "",
+        source_type: r[4] || "",
+        source_name: r[5] || "",
+        url: r[6] || "",
+      }));
   } catch {
-    return null;
+    return [];
   }
 }
 
-export async function saveDailyReport(date: string, report_md: string) {
+// Replaces any existing rows for this date (idempotent re-run) then appends
+// the fresh set — a digest re-run for the same day shouldn't duplicate rows.
+export async function saveDailyReportItems(date: string, items: Omit<DailyReportItem, "date">[]) {
   await ensureTab(REPORTS_TAB);
   const auth = getAuth();
   const sheets = google.sheets({ version: "v4", auth });
-  const generated_at = new Date().toISOString();
-  const existing = await readSheet(REPORTS_TAB, "A:A");
-  const idx = existing.findIndex((r) => r[0] === date); // 0-based incl header
-  const values = [[date, generated_at, report_md]];
-  if (idx >= 0) {
-    await sheets.spreadsheets.values.update({
+
+  const existingRes = await sheets.spreadsheets.values.get({ spreadsheetId: SHEET_ID, range: `${REPORTS_TAB}!A:A` });
+  const existingRows = existingRes.data.values || [];
+  const rowIndicesToClear = existingRows
+    .map((r, i) => (r[0] === date ? i + 1 : -1)) // 1-based sheet row
+    .filter((i) => i > 0);
+  if (rowIndicesToClear.length) {
+    // Clear in place (leaves blank rows rather than shifting everything —
+    // simplest safe idempotent approach for a Sheets API without a delete-by-filter).
+    await sheets.spreadsheets.values.batchClear({
       spreadsheetId: SHEET_ID,
-      range: `${REPORTS_TAB}!A${idx + 1}:C${idx + 1}`,
-      valueInputOption: "USER_ENTERED",
-      requestBody: { values },
+      requestBody: { ranges: rowIndicesToClear.map((i) => `${REPORTS_TAB}!A${i}:G${i}`) },
     });
-  } else {
+  }
+
+  const values = items.map((it) => [date, it.category, it.headline, it.summary, it.source_type, it.source_name, it.url]);
+  if (values.length) {
     await sheets.spreadsheets.values.append({
       spreadsheetId: SHEET_ID,
       range: `${REPORTS_TAB}!A1`,
@@ -155,7 +177,7 @@ export async function saveDailyReport(date: string, report_md: string) {
       requestBody: { values },
     });
   }
-  return { date, generated_at, report_md };
+  return { date, count: values.length };
 }
 
 // ============================================================
@@ -197,13 +219,14 @@ export interface IntelRow {
   comment_status: CommentStatus;
   comment_posted_at: string;  // ISO timestamp when LinkedIn accepted it
   comment_style: string;      // which preset was picked
+  image_url?: string;    // post's image/GIF, if the scraper returned one (Stage 15, col N)
   rowIndex?: number;     // 1-based, only set when read from sheet
 }
 
 const INTEL_TAB = "Intel";
 
 export async function loadIntel(opts: { sinceDays?: number } = {}): Promise<IntelRow[]> {
-  const rows = await readSheet(INTEL_TAB, "A:M");
+  const rows = await readSheet(INTEL_TAB, "A:N");
   if (rows.length <= 1) return [];
 
   const cutoff = opts.sinceDays
@@ -234,6 +257,7 @@ export async function loadIntel(opts: { sinceDays?: number } = {}): Promise<Inte
       comment_status: (r[10] || "") as CommentStatus,
       comment_posted_at: r[11] || "",
       comment_style: r[12] || "",
+      image_url: r[13] || "",
       rowIndex: i + 1,
     });
   }
@@ -341,6 +365,21 @@ export function karachiIso(d: Date): string {
   )}T${hour}:${get("minute")}:${get("second")}+05:00`;
 }
 
+// Human-readable version of a karachiIso string, e.g. "7:26 pm, 8 April 2026"
+// — Sophiya couldn't read the raw ISO timestamps easily (2026-07-08). The
+// machine columns (pulled_at/posted_at) stay ISO since scripts sort/filter
+// on them; this is a display-only companion column (Intel!O:P).
+function humanizeKarachi(iso: string): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  const time = d
+    .toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Asia/Karachi" })
+    .toLowerCase();
+  const date = d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Karachi" });
+  return `${time}, ${date}`;
+}
+
 // Updates the comment_* columns on the Intel row matching this URL.
 // Used by both /api/comments/plan (to write the draft) and
 // /api/comments/log (to record the posted/failed status).
@@ -421,6 +460,13 @@ export async function appendIntel(
     it.summary,
     it.score || 0,
     "FALSE",
+    "", // comment_text
+    "", // comment_status
+    "", // comment_posted_at
+    "", // comment_style
+    it.image_url || "", // Stage 15 — post's image/GIF, if the scraper returned one
+    humanizeKarachi(it.pulled_at), // pulled_at_display — Sophiya asked for readable dates, 2026-07-08
+    humanizeKarachi(it.posted_at || ""), // posted_at_display
   ]);
   await sheets.spreadsheets.values.append({
     spreadsheetId: SHEET_ID,

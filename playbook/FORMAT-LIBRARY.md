@@ -1,6 +1,6 @@
 # LinkedIn Format Library — The Living Swipe File
 **Owner:** Claude (the brain). I keep this current — Sophiya doesn't have to ask.
-**Last updated:** 2026-06-22
+**Last updated:** 2026-07-08 — added F10/F11 from the 6,642-post tagged corpus (see Sources tab)
 **Source of truth for:** which post formats win, why, and how we adapt them for Taha + Sophiya.
 
 ---
@@ -13,7 +13,7 @@
 4. **I propose formats to you** before each batch, pulled from the Working list.
 5. You never maintain this. You read it when you want, or let me pick from it.
 
-**Engagement note:** "score" below = the engagement number captured in our Intel tab (reactions/weighted signal from the scrape). Higher = more proven. Our scrape currently holds **191 creator LinkedIn posts**, score range 1–2649.
+**Engagement note:** "score" for F1-F9 = the engagement number captured in our Intel tab (191 creator posts, range 1-2649). F10-F11 are sourced from the much larger tagged corpus in the Template Library tab (182 curated posts out of 6,642 scraped across 11 experts) — real like/comment counts, noted explicitly per entry since the scales differ.
 
 ---
 
@@ -130,6 +130,55 @@ Ranked roughly by proven pull. Each is something we can run on Taha's or Sophiya
 
 ---
 
+### F10 · The Live Event Teaser (+ Recap)
+**Structure:** "We're doing [demo/workshop] live on [date/tomorrow]. Here's what we'll cover:" → bulleted preview. Follow-up recap post afterward: "Yesterday, X people watched [name] do Y live. Here's the breakdown:" → numbered steps.
+**Why it works:** a live, dated event creates urgency and a reason to comment/follow; the recap post lets people who missed it (and everyone else) relive the proof — two posts, one content investment.
+
+- **Proven —** Michel Lieben · **score 774 likes / 2846 comments** (highest comment count in our whole scrape) · *"Can you run your entire GTM with Claude Code? We're answering that tomorrow... On February 26th, we're opening our terminals and showing everything. Live."* [view](https://www.linkedin.com/posts/michel-lieben_can-you-run-your-entire-gtm-with-claude-code-activity-7432376863055884290-bJ5x)
+- **Proven —** Michel Lieben · score 752 likes / 1857 comments (the recap of the same event) · *"Yesterday, > 1400 people watched Kenny Damian build an entire outbound campaign using Claude code..."* [view](https://www.linkedin.com/posts/michel-lieben_yesterday-1400-people-watched-kenny-damian-activity-7433100139956895744-6VRj)
+
+**Our version:** announce a real live build/teardown session (Sophiya's builder brand fits this well), then post the recap the next day citing what actually happened. → lead magnet = the workflow/template shown live.
+**Whose profile:** either, but especially Sophiya (builder angle). **Funnel:** TOFU→MOFU.
+
+---
+
+### F11 · News Reaction + Insider Verdict
+**Structure:** "[Company] just released [thing]. Our [credentialed role] says [verdict] — based on [real usage/data]." → proof point → "if you want to do this yourself, here's how:"
+**Why it works:** rides a breaking-news wave (built-in reach) while adding a credentialed, proof-backed take instead of just commentary — the single highest combined-engagement post in our whole scrape.
+
+- **Proven —** Michel Lieben · **score 1039 likes / 3196 comments** (highest combined engagement in our scrape) · *"Anthropic just released Claude Design. Our designer Pilar says it's nowhere near Claude Code. That's based on 70+ AI-generated infographics she made with Claude Code + Figma... some of these designs generated close to 100,000 organic impressions."* [view](https://www.linkedin.com/posts/michel-lieben_anthropic-just-released-claude-design-our-activity-7462092873358909440-vDLk)
+
+**Our version:** react to a real cold-email/AI-tooling release with Taha's or Sophiya's own verdict, backed by a real number from running it. → lead magnet = the how-to guide referenced in the reaction.
+**Whose profile:** Taha (authority) for tooling/industry news; Sophiya for AI-agent news. **Funnel:** TOFU.
+
+---
+
+### F12 · The Synthesis / Mega-Playbook
+**Structure:** condense scattered information from many sources into ONE definitive doc/post —
+"I read/analyzed [large number] of [things] so you don't have to. Here's everything that
+matters." → the value is the compression itself, not any single new idea inside it.
+**Why it works:** engagement increasingly goes to whoever *saves the reader time* by doing the
+synthesis work for them, not whoever posts the most. This is philosophy #1 of our whole content
+system — see `DOMAIN-SYNTHESIS-deliverability-infra.md` for our own worked example (202
+high-signal posts across 8 experts, condensed into one deliverability playbook, every claim cited
+back to its source post + real engagement numbers).
+
+- **Proven —** Richard Illingworth · combining three Alex Hormozi cold-outreach books into a single
+  playbook, [visual captured to Visual Swipe](../scripts/capture-visual-swipe.mjs) as the format's
+  swipe example — see the Visual Swipe tab for the actual carousel/GIF treatment used.
+- **Also proven —** Richard Illingworth · *"i charge for a cold email infrastructure audit. but
+  f*ck it. here's everything I know for free."* (115 likes/430 comments — highest comment count of
+  any single-expert post in the deliverability-infra domain) — same synthesis move, packaged as a
+  free lead magnet instead of a standalone post.
+
+**Our version:** any Domain Synthesis doc (Stage 6 of the content-system build) is a ready-made F12
+post or lead magnet — pick one section, cite the real source posts/numbers behind it, ship it.
+**Whose profile:** either — works best when there's a large real corpus to visibly compress (the
+6,642-post tagged corpus is exactly that credibility device). **Funnel:** TOFU→MOFU (educates,
+but the compression itself signals authority).
+
+---
+
 ## PART 2 — OUR OWN FORMATS & PERFORMANCE
 
 **Status as of 2026-06-22: no data yet.** The Posts tab in our sheet is empty — nothing has been saved, so we have no engagement history on our own content. This fills in as we post.
@@ -158,6 +207,9 @@ Moves as we gather our own data. Until then, seeded from proven external pull.
 | F7 Build-in-Public | 277 / 124 | — | ✅ Strong (inherited) — Sophiya's lane |
 | F8 Hard-Truth Contrarian | 147 | — | 🧪 Testing |
 | F9 Swipe-File Drop | 151 | — | 🧪 Testing |
+| F10 Live Event Teaser + Recap | 2846 comments / 1857 comments | — | ⭐ Working (inherited) — highest comment counts in our scrape |
+| F11 News Reaction + Insider Verdict | 3196 comments (1039 likes) | — | ⭐ Working (inherited) — highest combined engagement in our scrape |
+| F12 Synthesis / Mega-Playbook | 430 comments (115 likes) | — | ✅ Strong (inherited) — our Domain Synthesis docs are this format, source-built |
 
 Legend: ⭐ top priority · ✅ strong · 🧪 testing · ❌ not working (none yet)
 

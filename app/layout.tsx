@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import BottomNav from "@/components/BottomNav";
-import QuickCaptureButton from "@/components/QuickCaptureButton";
 
 export const metadata: Metadata = {
   title: "LinkedIn HQ — Taha Anwar",
@@ -14,6 +12,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   // Light-only app (the dark theme + toggle were removed — Newsfeed v2 is a
   // clean light UI). No anti-flash script needed; light is the only mode.
+  //
+  // 2026-07-08: /news and /capture (the only two pages this nav pointed to)
+  // were retired in favor of the new linkedin-hq daily-tldr skill (Slack +
+  // Sheet, not a web page). BottomNav/QuickCaptureButton had nothing left to
+  // navigate to, so they're removed too. The app now only serves the public
+  // lead-magnet landing pages ((public) route group) + the save/publish API
+  // routes /linkedin-batch and /linkedin-post depend on -- untouched.
   return (
     <html lang="en">
       <head>
@@ -29,9 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           color: "#111827",
         }}
       >
-        <main className="pb-nav min-h-dvh">{children}</main>
-        <QuickCaptureButton />
-        <BottomNav />
+        <main className="min-h-dvh">{children}</main>
       </body>
     </html>
   );

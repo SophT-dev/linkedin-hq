@@ -250,10 +250,17 @@ Write posts in **proper grammar** — normal capitalization, complete sentences,
 No em dashes (—). No en dashes (–). Use a comma or a period instead. This is automatic grounds for rewriting the post.
 
 ## banned words (instant AI-tells, never use)
-tough, quiet, leverage, utilize, unlock, robust, comprehensive, streamlined, tailored, cutting-edge, ensure, maximize, noise, crucial, vital, essential, pivotal, seamless, empower, elevate, revolutionize, harness, foster, delve, realm, synergy, holistic, bandwidth, navigate, dive (as in "let's dive in"), explore, landscape, journey, ecosystem, transform (unless real before/after with numbers), 10x, game changer, level up, needle mover, low-hanging fruit, actionable insights, value-add, circle back, moving the needle.
+tough, quiet, quietly, leverage, utilize, unlock, robust, comprehensive, streamlined, tailored, cutting-edge, ensure, maximize, noise, crucial, vital, essential, pivotal, seamless, empower, elevate, revolutionize, harness, foster, delve, realm, synergy, holistic, bandwidth, navigate, dive (as in "let's dive in"), explore, landscape, journey, ecosystem, transform (unless real before/after with numbers), 10x, game changer, level up, needle mover, low-hanging fruit, actionable insights, value-add, circle back, moving the needle, embark, endeavor, endeavour, enlighten, esteemed, tapestry, treasure trove, testament, peril, amplify, beacon, convey, resonate, resonance, interplay, adhere, paramount, furthermore, moreover, profound, indelible, bespoke, cognizant, encompass, hitherto, groundbreaking, overwhelmed, alleviate, daunting, curated, refining, efficiency, nuance, bustling, era, breaks, breaking, underscore, underscores, genuinely, silently, broken (unless describing a literal real thing that broke, with specifics).
+
+**Source: BRAND.md compliance (Stage 11, 2026-07-08).** `Bleed AI Branding/BRAND.md` bans `genuinely`, `silently`, `broken`, and the phrase "before a single email goes out" as corporate-coach-tone AI-tells — added here so this list stays the single source of truth brand-wide, not just for LinkedIn.
 
 ## banned phrases
-"let me tell you", "here's the thing", "the truth is", "you need to understand", "i'll be honest", "let that sink in", "the secret to", "nobody talks about this", "this changed everything", "in today's world", "in this day and age", "now more than ever", "as we all know", "it goes without saying", "at the end of the day", "when push comes to shove".
+"let me tell you", "here's the thing", "the truth is", "you need to understand", "i'll be honest", "let that sink in", "the secret to", "nobody talks about this", "this changed everything", "in today's world", "in this day and age", "now more than ever", "as we all know", "it goes without saying", "at the end of the day", "when push comes to shove", "shed light on", "breaking barriers", "breaks down", "breaking new ground", "in a world where", "stands as a testament", "plays a vital role", "plays a crucial role", "not only... but also", "it is worth noting", "in conclusion", "before a single email goes out".
+
+**Source note:** this list is built from published research on the most statistically overused ChatGPT/LLM words and phrases (see [[feedback_ai_generic_words_banned]] in memory for the citations), plus whatever Sophiya flags in review. Add newly-flagged words here immediately, never let them slip back in.
+
+## example diversity (never lead with a mega-cap company)
+When a post needs a real-world proof point (a stat, a data provider comparison, a "here's what a big company does" beat), do not default to Apollo, Salesforce, HubSpot, or other giant/generic SaaS names as the headline example. Use the tools this audience actually runs day to day and that are trending in the space right now: Clay, Prospeo, Instantly, Smartlead, Findymail, RB2B, Common Room, Trigify, etc (see INSIDER-RESEARCH.md). Giant companies can appear in passing (a stat, a comparison) but should never be the emotional anchor of the story — a specific WinsLog client or a trending tool the ICP already uses lands harder than "Apollo has 275 million contacts."
 
 Zero rhetorical questions. No "ever wondered…?", no "what if i told you…?", no "you know that feeling when…?". Make a statement instead.
 
@@ -359,8 +366,9 @@ Tick every item. If any fails, rewrite that post before showing it.
 
 - [ ] proper grammar throughout (capitalized sentences, NOT lowercase; casual tone, not formal)
 - [ ] zero em dashes or en dashes
-- [ ] zero banned words
+- [ ] zero banned words (including the AI-tell additions — quietly, breaks/breaking, testament, curated, etc.)
 - [ ] zero banned phrases
+- [ ] no mega-cap company (Apollo, Salesforce, HubSpot, etc.) used as the emotional anchor of the post — trending tools or a real WinsLog client instead
 - [ ] zero rhetorical questions
 - [ ] all 4 authenticity tags covered across the batch
 - [ ] funnel mix correct for N
