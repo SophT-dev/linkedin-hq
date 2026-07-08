@@ -7,9 +7,25 @@
   "use strict";
   const FLAG = "bleedInjected";
 
-  // Walk up from a comment editor to the post it belongs to.
+  // LinkedIn's comment editor moved from Quill (.ql-editor) to Tiptap/
+  // ProseMirror at some point in 2026. Match both so this survives whichever
+  // one is live. The aria-label is the most stable Tiptap identifier LinkedIn
+  // exposes (used for accessibility, unlikely to be casually renamed); the
+  // .tiptap.ProseMirror classes are a fallback in case the label wording
+  // changes. isComment() below still gates out the post composer either way.
+  const EDITOR_SELECTOR =
+    ".ql-editor[contenteditable='true']," +
+    " [contenteditable='true'][aria-label='Text editor for creating comment']," +
+    " [contenteditable='true'].tiptap.ProseMirror";
+
+  // Walk up from a comment editor to the post it belongs to. LinkedIn's 2026
+  // feed rewrite uses hashed CSS-module class names (no stable classes at
+  // all), so we anchor on the ARIA role instead — each post in the feed is
+  // role="listitem" (confirmed via live DOM trace 2026-07-09). Old selectors
+  // kept as a fallback in case a different page template still uses them.
   function findPostContainer(el) {
     return (
+      el.closest('[role="listitem"]') ||
       el.closest(".feed-shared-update-v2") ||
       el.closest("[data-urn]") ||
       el.closest("article") ||
@@ -44,7 +60,10 @@
     return a ? (a.innerText || "").trim().split("\n")[0].slice(0, 80) : "";
   }
 
-  // Insert text into LinkedIn's Quill comment editor and make Quill notice.
+  // Insert text into LinkedIn's comment editor (Quill or Tiptap/ProseMirror)
+  // and make sure the editor notices. execCommand fires native beforeinput/
+  // input events, which is what makes both Quill and ProseMirror pick up a
+  // programmatic change instead of silently ignoring a direct textContent set.
   function insertIntoEditor(editor, text) {
     editor.focus();
     try {
@@ -54,7 +73,12 @@
     } catch (e) {
       editor.textContent = text;
     }
+    // Quill's empty-state flag lives on the editor itself; Tiptap/ProseMirror's
+    // lives on the inner <p>. Clear whichever is present.
     editor.classList.remove("ql-blank");
+    editor.querySelectorAll(".is-empty, .is-editor-empty").forEach((p) => {
+      p.classList.remove("is-empty", "is-editor-empty");
+    });
     editor.dispatchEvent(new InputEvent("input", { bubbles: true }));
   }
 
@@ -135,7 +159,11 @@
   function tryInject(editor) {
     if (!editor || editor.dataset[FLAG]) return;
     // Only the comment editor, never the post composer.
+    // LinkedIn 2026 rewrite: comment box wrapper's componentkey literally
+    // starts with "commentBox-" (confirmed via live DOM trace 2026-07-09).
+    // Old class-based checks kept as fallback for other page templates.
     const isComment =
+      editor.closest('[componentkey^="commentBox-"]') ||
       editor.closest(".comments-comment-box") ||
       editor.closest(".comments-comment-texteditor") ||
       editor.closest("form.comments-comment-box__form");
@@ -154,17 +182,14 @@
 
   function scan(root) {
     if (!root || !root.querySelectorAll) return;
-    root
-      .querySelectorAll(".ql-editor[contenteditable='true']")
-      .forEach(tryInject);
+    root.querySelectorAll(EDITOR_SELECTOR).forEach(tryInject);
   }
 
   const observer = new MutationObserver(function (muts) {
     for (const m of muts) {
       m.addedNodes.forEach(function (n) {
         if (n.nodeType !== 1) return;
-        if (n.matches && n.matches(".ql-editor[contenteditable='true']"))
-          tryInject(n);
+        if (n.matches && n.matches(EDITOR_SELECTOR)) tryInject(n);
         scan(n);
       });
     }

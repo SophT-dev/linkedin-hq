@@ -33,5 +33,6 @@ To update after code changes: hit the ↻ refresh icon on the extension card.
 
 ## Notes / known limits
 - LinkedIn's DOM class names change over time. If the button stops appearing, the selectors in `content.js` (`findPostContainer`, the `.comments-comment-box` checks) may need a refresh.
+- **2026-07-09:** LinkedIn switched the comment editor from Quill (`.ql-editor`) to Tiptap/ProseMirror. `content.js`'s `EDITOR_SELECTOR` now matches both, keyed off the editor's `aria-label` (`"Text editor for creating comment"`) and its `.tiptap.ProseMirror` classes as a fallback. If the button stops appearing again, right-click the comment box → Inspect → Copy element on the actual `contenteditable="true"` container (not just the empty `<p>` inside it) and check whether the aria-label or classes changed again.
 - Suggestions run through the same voice quality gate as the auto-comment bot, so anything off-voice is filtered before you see it.
 - Cost: ~3 Sonnet calls per click (the voice engine uses `claude-sonnet-4-6`). Could be dropped to Haiku later if cost matters.

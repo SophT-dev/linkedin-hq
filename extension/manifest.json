@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Bleed AI — LinkedIn Comment Assistant",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Inline comment suggestions in Taha's voice, right inside LinkedIn (desktop). Suggest-only — you insert, edit, and post yourself.",
   "host_permissions": [
     "https://www.linkedin.com/*",
