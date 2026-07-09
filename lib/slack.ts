@@ -1,8 +1,16 @@
 // Slim Slack API helper for the comment review flow.
-// Requires SLACK_BOT_TOKEN and SLACK_CHANNEL_ID env vars.
+// Requires SLACK_BOT_TOKEN and LINKEDIN_COMMENTS_SLACK_CHANNEL_ID env vars.
+//
+// Deliberately NOT the generic SLACK_CHANNEL_ID -- that name is reused by
+// several unrelated scripts across other repos (lead-crm sync, health-check,
+// call-prep, etc.) for their own default channel, so repointing it here
+// would silently break their notification routing. Confirmed real 2026-07-09:
+// SLACK_CHANNEL_ID was pointing at #github-updates, and this file's messages
+// were landing there instead of #linkedin-comments. Same pattern as this
+// repo's own TLDR_SLACK_CHANNEL_ID -- one dedicated var per destination.
 
 const TOKEN = () => process.env.SLACK_BOT_TOKEN || "";
-const CHANNEL = () => process.env.SLACK_CHANNEL_ID || "";
+const CHANNEL = () => process.env.LINKEDIN_COMMENTS_SLACK_CHANNEL_ID || "";
 
 export async function sendReviewMessage(draft: {
   creator_name: string;
