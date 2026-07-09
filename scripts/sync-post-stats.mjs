@@ -35,11 +35,10 @@ const RUN = process.argv.includes("--run");
 const SHEET_ID = process.env.GOOGLE_SHEETS_ID;
 const POSTS_TAB = "Posts";
 
-// Profiles to track. Confirm Sophiya's real URL before --run (same TODO the
-// original Notion-era script carried).
+// Profiles to track.
 const PROFILES = [
   { creator: "Taha", url: "https://www.linkedin.com/in/taha-coldemail/" },
-  { creator: "Sophiya", url: process.env.SOPHIYA_LINKEDIN_URL || "https://www.linkedin.com/in/SOPHIYA-PLACEHOLDER/" },
+  { creator: "Sophiya", url: process.env.SOPHIYA_LINKEDIN_URL || "https://www.linkedin.com/in/sophiya-imran/" },
 ];
 
 const ACTOR = process.env.APIFY_LINKEDIN_POSTS_ACTOR || "apimaestro~linkedin-profile-posts";
