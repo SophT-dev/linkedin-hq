@@ -9,7 +9,7 @@
 //   webinar/lecture note or recording link -> --type webinar
 //
 // Usage:
-//   node scripts/capture-item.mjs --type lead_magnet --source "<person>" \
+//   node scripts/capture-item.mjs --type lead_magnet --title "<real title>" --source "<person>" \
 //     --post-url "<their post url>" --link "<the lead magnet link>" \
 //     --takeaway "<key takeaway>" [--lm-type "PDF|Notion doc|..."]
 //
@@ -63,14 +63,23 @@ async function main() {
     const link = get("--link");
     const lmType = get("--lm-type", "unspecified");
     const takeaway = get("--takeaway");
+    // --title used to be silently dropped (lmType was written into the
+    // title column instead) and --link was read but never persisted to any
+    // column -- fixed 2026-07-09 while building the received-lead-magnets
+    // batch import. Falls back to lmType if --title isn't passed, so older
+    // invocations still behave the same as before.
+    const title = get("--title", lmType);
     if (!source || !link) {
-      console.error("Usage: --type lead_magnet --source <person> --link <lead magnet link> [--post-url ...] [--lm-type ...] [--takeaway ...]");
+      console.error("Usage: --type lead_magnet --title <real title> --source <person> --link <lead magnet link> [--post-url ...] [--lm-type ...] [--takeaway ...]");
       process.exit(1);
     }
+    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 60);
     // Columns A-P are the own-built pipeline (blank here); Q-U are the
-    // received-magnet fields this row actually uses.
+    // received-magnet fields this row actually uses. landing_url (L) holds
+    // the actual resource link -- previously read as --link but never
+    // written anywhere.
     const row = [
-      "", "", "", "unreviewed", lmType, "", "", "", "", "", "", "", "", today, "", "",
+      "", "", slug, "unreviewed", title, lmType, "", "", "", "", "", link, "", today, "", "",
       "received", source, postUrl, takeaway, "",
     ];
     await sheets.spreadsheets.values.append({

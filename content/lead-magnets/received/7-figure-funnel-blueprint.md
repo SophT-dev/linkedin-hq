@@ -1,0 +1,14 @@
+# 7-Figure Funnel Blueprint
+
+**Source:** Stijn Verhagen / CourseLaunchr; swipe content credited to Justin Welsh, Lara Acosta, and Matt Lakajev — https://www.notion.so/7-Figure-Funnel-Blueprint-1dbf971fc67780ef92a9df0c3fcc6253
+**Topic:** marketing-general · **Type:** other
+
+## Key takeaways
+- Whole-funnel framework built on the classic AIDA model (Attention -> Interest -> Desire -> Action), explicitly modeled on operators doing €1-10M, with a 30-day action plan structure and a 6-question 'Fit Test' to self-qualify before starting.
+- One-Glance Matrix gives named per-stage metrics + real creator benchmarks: Attention = impressions/reach (cites Justin Welsh's daily LinkedIn threads), Interest = email opt-in rate (cites Lara Acosta's LinkedIn Playbook opt-in — 15K subs in 60 days), Desire = click-through rate (cites Lara's 7-day Academy countdown), Action = purchase rate (cites Matt Lakajev's Skool page converting in under 60 seconds).
+- Concrete per-stage targets: Attention 100 ideal followers/day; Interest 25% opt-in rate + a 3-email Why/What/How sequence within 48h; Desire 3% CTR via a 7-day pre-launch story sequence + urgency stack; Action 5% page-view-to-purchase (low-ticket) or 40% call-close rate (high-ticket).
+- 'Swipe Vault' section gives real, attributed, copy-paste creator lines: Justin Welsh's hook 'Your LinkedIn headline is worth more than your MBA,' Lara Acosta's 'Stop posting value. Start posting results,' Matt Lakajev's 'What if LinkedIn generated leads while you slept?'
+- Named common mistakes per stage (e.g. 'link in the main post kills reach — put it in comment/DM'; 'multiple lead magnets splits focus'; 'hidden pricing makes buyers bail') — directly usable as contrarian LinkedIn post angles.
+
+## Excerpt
+Build a revenue machine like Alex Hormozi, Justin Welsh, Lara Acosta & Matt Lakajev — step by step. The One-Glance Matrix: Attention (daily scroll-stopper hook + profile CTA link — pro example: Justin Welsh's daily 'one-person business' LinkedIn threads); Interest (lead-magnet landing page + welcome email 3-pack — pro example: Lara Acosta's LinkedIn Playbook opt-in, 15K subs in 60 days); Desire (5 proof screenshots + deadline/bonus — pro example: Lara's 7-day Academy countdown); Action (2-click checkout + abandoned-cart email — pro example: Matt Lakajev's Skool page converting in under 60 seconds). Rule of thumb: only optimize one metric per stage at a time. Swipe Vault includes real attributed hooks: 'Your LinkedIn headline is worth more than your MBA' (Welsh), 'Stop posting value. Start posting results' (Acosta), 'What if LinkedIn generated leads while you slept?' (Lakajev).

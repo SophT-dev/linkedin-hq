@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Sidebar from "@/components/Sidebar";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -19,6 +20,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   // navigate to, so they're removed too. The app now only serves the public
   // lead-magnet landing pages ((public) route group) + the save/publish API
   // routes /linkedin-batch and /linkedin-post depend on -- untouched.
+  //
+  // 2026-07-09: revamped into a desktop-sized webapp -- /calendar is the real
+  // landing page again (see app/page.tsx), with a persistent desktop sidebar
+  // (Sidebar.tsx, lg+ only) for switching between Calendar/Lead Magnets/Post
+  // Ideas. Below lg it degrades to just the page content, same as before.
   return (
     <html lang="en">
       <head>
@@ -34,7 +40,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           color: "#111827",
         }}
       >
-        <main className="min-h-dvh">{children}</main>
+        <div className="lg:flex lg:min-h-dvh">
+          <Sidebar />
+          <main className="min-h-dvh flex-1 lg:min-w-0">{children}</main>
+        </div>
       </body>
     </html>
   );

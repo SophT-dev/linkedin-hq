@@ -3,6 +3,9 @@
 import { useState, useEffect } from "react";
 import { Plus, X, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import ScreenshotGallery from "@/components/ScreenshotGallery";
+import InspoGallery from "@/components/InspoGallery";
 import {
   format, startOfMonth, endOfMonth, eachDayOfInterval,
   isSameMonth, isSameDay, addMonths, subMonths, parseISO
@@ -39,6 +42,7 @@ interface Post {
 }
 
 export default function CalendarPage() {
+  const [tab, setTab] = useState("calendar");
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [posts, setPosts] = useState<Post[]>([]);
   const [adding, setAdding] = useState(false);
@@ -104,14 +108,36 @@ export default function CalendarPage() {
   const bofuPct = 100 - tofuPct - mofuPct;
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-6 space-y-5">
+    <div className="max-w-lg lg:max-w-5xl mx-auto px-4 py-6 space-y-5">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Content</p>
-          <h1 className="text-xl font-bold flex items-center gap-2"><Calendar size={20} className="text-indigo-400" /> Calendar</h1>
+          <h1 className="text-xl font-bold flex items-center gap-2"><Calendar size={20} className="text-indigo-400" /> LinkedIn HQ</h1>
         </div>
-        <Button size="sm" onClick={() => setAdding(true)}><Plus size={16} className="mr-1" /> Add Post</Button>
+        {tab === "calendar" && (
+          <Button size="sm" onClick={() => setAdding(true)}><Plus size={16} className="mr-1" /> Add Post</Button>
+        )}
       </div>
+
+      <Tabs value={tab} onValueChange={(v) => setTab(v as string)}>
+        <TabsList variant="line">
+          <TabsTrigger value="calendar">Calendar</TabsTrigger>
+          <TabsTrigger value="slack">Slack Screenshots</TabsTrigger>
+          <TabsTrigger value="email">Email Screenshots</TabsTrigger>
+          <TabsTrigger value="inspo">Visual Inspo</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="slack" className="pt-4">
+          <ScreenshotGallery folderKey="slack" emptyHint="No Slack praise/proof screenshots saved here yet — add one, or run capture-proof-screenshot.mjs on a flagged win." />
+        </TabsContent>
+        <TabsContent value="email" className="pt-4">
+          <ScreenshotGallery folderKey="email" emptyHint="No email screenshots saved yet — add one to start this collection." />
+        </TabsContent>
+        <TabsContent value="inspo" className="pt-4">
+          <InspoGallery />
+        </TabsContent>
+
+        <TabsContent value="calendar" className="pt-4 space-y-5">
 
       {/* Funnel balance */}
       {monthPosts.length > 0 && (
@@ -226,6 +252,8 @@ export default function CalendarPage() {
           </div>
         </div>
       )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
