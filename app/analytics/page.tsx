@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
-import { Plus, X, BarChart2, TrendingUp } from "lucide-react";
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from "recharts";
+import { Plus, X, BarChart2, TrendingUp, Activity, Award, Eye, PenLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface PostStat {
@@ -18,14 +18,37 @@ interface PostStat {
   row: number;
 }
 
+// Real, non-manually-entered data from the Posts tab (columns A-Q). Only the
+// L-Q fields (posted_url|likes|comments|views|worked|stats_updated_at) plus
+// batch_date/format are used here — see sync-post-stats.mjs.
+interface RealPost {
+  id: string;
+  batch_date: string;
+  format: string;
+  posted_url: string;
+  likes: number;
+  comments: number;
+  views: number | null;
+  worked: string;
+}
+
 const FORMATS = ["Text", "Carousel", "Image", "Story", "Video"];
 const FUNNEL = ["TOFU", "MOFU", "BOFU"];
+
+const WORKED_ORDER = ["winner", "neutral", "flop"] as const;
+const WORKED_COLOR: Record<string, string> = {
+  winner: "oklch(0.72 0.19 145)", // green
+  neutral: "oklch(0.75 0.15 85)", // amber
+  flop: "oklch(0.6 0.22 25)", // red
+};
 
 export default function Analytics() {
   const [stats, setStats] = useState<PostStat[]>([]);
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState({ post_title: "", date: "", impressions: "", likes: "", comments: "", shares: "", profile_views: "", format: "Text", funnel_stage: "TOFU" });
   const [saving, setSaving] = useState(false);
+  const [realPosts, setRealPosts] = useState<RealPost[]>([]);
+  const [realLoaded, setRealLoaded] = useState(false);
 
   const load = async () => {
     const res = await fetch("/api/sheets?tab=Analytics&range=A:J");
@@ -43,7 +66,26 @@ export default function Analytics() {
     }
   };
 
-  useEffect(() => { load(); }, []);
+  // Real, automated tracking — Posts tab A-Q, populated by scripts/sync-post-stats.mjs
+  // via Apify scraping (not the manual Analytics tab above).
+  const loadReal = async () => {
+    const res = await fetch("/api/sheets?tab=Posts&range=A:Q");
+    if (res.ok) {
+      const { rows } = await res.json();
+      setRealPosts(
+        (rows as string[][]).slice(1).map((r) => ({
+          id: r[0], batch_date: r[1], format: r[4],
+          posted_url: r[11] || "",
+          likes: parseInt(r[12]) || 0, comments: parseInt(r[13]) || 0,
+          views: r[14] !== undefined && r[14] !== "" ? parseInt(r[14]) : null,
+          worked: (r[15] || "").toLowerCase(),
+        })).filter((p) => p.id)
+      );
+    }
+    setRealLoaded(true);
+  };
+
+  useEffect(() => { load(); loadReal(); }, []);
 
   const save = async () => {
     if (!form.post_title.trim()) return;
@@ -76,6 +118,26 @@ export default function Analytics() {
   const top5 = [...stats].sort((a, b) => b.impressions - a.impressions).slice(0, 5);
   const chartData = [...stats].reverse().slice(-20).map((s) => ({ name: s.date?.slice(5), impressions: s.impressions, likes: s.likes }));
 
+  // Real performance — only rows with a posted_url are actually-published, tracked posts.
+  const tracked = [...realPosts].filter((p) => p.posted_url.trim()).sort((a, b) => (a.batch_date || "").localeCompare(b.batch_date || ""));
+  const trendData = tracked.map((p) => ({ name: p.batch_date?.slice(5) || p.id, likes: p.likes, comments: p.comments }));
+  const viewsHaveData = tracked.some((p) => (p.views ?? 0) > 0);
+  const viewsData = tracked.map((p) => ({ name: p.batch_date?.slice(5) || p.id, views: p.views ?? 0 }));
+
+  const workedCounts = WORKED_ORDER.map((w) => ({
+    worked: w,
+    count: tracked.filter((p) => p.worked === w).length,
+  }));
+  const hasWorkedData = workedCounts.some((w) => w.count > 0);
+
+  const realByFormat = Array.from(new Set(tracked.map((p) => p.format).filter(Boolean)))
+    .map((f) => {
+      const fPosts = tracked.filter((p) => p.format === f);
+      const avgScore = fPosts.length ? Math.round(fPosts.reduce((a, p) => a + p.likes + p.comments * 3, 0) / fPosts.length) : 0;
+      return { format: f, avgScore, count: fPosts.length };
+    })
+    .sort((a, b) => b.avgScore - a.avgScore);
+
   const tooltipStyle = {
     contentStyle: { background: "var(--surface-2)", border: "1px solid var(--border-subtle)", borderRadius: "8px", fontSize: "12px", color: "oklch(0.985 0 0)" },
     labelStyle: { color: "oklch(0.708 0 0)" },
@@ -89,6 +151,115 @@ export default function Analytics() {
           <h1 className="text-xl font-bold flex items-center gap-2"><BarChart2 size={20} className="text-indigo-400" /> Analytics</h1>
         </div>
         <Button size="sm" onClick={() => setAdding(true)}><Plus size={16} className="mr-1" /> Log Post</Button>
+      </div>
+
+      {/* Real performance — automated, from Posts tab (Apify-scraped), not manual entry */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <Activity size={16} className="text-green-400" />
+          <p className="text-sm font-semibold">Real Performance</p>
+          <span className="text-[10px] px-2 py-0.5 rounded-full border border-white/10 text-muted-foreground">from your published posts</span>
+        </div>
+
+        {!realLoaded ? null : tracked.length === 0 ? (
+          <div className="rounded-2xl p-5 border text-center text-sm text-muted-foreground" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
+            No published posts tracked yet. Run <code className="text-[11px] px-1 py-0.5 rounded bg-black/20">node scripts/sync-post-stats.mjs --run</code> after your first post goes live to start tracking real performance.
+          </div>
+        ) : (
+          <>
+            {/* Likes + comments over time */}
+            <div className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
+              <p className="text-sm font-semibold">Likes &amp; Comments Over Time</p>
+              <div className="h-40">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={trendData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 5%)" />
+                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "oklch(0.556 0 0)" }} tickLine={false} axisLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "oklch(0.556 0 0)" }} tickLine={false} axisLine={false} />
+                    <Tooltip {...tooltipStyle} />
+                    <Line type="monotone" dataKey="likes" stroke="oklch(0.488 0.243 264.376)" strokeWidth={2} dot={{ r: 3 }} />
+                    <Line type="monotone" dataKey="comments" stroke="oklch(0.75 0.15 85)" strokeWidth={2} dot={{ r: 3 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex gap-4 text-xs text-muted-foreground">
+                <span><span style={{ color: "oklch(0.488 0.243 264.376)" }}>●</span> Likes</span>
+                <span><span style={{ color: "oklch(0.75 0.15 85)" }}>●</span> Comments</span>
+              </div>
+              <p className="text-xs text-muted-foreground">{tracked.length} tracked post{tracked.length === 1 ? "" : "s"} (real, scraped via Apify)</p>
+            </div>
+
+            {/* Worked verdict distribution */}
+            {hasWorkedData && (
+              <div className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
+                <div className="flex items-center gap-2">
+                  <Award size={16} className="text-indigo-400" />
+                  <p className="text-sm font-semibold">Worked Verdict</p>
+                </div>
+                <div className="h-32">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={workedCounts}>
+                      <XAxis dataKey="worked" tick={{ fontSize: 11, fill: "oklch(0.556 0 0)" }} tickLine={false} axisLine={false} />
+                      <Tooltip {...tooltipStyle} formatter={(v) => [v, "Posts"]} />
+                      <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                        {workedCounts.map((w) => <Cell key={w.worked} fill={WORKED_COLOR[w.worked]} />)}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            )}
+
+            {/* Best-performing format (real data) */}
+            {realByFormat.length > 0 && (
+              <div className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
+                <div className="flex items-center gap-2">
+                  <TrendingUp size={16} className="text-green-400" />
+                  <p className="text-sm font-semibold">Best Format (real posts, likes + comments×3)</p>
+                </div>
+                <div className="h-32">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={realByFormat}>
+                      <XAxis dataKey="format" tick={{ fontSize: 11, fill: "oklch(0.556 0 0)" }} tickLine={false} axisLine={false} />
+                      <Tooltip {...tooltipStyle} formatter={(v) => [v, "Avg Score"]} />
+                      <Bar dataKey="avgScore" fill="oklch(0.488 0.243 264.376)" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            )}
+
+            {/* Views — real if manually filled, honest note if not */}
+            <div className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
+              <div className="flex items-center gap-2">
+                <Eye size={16} className="text-muted-foreground" />
+                <p className="text-sm font-semibold">Views / Impressions</p>
+              </div>
+              {viewsHaveData ? (
+                <>
+                  <div className="h-32">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={viewsData}>
+                        <XAxis dataKey="name" tick={{ fontSize: 10, fill: "oklch(0.556 0 0)" }} tickLine={false} axisLine={false} />
+                        <Tooltip {...tooltipStyle} formatter={(v) => [Number(v).toLocaleString(), "Views"]} />
+                        <Bar dataKey="views" fill="oklch(0.65 0.2 300)" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Apify can&apos;t scrape views — any values shown here were entered manually from your own LinkedIn analytics.</p>
+                </>
+              ) : (
+                <p className="text-xs text-muted-foreground">View/impression tracking requires manual entry from your own LinkedIn analytics — Apify can&apos;t scrape this.</p>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Manual log — divider */}
+      <div className="flex items-center gap-2 pt-2">
+        <PenLine size={16} className="text-muted-foreground" />
+        <p className="text-sm font-semibold text-muted-foreground">Manual Log (self-reported)</p>
       </div>
 
       {/* Summary cards */}

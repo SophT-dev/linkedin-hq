@@ -2,10 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Calendar, Gift, Lightbulb, PenLine } from "lucide-react";
+import { Calendar, Gift, Lightbulb, PenLine, LayoutDashboard, Flame, MessageCircle, BarChart2, Users2 } from "lucide-react";
 
 const NAV = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/calendar", label: "Calendar", icon: Calendar },
+  { href: "/viral-posts", label: "Viral Posts", icon: Flame },
+  { href: "/engagement", label: "Engagement Hub", icon: MessageCircle },
+  { href: "/analytics", label: "Analytics", icon: BarChart2 },
+  { href: "/networking", label: "Networking", icon: Users2 },
   { href: "/lead-magnets", label: "Lead Magnets", icon: Gift },
   { href: "/ideas", label: "Post Ideas", icon: Lightbulb },
 ];
