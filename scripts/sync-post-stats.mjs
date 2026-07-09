@@ -67,8 +67,17 @@ async function scrapeProfile(profile) {
   return items
     .map((it) => ({
       url: it.url || it.postUrl || it.link,
-      likes: it.numLikes ?? it.likes ?? it.reactions ?? it.likesCount ?? 0,
-      comments: it.numComments ?? it.comments ?? it.commentsCount ?? 0,
+      // The actor nests engagement under `stats`, not top-level fields —
+      // confirmed 2026-07-09 against a real post (stats.total_reactions=8,
+      // stats.comments=5 matched LinkedIn's own analytics exactly; the
+      // top-level fallbacks below never actually populate for this actor,
+      // kept only in case a future actor version flattens the shape).
+      likes: it.stats?.total_reactions ?? it.numLikes ?? it.likes ?? it.reactions ?? it.likesCount ?? 0,
+      comments: it.stats?.comments ?? it.numComments ?? it.comments ?? it.commentsCount ?? 0,
+      // This actor never returns view/impression counts — LinkedIn doesn't
+      // expose that for posts you don't own via public scraping. Stays null;
+      // owner-only impressions (from the poster's own analytics tab) have to
+      // be entered manually.
       views: it.numViews ?? it.views ?? it.impressions ?? null,
     }))
     .filter((p) => p.url);
