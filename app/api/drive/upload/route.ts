@@ -25,7 +25,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "filename and dataUrl are required" }, { status: 400 });
   }
   try {
-    const file = await uploadDataUrlToSubfolder(subfolderPath, body.filename, body.dataUrl);
+    const file = await uploadDataUrlToSubfolder(subfolderPath, body.filename, body.dataUrl, {
+      dualSaveToProof: body.folder === "slack",
+    });
     return NextResponse.json({ file });
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 });

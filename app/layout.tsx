@@ -1,12 +1,35 @@
 import type { Metadata } from "next";
+import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import Sidebar from "@/components/Sidebar";
+import AppShell from "@/components/AppShell";
 import "./globals.css";
+
+// Bleed AI's real brand fonts (BRAND.md) -- Inter for headlines/body,
+// Instrument Serif italic for sparing accents, JetBrains Mono for technical
+// labels. Loaded globally (on <html>) so the public lead-magnet page gets
+// on-brand typography too -- only the .app-shell COLOR scope is internal-only.
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  weight: ["400", "500", "600", "700", "800", "900"],
+});
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  variable: "--font-instrument-serif",
+  weight: "400",
+  style: ["normal", "italic"],
+});
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
+  weight: ["400", "500", "600"],
+});
 
 export const metadata: Metadata = {
   title: "LinkedIn HQ — Taha Anwar",
   description: "Your personal LinkedIn domination system",
   manifest: "/manifest.json",
-  themeColor: "#f6f6f7",
+  themeColor: "#fafbfc",
   viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
 };
 
@@ -26,24 +49,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   // (Sidebar.tsx, lg+ only) for switching between Calendar/Lead Magnets/Post
   // Ideas. Below lg it degrades to just the page content, same as before.
   return (
-    <html lang="en">
+    <html lang="en" className={`${inter.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`}>
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
-      <body
-        className="antialiased"
-        style={{
-          fontFamily: "Arial, Helvetica, sans-serif",
-          background: "#f6f6f7",
-          color: "#111827",
-        }}
-      >
-        <div className="lg:flex lg:min-h-dvh">
+      <body className="antialiased">
+        <AppShell>
           <Sidebar />
           <main className="min-h-dvh flex-1 lg:min-w-0">{children}</main>
-        </div>
+        </AppShell>
       </body>
     </html>
   );

@@ -1,14 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, X, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, X, Calendar, ChevronLeft, ChevronRight, ImageOff, ImagePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ScreenshotGallery from "@/components/ScreenshotGallery";
 import InspoGallery from "@/components/InspoGallery";
 import {
   format, startOfMonth, endOfMonth, eachDayOfInterval,
-  isSameMonth, isSameDay, addMonths, subMonths, parseISO
+  isSameMonth, isSameDay, addMonths, subMonths, parseISO,
+  startOfWeek, endOfWeek, addWeeks, subWeeks, addDays, subDays
 } from "date-fns";
 
 const STATUSES = ["Idea", "Draft", "Designed", "Scheduled", "Posted"];
@@ -38,12 +39,53 @@ interface Post {
   status: string;
   post_url: string;
   notes: string;
+  visual_url?: string;
   row: number;
+}
+
+function PostCard({ post, size, onAddVisual }: { post: Post; size: "sm" | "lg"; onAddVisual: (p: Post) => void }) {
+  const isUrl = post.lead_magnet?.startsWith("http");
+  return (
+    <div className="rounded-xl border p-3 space-y-2" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
+      <div className="flex gap-3">
+        <div className={`flex-shrink-0 rounded-lg overflow-hidden bg-black/10 flex items-center justify-center ${size === "lg" ? "w-28 h-32" : "w-16 h-20"}`}>
+          {post.visual_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={post.visual_url} alt="" className="w-full h-full object-cover" />
+          ) : (
+            <ImageOff size={size === "lg" ? 24 : 16} className="text-muted-foreground" />
+          )}
+        </div>
+        <div className="flex-1 min-w-0 space-y-1.5">
+          <p className={size === "lg" ? "font-semibold text-base" : "font-semibold text-sm"}>{post.title}</p>
+          <div className="flex flex-wrap gap-1.5">
+            <span className="text-[10px] px-2 py-0.5 rounded-full border border-white/10 text-muted-foreground">{post.format}</span>
+            <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold badge-${post.funnel_stage?.toLowerCase()}`}>{post.funnel_stage}</span>
+          </div>
+          {post.lead_magnet && (
+            isUrl ? (
+              <a href={post.lead_magnet} target="_blank" rel="noreferrer" className="text-xs text-indigo-300 underline truncate block">{post.lead_magnet}</a>
+            ) : (
+              <p className="text-xs text-muted-foreground truncate">{post.lead_magnet}</p>
+            )
+          )}
+        </div>
+      </div>
+      {!post.visual_url && (
+        <button onClick={() => onAddVisual(post)} className="text-[10px] flex items-center gap-1 text-indigo-300">
+          <ImagePlus size={12} /> Add visual
+        </button>
+      )}
+    </div>
+  );
 }
 
 export default function CalendarPage() {
   const [tab, setTab] = useState("calendar");
+  const [view, setView] = useState<"month" | "week" | "day">("month");
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [currentWeek, setCurrentWeek] = useState(new Date());
+  const [currentDay, setCurrentDay] = useState(new Date());
   const [posts, setPosts] = useState<Post[]>([]);
   const [adding, setAdding] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -58,7 +100,8 @@ export default function CalendarPage() {
       setPosts(
         (rows as string[][]).slice(1).map((r, i) => ({
           date: r[0], title: r[1], format: r[2], funnel_stage: r[3],
-          lead_magnet: r[4], status: r[5], post_url: r[6], notes: r[7], row: i + 2,
+          lead_magnet: r[4], status: r[5], post_url: r[6], notes: r[7],
+          visual_url: r[8], row: i + 2,
         })).filter((p) => p.title)
       );
     }
@@ -79,7 +122,7 @@ export default function CalendarPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         tab: "ContentCalendar",
-        values: [form.date, form.title, form.format, form.funnel_stage, form.lead_magnet, form.status, form.post_url, form.notes],
+        values: [form.date, form.title, form.format, form.funnel_stage, form.lead_magnet, form.status, form.post_url, form.notes, ""],
       }),
     });
     setSaving(false);
@@ -94,11 +137,25 @@ export default function CalendarPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         tab: "ContentCalendar", action: "update", rowIndex: post.row,
-        values: [post.date, post.title, post.format, post.funnel_stage, post.lead_magnet, status, post.post_url, post.notes],
+        values: [post.date, post.title, post.format, post.funnel_stage, post.lead_magnet, status, post.post_url, post.notes, post.visual_url || ""],
       }),
     });
     await load();
     setSelectedPost((p) => p ? { ...p, status } : null);
+  };
+
+  const updateVisualUrl = async (post: Post) => {
+    const url = window.prompt("Visual URL", post.visual_url || "");
+    if (url === null) return;
+    await fetch("/api/sheets", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        tab: "ContentCalendar", action: "update", rowIndex: post.row,
+        values: [post.date, post.title, post.format, post.funnel_stage, post.lead_magnet, post.status, post.post_url, post.notes, url],
+      }),
+    });
+    await load();
   };
 
   // Funnel balance
@@ -159,6 +216,21 @@ export default function CalendarPage() {
         </div>
       )}
 
+      {/* Month/Week/Day switcher */}
+      <div className="inline-flex rounded-xl border p-1 gap-1" style={{ borderColor: "var(--border-subtle)", background: "var(--surface-2)" }}>
+        {(["month", "week", "day"] as const).map((v) => (
+          <button
+            key={v}
+            onClick={() => setView(v)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-colors ${view === v ? "bg-indigo-500 text-white" : "text-muted-foreground hover:bg-white/5"}`}
+          >
+            {v}
+          </button>
+        ))}
+      </div>
+
+      {view === "month" && (
+        <>
       {/* Month nav */}
       <div className="flex items-center justify-between">
         <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="p-2 rounded-xl hover:bg-white/5"><ChevronLeft size={20} /></button>
@@ -182,7 +254,7 @@ export default function CalendarPage() {
             return (
               <button
                 key={day.toISOString()}
-                onClick={() => { setSelectedDate(day); setAdding(true); setForm((f) => ({ ...f, date: format(day, "yyyy-MM-dd") })); }}
+                onClick={() => { setSelectedDate(day); setCurrentDay(day); setAdding(true); setForm((f) => ({ ...f, date: format(day, "yyyy-MM-dd") })); }}
                 className={`min-h-[60px] p-1.5 border-t border-r text-left transition-colors hover:bg-white/5 ${!inMonth ? "opacity-30" : ""}`}
                 style={{ borderColor: "var(--border-subtle)" }}
               >
@@ -207,6 +279,70 @@ export default function CalendarPage() {
           })}
         </div>
       </div>
+        </>
+      )}
+
+      {view === "week" && (
+        <>
+          <div className="flex items-center justify-between">
+            <button onClick={() => setCurrentWeek(subWeeks(currentWeek, 1))} className="p-2 rounded-xl hover:bg-white/5"><ChevronLeft size={20} /></button>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-sm">{format(startOfWeek(currentWeek), "MMM d")} – {format(endOfWeek(currentWeek), "MMM d, yyyy")}</span>
+              <button onClick={() => setCurrentWeek(new Date())} className="text-xs px-2.5 py-1 rounded-full border border-white/10 text-muted-foreground hover:bg-white/5">This week</button>
+            </div>
+            <button onClick={() => setCurrentWeek(addWeeks(currentWeek, 1))} className="p-2 rounded-xl hover:bg-white/5"><ChevronRight size={20} /></button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-7 gap-2">
+            {eachDayOfInterval({ start: startOfWeek(currentWeek), end: endOfWeek(currentWeek) }).map((day) => {
+              const dayPosts = postsOnDay(day);
+              const isToday = isSameDay(day, new Date());
+              return (
+                <div key={day.toISOString()} className="space-y-2">
+                  <button
+                    onClick={() => { setCurrentDay(day); setView("day"); }}
+                    className={`w-full text-left text-xs font-medium px-1 py-1 rounded-lg ${isToday ? "bg-indigo-500 text-white" : "text-muted-foreground hover:bg-white/5"}`}
+                  >
+                    {format(day, "EEE d")}
+                  </button>
+                  {dayPosts.length === 0 ? (
+                    <div className="rounded-xl border border-dashed p-3 text-center text-[11px] text-muted-foreground" style={{ borderColor: "var(--border-subtle)" }}>
+                      No post
+                    </div>
+                  ) : (
+                    dayPosts.map((p) => (
+                      <PostCard key={p.row} post={p} size="sm" onAddVisual={updateVisualUrl} />
+                    ))
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      {view === "day" && (
+        <>
+          <div className="flex items-center justify-between">
+            <button onClick={() => setCurrentDay(subDays(currentDay, 1))} className="p-2 rounded-xl hover:bg-white/5"><ChevronLeft size={20} /></button>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold">{format(currentDay, "EEEE, MMMM d, yyyy")}</span>
+              <button onClick={() => setCurrentDay(new Date())} className="text-xs px-2.5 py-1 rounded-full border border-white/10 text-muted-foreground hover:bg-white/5">Today</button>
+            </div>
+            <button onClick={() => setCurrentDay(addDays(currentDay, 1))} className="p-2 rounded-xl hover:bg-white/5"><ChevronRight size={20} /></button>
+          </div>
+          <div className="space-y-3">
+            {postsOnDay(currentDay).length === 0 ? (
+              <div className="rounded-2xl border border-dashed p-8 text-center text-sm text-muted-foreground" style={{ borderColor: "var(--border-subtle)" }}>
+                No posts scheduled for this day.
+              </div>
+            ) : (
+              postsOnDay(currentDay).map((p) => (
+                <PostCard key={p.row} post={p} size="lg" onAddVisual={updateVisualUrl} />
+              ))
+            )}
+          </div>
+        </>
+      )}
 
       {/* Add form */}
       {adding && (

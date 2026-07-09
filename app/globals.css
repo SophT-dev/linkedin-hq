@@ -7,8 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: Arial, Helvetica, sans-serif;
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+  --font-serif-accent: var(--font-instrument-serif);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -92,48 +93,68 @@
   --color-accent: oklch(0.45 0.22 25);
 }
 
-.dark {
-  --background: oklch(0.09 0.015 25);
-  --foreground: oklch(0.97 0 0);
-  --card: oklch(0.14 0.015 25);
-  --card-foreground: oklch(0.97 0 0);
-  --popover: oklch(0.14 0.015 25);
-  --popover-foreground: oklch(0.97 0 0);
-  --primary: oklch(0.60 0.22 25);
-  --primary-foreground: oklch(0.97 0 0);
-  --secondary: oklch(0.22 0.02 25);
-  --secondary-foreground: oklch(0.97 0 0);
-  --muted: oklch(0.22 0.02 25);
-  --muted-foreground: oklch(0.65 0.03 25);
-  --accent: oklch(0.30 0.10 25);
-  --accent-foreground: oklch(0.97 0 0);
-  --destructive: oklch(0.65 0.22 25);
-  --border: oklch(0.60 0.22 25 / 18%);
-  --input: oklch(0.97 0 0 / 10%);
-  --ring: oklch(0.60 0.22 25 / 60%);
-  --chart-1: oklch(0.65 0.22 25);
-  --chart-2: oklch(0.52 0.20 25);
-  --chart-3: oklch(0.42 0.18 25);
-  --chart-4: oklch(0.33 0.15 25);
-  --chart-5: oklch(0.26 0.12 25);
-  --sidebar: oklch(0.14 0.015 25);
-  --sidebar-foreground: oklch(0.97 0 0);
-  --sidebar-primary: oklch(0.60 0.22 25);
-  --sidebar-primary-foreground: oklch(0.97 0 0);
-  --sidebar-accent: oklch(0.22 0.02 25);
-  --sidebar-accent-foreground: oklch(0.97 0 0);
-  --sidebar-border: oklch(0.60 0.22 25 / 18%);
-  --sidebar-ring: oklch(0.60 0.22 25 / 60%);
-  /* Component surfaces */
-  --surface-1: oklch(0.14 0.015 25);
-  --surface-2: oklch(0.205 0 0);
-  --surface-3: oklch(0.09 0.015 25);
-  --surface-4: oklch(0.22 0.02 25);
-  --surface-pulse: oklch(0.3 0 0);
-  --nav-bg: oklch(0.10 0.015 25 / 95%);
-  --border-subtle: oklch(1 0 0 / 8%);
-  --border-accent: oklch(0.60 0.22 25 / 18%);
-  --color-accent: oklch(0.65 0.22 25);
+/* .dark removed 2026-07-10 -- confirmed dead: ThemeToggle.tsx (the only
+   thing that ever applied the .dark class) is never imported/rendered
+   anywhere; dark mode itself was removed 2026-07-08. The @custom-variant
+   dark declaration above stays -- shadcn's own ui/ components (button,
+   badge, tabs, textarea, select) bake in dark: utility classes, so Tailwind
+   still needs the variant defined even though it's never triggered here. */
+
+/* Internal-app theme scope -- Taplio-inspired soft/light/floaty palette,
+   2026-07-10. Deliberately NOT in :root: app/(public)/lead-magnet/[slug] is
+   a real customer-facing page that shares these same CSS variable names,
+   and Bleed AI's actual brand is dark/red (BRAND.md), not this soft-blue
+   internal-tool look. Scoping to .app-shell (wrapped around <Sidebar/> +
+   <main> in app/layout.tsx) means the public page keeps :root's original
+   values untouched, while every internal route gets the new palette via
+   normal CSS variable cascade. */
+.app-shell {
+  --background: oklch(0.985 0.003 250);
+  --foreground: oklch(0.22 0.015 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.015 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.015 260);
+  --primary: oklch(0.58 0.16 258);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.95 0.006 250);
+  --secondary-foreground: oklch(0.22 0.015 260);
+  --muted: oklch(0.96 0.005 250);
+  --muted-foreground: oklch(0.52 0.02 260);
+  --accent: oklch(0.94 0.03 300);
+  --accent-foreground: oklch(0.30 0.05 300);
+  --destructive: oklch(0.62 0.19 25);
+  --border: oklch(0.90 0.006 250);
+  --input: oklch(0.90 0.006 250);
+  --ring: oklch(0.58 0.16 258 / 50%);
+  --chart-1: oklch(0.58 0.16 258);
+  --chart-2: oklch(0.66 0.14 300);
+  --chart-3: oklch(0.72 0.14 340);
+  --chart-4: oklch(0.70 0.12 200);
+  --chart-5: oklch(0.75 0.10 150);
+  --radius: 1.25rem;
+  --sidebar: oklch(0.99 0.002 250);
+  --sidebar-foreground: oklch(0.22 0.015 260);
+  --sidebar-primary: oklch(0.58 0.16 258);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.92 0.035 258);
+  --sidebar-accent-foreground: oklch(0.35 0.10 258);
+  --sidebar-border: oklch(0.92 0.006 250);
+  --sidebar-ring: oklch(0.58 0.16 258 / 50%);
+  --surface-1: oklch(1 0 0);
+  --surface-2: oklch(0.97 0.004 250);
+  --surface-3: oklch(0.99 0.002 250);
+  --surface-4: oklch(0.95 0.006 250);
+  --surface-pulse: oklch(0.93 0.006 250);
+  --nav-bg: oklch(0.99 0.002 250 / 97%);
+  --border-subtle: oklch(0.85 0.01 250 / 40%);
+  --border-accent: oklch(0.58 0.16 258 / 25%);
+  --color-accent: oklch(0.58 0.16 258);
+}
+
+.font-serif-accent {
+  font-family: var(--font-serif-accent);
+  font-style: italic;
 }
 
 @layer base {
