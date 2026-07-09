@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Calendar, Gift, Lightbulb, PenLine, LayoutDashboard, Flame, MessageCircle, BarChart2, Users2 } from "lucide-react";
+import { Calendar, Gift, Lightbulb, PenLine, LayoutDashboard, Flame, MessageCircle, BarChart2, Users2, Menu, X } from "lucide-react";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -15,25 +16,16 @@ const NAV = [
   { href: "/ideas", label: "Post Ideas", icon: Lightbulb },
 ];
 
-// Desktop-only sidebar (hidden below lg). On mobile the app falls back to
-// just the page content -- no bottom nav exists anymore (removed 2026-07-08),
-// and rebuilding one wasn't in scope for this desktop-webapp revamp.
-export default function Sidebar() {
-  const pathname = usePathname();
-  // Hidden on public customer-facing lead-magnet landing pages -- same
-  // convention app/(public)/layout.tsx documents for the old BottomNav.
-  if (pathname?.startsWith("/lead-magnet")) return null;
+function NavContent({ pathname, onNavigate }: { pathname: string | null; onNavigate?: () => void }) {
   return (
-    <aside
-      className="hidden lg:flex lg:flex-col lg:w-60 lg:shrink-0 lg:h-dvh lg:sticky lg:top-0 border-r px-4 py-6"
-      style={{ background: "var(--sidebar)", borderColor: "var(--sidebar-border)" }}
-    >
+    <>
       <div className="px-2.5 mb-6">
         <p className="text-sm font-bold tracking-tight">LinkedIn HQ</p>
         <p className="text-xs text-muted-foreground">Taha Anwar</p>
       </div>
       <Link
         href="/calendar"
+        onClick={onNavigate}
         className="flex items-center justify-center gap-2 rounded-full py-3 mb-6 text-sm font-semibold shadow-sm transition-transform hover:scale-[1.02]"
         style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
       >
@@ -47,6 +39,7 @@ export default function Sidebar() {
             <Link
               key={href}
               href={href}
+              onClick={onNavigate}
               className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-full text-sm font-medium transition-colors"
               style={
                 active
@@ -62,6 +55,67 @@ export default function Sidebar() {
           );
         })}
       </nav>
-    </aside>
+    </>
+  );
+}
+
+export default function Sidebar() {
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  // Hidden on public customer-facing lead-magnet landing pages -- same
+  // convention app/(public)/layout.tsx documents for the old BottomNav.
+  if (pathname?.startsWith("/lead-magnet")) return null;
+
+  return (
+    <>
+      {/* Mobile top bar -- hidden at lg+, where the real sidebar takes over */}
+      <div
+        className="lg:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 border-b"
+        style={{ background: "var(--nav-bg)", borderColor: "var(--sidebar-border)" }}
+      >
+        <p className="text-sm font-bold tracking-tight">LinkedIn HQ</p>
+        <button
+          onClick={() => setOpen(true)}
+          aria-label="Open menu"
+          className="p-2 rounded-full"
+          style={{ color: "var(--sidebar-foreground)" }}
+        >
+          <Menu size={20} />
+        </button>
+      </div>
+
+      {/* Mobile retractable drawer */}
+      {open && (
+        <div className="lg:hidden fixed inset-0 z-50 flex">
+          <div
+            className="absolute inset-0"
+            style={{ background: "oklch(0 0 0 / 40%)" }}
+            onClick={() => setOpen(false)}
+          />
+          <aside
+            className="relative w-72 max-w-[80vw] h-dvh px-4 py-6 overflow-y-auto border-r shadow-xl"
+            style={{ background: "var(--sidebar)", borderColor: "var(--sidebar-border)" }}
+          >
+            <button
+              onClick={() => setOpen(false)}
+              aria-label="Close menu"
+              className="absolute top-4 right-4 p-1.5 rounded-full"
+              style={{ color: "var(--sidebar-foreground)" }}
+            >
+              <X size={18} />
+            </button>
+            <NavContent pathname={pathname} onNavigate={() => setOpen(false)} />
+          </aside>
+        </div>
+      )}
+
+      {/* Desktop-only static sidebar */}
+      <aside
+        className="hidden lg:flex lg:flex-col lg:w-60 lg:shrink-0 lg:h-dvh lg:sticky lg:top-0 border-r px-4 py-6"
+        style={{ background: "var(--sidebar)", borderColor: "var(--sidebar-border)" }}
+      >
+        <NavContent pathname={pathname} />
+      </aside>
+    </>
   );
 }
