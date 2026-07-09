@@ -8,7 +8,7 @@ const BASE = 'c:/Users/sophi/Downloads/SOPH VS Code';
 const puppeteer = require(BASE + '/lm-sales-agent/node_modules/puppeteer');
 const ffmpeg = require('ffmpeg-static');
 
-const htmlFile = process.argv[2] || (BASE + '/linkedin-hq/content/toolstack-budget-tiers.html');
+const htmlFile = process.argv[2] || (BASE + '/linkedin-hq/content/sources/toolstack-budget-tiers.html');
 const outGif   = process.argv[3] || (BASE + '/linkedin-hq/content/toolstack-budget-tiers.gif');
 const OUT_W    = parseInt(process.argv[4] || '600', 10);
 const FPS      = parseInt(process.argv[5] || '20', 10);

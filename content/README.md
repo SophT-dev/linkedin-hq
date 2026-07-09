@@ -7,16 +7,16 @@ point to is retired as of Stage 12.)
 
 ## What lives here
 - `make-gif.cjs` / `render-png.cjs` + `package.json` + `node_modules/` — the HTML→GIF/PNG renderer.
-- `*.html` at the root (`toolstack-*.html`, `tam-*.html`, etc.) — **editable source visuals**.
-  These stay flat here on purpose: they reference `assets/*.png` etc. with a relative path, so
-  moving them into a subfolder would break every image reference. Re-render anytime from here.
-  Don't assume an html file with no rendered output is dead — grep for its filename across
+- `sources/` — **editable source visuals** (`toolstack-*.html`, `tam-*.html`, etc.). Each one
+  references `../assets/*.png` / `../meme-templates/*` with a relative path one level up — if you
+  move a source file elsewhere, fix its image `src` paths and re-render to confirm it still loads
+  (don't just eyeball the HTML — open the rendered output and check the image isn't broken).
+  Don't assume a source file with no rendered output is dead — grep for its filename across
   `.claude/skills/`, `scripts/`, and any `meta.json` before deleting (confirmed real 2026-07-09:
   `toolstack-budget-tiers.html` is `make-gif.cjs`'s literal default arg *and* a real post's
   `visual_source`; `tam-pie-visual.html`/`tam-pie-visual-branded-day.html` are cited by name in
   `.claude/skills/linkedin-post/brand-compliance.md` as the canonical brand-drift example).
-- `assets/` — shared brand images referenced directly by the HTML sources above (logo, droplet)
-  — keep flat for the same relative-path reason.
+- `assets/` — shared brand images referenced by the sources above (logo, droplet) — keep flat.
   - `assets/people/<name>/` — raw reference photos for a person (candid shots, headshot options).
   - `assets/taha.jpg` — the canonical headshot several HTML sources reference; keep this exact
     filename current if the photo changes.
@@ -51,16 +51,18 @@ Don't start from a blank HTML file. Read
 (structured/data-heavy, proof/screenshot, simple/iconographic, animated/GIF, photo-real Taha, or
 AI-illustrated) and routes to the right path: Claude Design (manual handoff — brand setup is
 `../../Bleed AI Branding/CLAUDE-DESIGN-SYSTEM.md`, paste once per dark/day mode), hand-coded HTML
-in this folder, or the `image-gen` Claude Code plugin for illustration/photo-real work. Real
+in `sources/`, or the `image-gen` Claude Code plugin for illustration/photo-real work. Real
 reference examples for each content type live in `inspo/` (see its own `README.md`). Whichever
-path produces the HTML, it still lands here flat and renders the same way below.
+path produces the HTML, it lands in `sources/` and renders the same way below.
 
 ## Render a visual → LinkedIn GIF or PNG
 ```
 cd linkedin-hq/content
-node make-gif.cjs <source.html> <out.gif> [width] [fps] [recMs] [winStart] [winLen]
-node render-png.cjs <source.html> <out.png>
+node make-gif.cjs <absolute-path-to-source.html> <out.gif> [width] [fps] [recMs] [winStart] [winLen]
+node render-png.cjs <absolute-path-to-source.html> <out.png>
 ```
+Both scripts need an **absolute** path to the source file (they don't resolve relative paths
+against the current directory).
 Ship the **GIF only** to LinkedIn (no MP4). Save the final render into that post's
 `posts/<person>/linkedin/<date>-<slug>/media/` folder (or update `meta.json` for the older
 convention), then log/update the post row in the Sheet's Posts tab (`posted_url`, etc.).
