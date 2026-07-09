@@ -23,14 +23,27 @@
   // all), so we anchor on the ARIA role instead — each post in the feed is
   // role="listitem" (confirmed via live DOM trace 2026-07-09). Old selectors
   // kept as a fallback in case a different page template still uses them.
+  // The single-post permalink page (e.g. linkedin.com/feed/update/...) does
+  // NOT wrap its post in role="listitem" — there's only one post, not a list
+  // — so none of the specific selectors match there. Last-resort fallback:
+  // walk up from the editor and take the first ancestor with a meaningful
+  // amount of text, capped at 15 levels so we never walk all the way to
+  // <body> and grab the whole page.
   function findPostContainer(el) {
-    return (
+    const specific =
       el.closest('[role="listitem"]') ||
       el.closest(".feed-shared-update-v2") ||
       el.closest("[data-urn]") ||
-      el.closest("article") ||
-      null
-    );
+      el.closest("article");
+    if (specific) return specific;
+
+    let node = el.parentElement;
+    for (let i = 0; i < 15 && node; i++) {
+      const text = (node.innerText || "").trim();
+      if (text.length > 50) return node;
+      node = node.parentElement;
+    }
+    return null;
   }
 
   // Pull the post's text, trying the stable-ish content selectors first,
@@ -162,11 +175,13 @@
     // LinkedIn 2026 rewrite: comment box wrapper's componentkey literally
     // starts with "commentBox-" (confirmed via live DOM trace 2026-07-09).
     // Old class-based checks kept as fallback for other page templates.
+    const ariaLabel = (editor.getAttribute("aria-label") || "").toLowerCase();
     const isComment =
       editor.closest('[componentkey^="commentBox-"]') ||
       editor.closest(".comments-comment-box") ||
       editor.closest(".comments-comment-texteditor") ||
-      editor.closest("form.comments-comment-box__form");
+      editor.closest("form.comments-comment-box__form") ||
+      (ariaLabel.includes("comment") && !ariaLabel.includes("post"));
     if (!isComment) return;
     const container = findPostContainer(editor);
     if (!container) return;
