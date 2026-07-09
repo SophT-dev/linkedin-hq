@@ -4,7 +4,7 @@
 // assigns specific ideas to specific slots; this tab is the larger
 // unscheduled pool they get pulled from -- deliberately holds MORE ideas
 // than are currently calendared. Every idea traces to something real: the
-// deliverability-infra Domain Synthesis doc (Stage 6), a real Template
+// deliverability-infra Knowledge Base doc (Stage 6, playbook/knowledge/), a real Template
 // Library entry (Stage 2), or a real WinsLog row -- nothing invented.
 //
 // Idempotent: seeds only if the tab has no data rows yet.
@@ -34,7 +34,7 @@ const SHEET_ID = process.env.GOOGLE_SHEETS_ID;
 const TAB = "Post Ideas";
 const HEADERS = ["idea_angle", "suggested_format", "funnel_stage", "tags", "lead_magnet_ideas", "source", "status", "scheduled_slot"];
 
-const SYN_DOC = "playbook/DOMAIN-SYNTHESIS-deliverability-infra.md";
+const SYN_DOC = "playbook/knowledge/deliverability-infra.md";
 
 const ROWS = [
   ["the deliverability consensus stack, condensed from 8 experts we track", "F12", "TOFU", "deliverability, infra, synthesis", "Cold Email Infra Audit Checklist PDF; 30-Day Warmup Schedule template; Domain Rotation Tracker", `${SYN_DOC} §1`, "scheduled", "2026-07-14 (Taha)"],

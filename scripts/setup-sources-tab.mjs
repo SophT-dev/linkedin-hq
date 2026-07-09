@@ -48,13 +48,13 @@ const HEADERS = ["name", "location", "status", "last_touched", "notes"];
 // Seed rows compiled from the full research + planning conversation.
 // status values: live | live-partial | live-manual | dormant | building | gap | exists-unprocessed | retiring
 const SEED_ROWS = [
-  ["Scraped Expert Posts (11 experts, 6,642 posts, tagged)", "campaign-master/knowledge-base/learning-center", "live", "2026-07-04", "Pass-1 tagged (domain/signal/likes/comments). Pass-2 domain synthesis not started yet (Stage 6)."],
+  ["Scraped Expert Posts (11 experts, 6,642 posts, tagged)", "campaign-master/knowledge-base/learning-center", "live", "2026-07-04", "Pass-1 tagged (domain/signal/likes/comments). Pass-2 Knowledge Base writing (playbook/knowledge/) started 2026-07-10, most files still scaffolds."],
   ["Past LinkedIn Posts (Taha)", "linkedin-hq Google Sheet — Posts tab", "live", "", ""],
   ["Past LinkedIn Posts (Sophiya)", "linkedin-hq Google Sheet — Posts tab", "live-partial", "", "Sophiya's own LinkedIn profile URL is still a placeholder in stats-scrape.cjs."],
   ["Wins / Client Stories", "linkedin-hq Google Sheet — WinsLog tab", "live", "", ""],
   ["Lead replies / Email reply screenshots", "COOKED/proof/ (PROOF-LIBRARY.md, SLACK-SCREENSHOT-CHECKLIST.md)", "live-manual", "", "Working manual pipeline for sales proof. Needs a content-worthy? tag to also feed LinkedIn content (Stage 9)."],
   ["Calendar / booked-call proof", "Google Calendar (API/MCP already connected)", "gap", "", "No screenshot needed — pull booked-call counts directly via API (Stage 9)."],
-  ["Playbooks / Hook bank / Format Library", "linkedin-hq/playbook/ (COPYWRITING-BIBLE.md, FORMAT-LIBRARY.md, STRATEGY.md, PLAYBOOK.md, INSIDER-RESEARCH.md, RESOURCES.md)", "live", "", ""],
+  ["Playbooks / Hook bank / Format Library", "linkedin-hq/playbook/ (COPYWRITING-BIBLE.md, FORMAT-LIBRARY.md, STRATEGY.md, PLAYBOOK.md, RESOURCES.md)", "live", "", ""],
   ["Branding", "Bleed AI Branding/BRAND.md", "live", "2026-06-22", "Canonical brand bible — colors, fonts, voice, banned words."],
   ["Company story / wins / losses / growth", "COOKED/CLAUDE.md — COMPANY SNAPSHOT", "live-partial", "", "Has identity/pricing/team/financials. Missing Story/Wins/Losses/Growth narrative (Stage 10)."],
   ["Campaign Workflows / Process Knowledge", "lm-sales-agent skills (run-sales-pitch, process-replies) + campaign-master scripts/README", "live", "", "Real methodology/tool-stack detail for 'show the work' philosophy."],
@@ -64,7 +64,7 @@ const SEED_ROWS = [
   ["YouTube transcripts (eric-nowoslawski)", "campaign-master/knowledge-base/learning-center/eric-nowoslawski/youtube", "exists-unprocessed", "", "~52 transcripts scraped but never tagged (Pass-1 tagging never ran on these)."],
   ["Template Library", "linkedin-hq Google Sheet — Template Library tab", "building", "", "Stage 2 — curated top slice (~150-200 posts) ranked by likes/comments from the tagged corpus."],
   ["Visual Swipe", "linkedin-hq Google Sheet — Visual Swipe tab", "building", "", "Stage 5 — forward-only capture of visuals/screen-recordings worth stealing."],
-  ["Domain Synthesis docs", "TBD (Stage 6)", "building", "", "One mega-playbook per domain, condensing high-signal posts from the tagged corpus."],
+  ["Knowledge Base docs (renamed from Domain Synthesis 2026-07-10)", "linkedin-hq/playbook/knowledge/", "building", "2026-07-10", "One mega-playbook per corpus domain, condensing high-signal posts + received lead magnets. deliverability-infra.md is the real worked example; the other 9 are empty scaffolds filled in over time."],
   ["Content Calendar", "linkedin-hq Google Sheet — Content Calendar tab", "building", "", "Stage 7 — Taha + Sophiya personal profiles, informed by tracked-expert posting-cadence research."],
   ["LeadMagnetVault", "linkedin-hq Google Sheet — LeadMagnetVault tab", "building", "", "Stage 8 — lead magnets received from commenting on others' posts."],
   ["Ideas", "linkedin-hq Google Sheet — Ideas tab", "building", "", "Stage 8 — quick chat-log capture of new ideas, feeds the Daily TLDR."],

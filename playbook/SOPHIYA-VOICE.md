@@ -1,6 +1,6 @@
 # Sophiya's voice — distilled from real Wispr Flow transcripts (2026-07-09)
 
-Built the same way as a Domain Synthesis doc: real source material, condensed into named,
+Built the same way as a Knowledge Base doc (`playbook/knowledge/`): real source material, condensed into named,
 citable patterns — not raw transcript pasted into a prompt. Source: a large batch of Sophiya's
 own dictated messages spanning multiple sessions (project instructions, design feedback, feature
 requests), not scripted writing. This is what she sounds like unscripted, which is exactly what

@@ -1,7 +1,7 @@
 # LinkedIn HQ — Claude Context
 
 ## What this project is
-Taha Anwar's (Bleed AI) personal LinkedIn operating system. Mobile-first Next.js web app on Vercel + two Claude Code skills, PLUS (as of 2026-07-08) a wider content system — a 6,642-post tagged expert corpus distilled into a Template Library and Domain Synthesis docs, a Content Calendar, a Post Ideas backlog, Visual Swipe, a Drive-based media store, and Sheets-based performance tracking — so drafting a post pulls from proven templates and real research instead of starting blank. One bookmarked URL on phone for intel scanning; `/linkedin-batch` for multi-post batches, `/linkedin-post` for one post drafted from the fuller pipeline (Content Calendar, Template Library, real lead-magnet suggestions). Everything else lives in one Google Sheet.
+Taha Anwar's (Bleed AI) personal LinkedIn operating system. Mobile-first Next.js web app on Vercel + two Claude Code skills, PLUS (as of 2026-07-08) a wider content system — a 6,642-post tagged expert corpus distilled into a Template Library and Knowledge Base docs (renamed from "Domain Synthesis" 2026-07-10, see below), a Content Calendar, a Post Ideas backlog, Visual Swipe, a Drive-based media store, and Sheets-based performance tracking — so drafting a post pulls from proven templates and real research instead of starting blank. One bookmarked URL on phone for intel scanning; `/linkedin-batch` for multi-post batches, `/linkedin-post` for one post drafted from the fuller pipeline (Content Calendar, Template Library, real lead-magnet suggestions). Everything else lives in one Google Sheet.
 
 **Read this file top to bottom if you're new here** — it's the one place that explains what exists, what each piece is for, and how they connect. See "## Content System" below for the full build.
 
@@ -14,15 +14,21 @@ Taha Anwar's (Bleed AI) personal LinkedIn operating system. Mobile-first Next.js
 
 **Two folders hold our stuff** (the rest is the Next.js app): `playbook/` (all the thinking) + `content/` (the render workshop). Everything is consolidated — one strategy doc, one playbook doc, no duplicates.
 
-- **`playbook/` — all knowledge, 6 flat files:**
+- **`playbook/` — all knowledge, 6 flat files + one growing subfolder:**
   - `STRATEGY.md` — the **WHY & WHO**: positioning, USP, dual-brand (Taha+Sophiya), profile, 90-day roadmap, the rules.
   - `PLAYBOOK.md` — the **HOW**: 9 experts' lessons, 10 principles, Michel Lieben's operating manual, creative formats, pre-batch checklist. (Merged from the old Authority + Michel playbooks.)
   - `FORMAT-LIBRARY.md` — living swipe file, 12 proven formats (F1-F12) w/ real engagement + links, incl. F12 Synthesis/Mega-Playbook (see Content System below). **I keep this current.**
-  - `DOMAIN-SYNTHESIS-*.md` — one condensed mega-playbook per corpus domain (e.g. `DOMAIN-SYNTHESIS-deliverability-infra.md`), built from real high-signal posts, every claim cited to its source. See Content System below.
   - `POST-STRUCTURE-LIBRARY.md` — **added 2026-07-08, a real gap Sophiya caught**: FORMAT-LIBRARY.md covers content *angle* (F1-F12), this covers physical *layout* — line length, white space, bullets vs. arrows, brick vs. broken, number density. 5 named structures (S1-S5) read from ~60 real high-signal posts. Standing rule: every draft commits to ONE named structure from here, never freehand, same as hooks.
-  - `INSIDER-RESEARCH.md` — 28 sourced insider findings = content fuel (each line ≈ a post).
-  - `COPYWRITING-BIBLE.md` — the master copywriting reference distilled from Ogilvy (*Ogilvy on Advertising*) + Sugarman (*The Adweek Copywriting Handbook*). Principles + mechanics + a big **Swipe File** (Part C: steal-and-adapt hooks, guarantees, ad structures) + a pre-publish checklist. Raid this when writing any hook/post/lead magnet. (Books live as PDFs in `linkedin-hq/`.)
+  - `COPYWRITING-BIBLE.md` — the master copywriting reference distilled from Ogilvy (*Ogilvy on Advertising*) + Sugarman (*The Adweek Copywriting Handbook*). Principles + mechanics + a big **Swipe File** (Part C: steal-and-adapt hooks, guarantees, ad structures) + a pre-publish checklist. Raid this when writing any hook/post/lead magnet. (Books live as PDFs in `linkedin-hq/`.) Not the same as `playbook/knowledge/copywriting.md` below — the Bible is book-sourced craft principles, the KB doc is corpus-cited real-post consensus. Cross-linked, not merged.
   - `RESOURCES.md` — external links/resources.
+  - **`playbook/knowledge/` — the Knowledge Base (renamed from "Domain Synthesis" 2026-07-10):**
+    one condensed mega-playbook per corpus domain (e.g. `deliverability-infra.md`), built from real
+    high-signal posts + received lead magnets, every claim cited to its source. Growing over time —
+    most files are still empty scaffolds (H1 + "what belongs here" + a "Sources ingested" list),
+    only `deliverability-infra.md` has the real synthesis written. See Content System below for the
+    full domain list and the build process. **Naming note:** don't confuse this with the unrelated
+    `linkedin-hq/knowledge-base/` folder at repo root — that's a client-facing course product
+    (`cold-email-mastery/`), nothing to do with this internal research base.
 - **`content/` — the render workshop only** (standing organization rules live in `content/README.md`
   — that's the one source of truth, don't duplicate its details here): `make-gif.cjs` + `assets/`
   (brand images) + `sources/` (editable source visuals, e.g. `toolstack-*.html`) + `meme-templates/`
@@ -40,7 +46,7 @@ Taha Anwar's (Bleed AI) personal LinkedIn operating system. Mobile-first Next.js
 **Why this exists:** before this, sources were scattered with no map, drafting a post meant starting blank, and lead magnets/visuals worth stealing were captured nowhere. This build connects what already existed (the 6,642-post tagged corpus, this Sheet) and adds the few genuinely missing pieces — one stage at a time, each tested before the next.
 
 **Three standing philosophies (apply to every post/lead magnet):**
-1. **Synthesis over volume** — condense scattered info into one asset that saves the reader time (Domain Synthesis docs are the mechanism).
+1. **Synthesis over volume** — condense scattered info into one asset that saves the reader time (`playbook/knowledge/` Knowledge Base docs are the mechanism).
 2. **Show the work** — cite real numbers/sources/tools, never invent a stat.
 3. **Prove before automating** — one real post/capture end-to-end before touching `/linkedin-batch` or adding cron jobs.
 
@@ -68,7 +74,7 @@ durable result.
 
 **The `linkedin-post` skill (Stage 13)** — `[.claude/skills/linkedin-post/SKILL.md](.claude/skills/linkedin-post/SKILL.md)`,
 invoke with `/linkedin-post`. Drafts ONE post from the next Content Calendar slot (or an explicit
-Post Ideas row / Domain Synthesis doc / WinsLog entry), always 2-3 options each citing a real
+Post Ideas row / Knowledge Base doc (`playbook/knowledge/`) / WinsLog entry), always 2-3 options each citing a real
 Template Library hook source + a real proven structure (S1-S5) + a real fact, each with 2-3
 starred lead magnet options. Structured as a master + 4 sub-skills in the same folder
 (`hook-selection.md`, `post-structure-selection.md`, `lead-magnet-suggestion.md`,
@@ -150,7 +156,7 @@ Shared utility: [scripts/lib/linkedin-drive.mjs](scripts/lib/linkedin-drive.mjs)
 | `setup-sources-tab.mjs` | Creates/seeds the Sources tab (idempotent by name) |
 | `format-all-tabs.mjs` | Applies house style to every tab — re-run after adding/changing any tab's schema |
 | `build-template-library.mjs` | Extracts + ranks the Template Library from the tagged corpus |
-| `extract-domain-synthesis-source.mjs --domain <name> --top N` | Pulls full-content top posts for one corpus domain, for writing a Domain Synthesis doc |
+| `extract-domain-synthesis-source.mjs --domain <name> --top N` | Pulls full-content top posts for one corpus domain, for writing/updating a `playbook/knowledge/<domain>.md` Knowledge Base doc |
 | `analyze-posting-cadence.mjs` | Real posts/week + day-of-week + content-type mix per tracked expert |
 | `setup-linkedin-drive.mjs` | Builds/repairs the `LinkedIn/` Drive folder tree |
 | `setup-visual-swipe-tab.mjs`, `capture-visual-swipe.mjs` | Visual Swipe tab setup + the capture-one-visual flow |

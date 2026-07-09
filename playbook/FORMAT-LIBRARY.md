@@ -159,9 +159,11 @@ Ranked roughly by proven pull. Each is something we can run on Taha's or Sophiya
 matters." → the value is the compression itself, not any single new idea inside it.
 **Why it works:** engagement increasingly goes to whoever *saves the reader time* by doing the
 synthesis work for them, not whoever posts the most. This is philosophy #1 of our whole content
-system — see `DOMAIN-SYNTHESIS-deliverability-infra.md` for our own worked example (202
+system — see `playbook/knowledge/deliverability-infra.md` for our own worked example (202
 high-signal posts across 8 experts, condensed into one deliverability playbook, every claim cited
-back to its source post + real engagement numbers).
+back to its source post + real engagement numbers). That's one of ten Knowledge Base docs living
+in `playbook/knowledge/` (renamed from "Domain Synthesis" 2026-07-10, see `CLAUDE.md`) — most are
+still empty scaffolds, filled in over time.
 
 - **Proven —** Richard Illingworth · combining three Alex Hormozi cold-outreach books into a single
   playbook, [visual captured to Visual Swipe](../scripts/capture-visual-swipe.mjs) as the format's
@@ -171,8 +173,9 @@ back to its source post + real engagement numbers).
   any single-expert post in the deliverability-infra domain) — same synthesis move, packaged as a
   free lead magnet instead of a standalone post.
 
-**Our version:** any Domain Synthesis doc (Stage 6 of the content-system build) is a ready-made F12
-post or lead magnet — pick one section, cite the real source posts/numbers behind it, ship it.
+**Our version:** any Knowledge Base doc (`playbook/knowledge/`, Stage 6 of the content-system
+build) is a ready-made F12 post or lead magnet — pick one section, cite the real source
+posts/numbers behind it, ship it.
 **Whose profile:** either — works best when there's a large real corpus to visibly compress (the
 6,642-post tagged corpus is exactly that credibility device). **Funnel:** TOFU→MOFU (educates,
 but the compression itself signals authority).
@@ -209,7 +212,7 @@ Moves as we gather our own data. Until then, seeded from proven external pull.
 | F9 Swipe-File Drop | 151 | — | 🧪 Testing |
 | F10 Live Event Teaser + Recap | 2846 comments / 1857 comments | — | ⭐ Working (inherited) — highest comment counts in our scrape |
 | F11 News Reaction + Insider Verdict | 3196 comments (1039 likes) | — | ⭐ Working (inherited) — highest combined engagement in our scrape |
-| F12 Synthesis / Mega-Playbook | 430 comments (115 likes) | — | ✅ Strong (inherited) — our Domain Synthesis docs are this format, source-built |
+| F12 Synthesis / Mega-Playbook | 430 comments (115 likes) | — | ✅ Strong (inherited) — our Knowledge Base docs are this format, source-built |
 
 Legend: ⭐ top priority · ✅ strong · 🧪 testing · ❌ not working (none yet)
 

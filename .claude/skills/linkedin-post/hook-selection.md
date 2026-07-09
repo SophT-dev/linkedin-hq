@@ -12,8 +12,8 @@ right to improvise.
 ## Where to pull from, in order
 
 1. **The assigned source** — whatever Phase 1 picked (a Content Calendar slot, a Post Ideas row,
-   a Domain Synthesis doc, or a WinsLog entry). This determines the topic/angle; it does NOT by
-   itself give you a hook structure.
+   a Knowledge Base doc from `playbook/knowledge/`, or a WinsLog entry). This determines the
+   topic/angle; it does NOT by itself give you a hook structure.
 2. **Template Library tab** — filter to the same `domain` (or a close one) as the topic, sort by
    `likes` and separately by `comments`. Pick the top 2-3 candidate hooks whose *structure* fits
    the angle (a big-number hook for a stat, a contrarian hook for a hot take, etc.) — read
@@ -59,7 +59,7 @@ satisfy philosophy #2 (show the work) — every draft must be able to say what i
 ## Guardrail
 
 If nothing in the Template Library fits the assigned topic/domain well, say so explicitly rather
-than forcing a mismatched hook — fall back to a Domain Synthesis doc's own framing, or flag it
+than forcing a mismatched hook — fall back to a Knowledge Base doc's own framing, or flag it
 back to the orchestrator so Sophiya can pick a different source for this slot.
 
 ## Hooks don't stand alone — see `post-structure-selection.md`

@@ -1,8 +1,10 @@
 // Stage 6 helper (one-off, not part of the standing pipeline): pulls the
 // high-signal posts for one corpus domain, joins the tagged Pass-1 fields to
 // each expert's raw posts.json for full content + real engagement numbers,
-// ranks by likes, and dumps the top N to a plain text file so the domain
-// synthesis doc can be written by reading real posts, not just abstracts.
+// ranks by likes, and dumps the top N to a plain text file so the matching
+// `playbook/knowledge/<domain>.md` Knowledge Base doc (renamed from "Domain
+// Synthesis" 2026-07-10 — see linkedin-hq/CLAUDE.md) can be written by
+// reading real posts, not just abstracts. Script name/CLI flags unchanged.
 //
 // Usage: node scripts/extract-domain-synthesis-source.mjs --domain deliverability-infra --top 50 --out <path>
 import { readFileSync, writeFileSync } from "node:fs";

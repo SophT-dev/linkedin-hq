@@ -5,15 +5,17 @@ magnet ideas — one starred as the recommended pick. Never a generic "free guid
 
 ## Where to pull from, in order
 
-1. **The draft's own source material.** If the post is built from a Domain Synthesis doc, the
-   most obvious lead magnet is a slice of that doc turned into a standalone checklist/template
-   (see `DOMAIN-SYNTHESIS-deliverability-infra.md` §5 "How to use this doc" for a worked example —
-   its own §3 QA checklist is close to lead-magnet-ready as-is).
+1. **The draft's own source material.** If the post is built from a Knowledge Base doc
+   (`playbook/knowledge/<domain>.md`), the most obvious lead magnet is a slice of that doc turned
+   into a standalone checklist/template (see `playbook/knowledge/deliverability-infra.md` §5 "How
+   to use this doc" for a worked example — its own §3 QA checklist is close to lead-magnet-ready
+   as-is).
 2. **The Post Ideas tab's `lead_magnet_ideas` column** — if this draft came from a Post Ideas row,
    the lead magnet ideas are usually already there. Use them, adapt if the draft angle shifted.
 2b. **LeadMagnets tab, `kind=received` rows** — lead magnets Sophiya's actually seen work on other
-   people's posts (logged via `capture-item.mjs --type lead_magnet`). If one's format/angle fits
-   this draft's topic, it's real proof that shape converts — cite it as inspiration, don't copy it.
+   people's posts (logged via `capture-item.mjs --type lead_magnet`). Filter to the `domain` column
+   (added 2026-07-10, matches the same `playbook/knowledge/<domain>.md` slugs) to find rows that
+   match this draft's topic — real proof that shape converts. Cite as inspiration, don't copy it.
 3. **WinsLog** — a real client result can often BE the lead magnet's spine (a template, a
    checklist, or a teardown of exactly how that result happened).
 
@@ -22,7 +24,7 @@ magnet ideas — one starred as the recommended pick. Never a generic "free guid
 For each draft, 2-3 options in this shape, one starred:
 ```
 lead magnet options:
-  ⭐ [name, 4-8 words] — [value_prop, ≤120 chars] — source: [Domain Synthesis doc §N /
+  ⭐ [name, 4-8 words] — [value_prop, ≤120 chars] — source: [Knowledge Base doc §N /
      Post Ideas row / WinsLog: client]
   [option 2, same shape]
   [option 3, same shape]

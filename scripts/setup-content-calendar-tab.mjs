@@ -7,7 +7,7 @@
 // authority accounts); Sophiya's cadence models the lighter ~2x/week
 // Mon-anchored pattern seen from Kenny Damian (a builder/ops-style account).
 // Every slot's source traces to something we've actually built: the
-// deliverability-infra Domain Synthesis doc (Stage 6), real Template
+// deliverability-infra Knowledge Base doc (Stage 6, playbook/knowledge/), real Template
 // Library entries (Stage 2), or real WinsLog rows -- nothing invented.
 //
 // Idempotent: seeds only if the tab has no data rows yet. Re-running after
@@ -38,7 +38,7 @@ const SHEET_ID = process.env.GOOGLE_SHEETS_ID;
 const TAB = "Content Calendar";
 const HEADERS = ["date", "day", "profile", "post_type", "visual_type", "angle_theme", "source", "status"];
 
-const SYN_DOC = "playbook/DOMAIN-SYNTHESIS-deliverability-infra.md";
+const SYN_DOC = "playbook/knowledge/deliverability-infra.md";
 
 const ROWS = [
   // -- Taha (authority voice, ~3x/week Tue/Wed/Thu, cold-email/deliverability expertise) --

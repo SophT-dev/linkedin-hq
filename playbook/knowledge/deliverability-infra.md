@@ -1,10 +1,11 @@
-# Domain Synthesis: Deliverability & Infrastructure
+# Knowledge Base: Deliverability & Infrastructure
 
 **What this is:** philosophy #1 ("synthesis over volume") in action — one condensed mega-playbook
 built from the 202 high-signal `deliverability-infra` posts in the tagged corpus (top 25 by likes,
 spanning 8 experts, read in full), so drafting a post or lead magnet on this topic means reading
 one doc instead of 200. Modeled on what Richard Illingworth did compressing three Hormozi books
-into one playbook — same move, applied to our own corpus.
+into one playbook — same move, applied to our own corpus. Part of the `playbook/knowledge/`
+Knowledge Base doc set (formerly called "Domain Synthesis" — renamed, see `CLAUDE.md`).
 
 **Source note (show the work):** every claim below is cited to the specific post and expert it
 came from — real engagement numbers included so you can judge how much consensus actually backs
@@ -144,6 +145,44 @@ since it contradicts some of the older "just follow the checklist" consensus abo
   and lead lists have to support reuse/multi-tier targeting because you can't source fresh
   contacts fast enough at that scale (100 likes/208 comments).
 
+### Corroborating vendor stats (folded in from the retired `INSIDER-RESEARCH.md`, 2026-06-22)
+**Caveat carried over verbatim: most numbers below are vendor-blog sourced (directional, not
+audited). The *directions* are corroborated across sources. Verify before quoting hard.**
+
+- Gmail ~87% vs Microsoft ~75.6% inbox placement — most B2B inboxes are M365, where placement is
+  ~12pts worse and IP-driven. (Source: vendor blog, directional —
+  https://puzzleinbox.com/blog/cold-email-infrastructure-types-guide/)
+- **~35 emails/day is the real per-inbox ceiling** for indefinite good reputation on Google —
+  50-80/day degrades you to "Medium" in 30-45 days even on a clean list; the "50-100/day" advice is
+  a slow bleed. (Source: vendor blog, directional —
+  https://litemail.ai/blog/cold-email-inbox-limit-per-day-google-vs-microsoft-2026)
+- **Pre-2022 warmup pools now HURT you.** Gmail flags artificial warmup as suspicious instead of
+  ignoring it — only genuine human engagement helps. (Source: vendor blog, directional —
+  https://litemail.ai/blog/does-email-warmup-work-2026)
+- "Premium" reseller inboxes (Maildoso/Zapmail) ride contaminated pools — Maildoso network spam
+  rate ~5% (May 2026), so you inherit the neighbor's reputation. (Source: vendor blog, directional
+  — https://coldemailkit.com/tools/maildoso)
+- **Bulk-sender status is permanent.** Cross 5,000 Gmail recipients in 24h once and the tag never
+  comes off (since Nov 2025, permanent 550 rejections). (Source: vendor blog, directional —
+  https://firstsales.io/blog/google-bulk-sender-rules-2026/)
+- 0.30% spam complaint rate = blocking; <0.10% is the real target — Postmaster lags 24-48h, so
+  you're blind during the damage. (Source: vendor blog, directional —
+  https://coldreach.ai/blog/gmail-spam-rules)
+- Sudden domain death is one event, not decay — a single recycled spam-trap hit (-30% placement)
+  or a >30-50% day-over-day volume jump on a <90-day inbox. (Source: vendor blog, directional —
+  https://reachkit.ai/blog/domain-burnout-cold-outreach)
+- Kill open tracking — post-MPP it's noise, and the pixel triggers Gmail's "images hidden /
+  suspicious" banner; keep a custom tracking domain for isolation, disable the pixel. (Source:
+  vendor blog, directional — https://prospeo.io/s/gmail-open-tracking-changes)
+- The links rule is engagement-gated: first touch plain text, ≤1 link, no images; after they
+  reply, links/images are fine. (Source: vendor blog, directional —
+  https://www.mailpool.ai/blog/cold-email-attachments-vs-links-whats-safe-in-2026-and-whats-not)
+- In-body "reply remove" opt-out cuts complaints 20-40% vs header-only — the human path beats the
+  spam button. (Source: vendor blog, directional — https://powerdmarc.com/bulk-email-sender-requirements/)
+- BIMI is a trap for cold: ~$1,500/yr, 2-6% open lift, Outlook still ignores it (May 2026) — just
+  take the DMARC enforcement it forces instead. (Source: vendor blog, directional —
+  https://puzzleinbox.com/blog/bimi-cold-email-setup-worth-it-2026)
+
 ---
 
 ## 3. Steal-this checklist (condensed from Nick Abraham's two published QA checklists)
@@ -196,3 +235,20 @@ on? Campaign start times rotating daily, not fixed?
   infra checklist post (cited above, 115 likes/430 comments) worked as *his* lead magnet.
 - **Referenced in:** `FORMAT-LIBRARY.md`'s new Synthesis/Mega-Playbook format entry (Stage 3) uses
   this doc as the worked example.
+
+## Sources ingested
+- **Corpus:** top 25 by likes of 202 high-signal `deliverability-infra` posts (out of 470 total
+  tagged posts in this domain), snapshot taken 2026-07-08 — see the header note above for the
+  regeneration command.
+- **Received lead magnets** (`content/lead-magnets/received/`, remapped 2026-07-10 — see
+  `scripts/remap-leadmagnet-domains.mjs`):
+  - `inbox-breakthrough.md`
+  - `deliverability-masterclass-smartservers-smartsenders-smartde.md`
+  - `set-up-smartlead-ai-email-warm-up.md`
+  - `secrets-to-64-reply-rates-in-2025.md`
+  - `7-ways-to-transform-your-cold-email-campaigns.md`
+  - "Premium Playbook" (slug `premium-playbook`) — LeadMagnets sheet row only, no local swipe file
+    captured
+  - "Infrastructure Blueprint" (slug `infrastructure-blueprint`) — LeadMagnets sheet row only, no
+    local swipe file captured
+- **INSIDER-RESEARCH.md items 1-11 folded into §1/§2 above** (retired doc, see `CLAUDE.md`).
