@@ -27,26 +27,36 @@ normally to posts that DO link out directly.)
 
 ## The meme — real capability, not invented
 
-**What's actually available:** no image-generation tool and no way to fetch/download a real
-copyrighted meme template photo (no image tool for that). What IS real and proven: the HTML→GIF
-render pipeline in `content/make-gif.cjs` (puppeteer + ffmpeg-static, already used for every
-brand visual in this project). So the meme is an **original graphic built from scratch as HTML**,
-in the *format/joke structure* of a well-known meme (expanding brain, expectation-vs-reality,
-drake-style two-panel, etc.) — never a re-hosted copy of someone else's actual template image.
-This is honest: cite which meme format inspired the structure, don't claim to be using the real
-template.
+**Default: the HTML→GIF render pipeline**, same as always — `content/make-gif.cjs` (puppeteer +
+ffmpeg-static, already used for every brand visual in this project). For a meme, this means an
+**original graphic built from scratch as HTML**, in the *format/joke structure* of a well-known
+meme (expanding brain, expectation-vs-reality, drake-style two-panel, etc.) — never a re-hosted
+copy of someone else's actual template image. This is honest: cite which meme format inspired the
+structure, don't claim to be using the real template. Stick to this default for most memes — it's
+simple, fast, and matches how every other brand visual gets made here.
+
+**If a meme genuinely needs real illustration or a photo-real gag** (not just styled text/shapes),
+`visual-generation.md` in this same folder (added 2026-07-09) now has an actual AI-illustration
+path — this used to be a real gap ("no image-generation tool available"), it no longer is. Reach
+for it only when the HTML-built default can't do the joke justice; don't default to it for a
+simple meme.
 
 Steps:
 1. Pick a meme **format** that actually fits this post's specific angle — not a default. Ask: what
    is this post's core tension (a mismatch, an escalation, a before/after)? Match the format to
    that tension.
-2. Write the source HTML in `content/` (same pattern as the existing `toolstack-*.html` files —
-   references `assets/` relatively, uses Bleed AI brand colors/fonts per BRAND.md, one red accent,
-   dark background, Inter/Instrument Serif).
-3. Render it: `cd content && node make-gif.cjs <meme.html> <out.gif> [width] [fps]` (a short,
-   simple loop, or even a single still frame if the joke doesn't need motion — check `make-gif.cjs`
-   usage notes for a near-zero-motion setting if so).
-4. Attach the rendered GIF to the pinned comment (or as a reply to it) alongside the link.
+2. Write the source HTML in `content/sources/` (same pattern as the existing `toolstack-*.html`
+   files — references `../assets/` and, if using a raw meme template image, `../meme-templates/`,
+   both one relative `../` hop up — uses Bleed AI brand colors/fonts per BRAND.md, one red accent,
+   dark background, Inter/Instrument Serif). A reusable raw meme template image (not tied to this
+   one post) goes in `content/meme-templates/`, not inline in the post's own folder.
+3. Render it (absolute path required, see `content/README.md`):
+   `cd content && node make-gif.cjs <absolute-path-to-sources/meme.html> <out.gif> [width] [fps]`
+   (a short, simple loop, or even a single still frame if the joke doesn't need motion — check
+   `make-gif.cjs` usage notes for a near-zero-motion setting if so).
+4. Save the final rendered file into
+   `content/posts/<person>/linkedin/<date>-<slug>/pinned-comment/` — not flat in `content/`.
+5. Attach the rendered GIF to the pinned comment (or as a reply to it) alongside the link.
 
 ## Output
 

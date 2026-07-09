@@ -23,8 +23,13 @@ Taha Anwar's (Bleed AI) personal LinkedIn operating system. Mobile-first Next.js
   - `INSIDER-RESEARCH.md` — 28 sourced insider findings = content fuel (each line ≈ a post).
   - `COPYWRITING-BIBLE.md` — the master copywriting reference distilled from Ogilvy (*Ogilvy on Advertising*) + Sugarman (*The Adweek Copywriting Handbook*). Principles + mechanics + a big **Swipe File** (Part C: steal-and-adapt hooks, guarantees, ad structures) + a pre-publish checklist. Raid this when writing any hook/post/lead magnet. (Books live as PDFs in `linkedin-hq/`.)
   - `RESOURCES.md` — external links/resources.
-- **`content/` — the render workshop only** (see `content/README.md`): `make-gif.cjs` + `assets/` (brand images) + `toolstack-*.html` (editable source visuals). Finished work does **not** pile up here.
-  - **Render any visual → LinkedIn GIF:** `cd content && node make-gif.cjs <input.html> <output.gif> [width] [fps] [recMs] [winStart] [winLen]`. Bundled `ffmpeg-static` + puppeteer, one shared palette + bayer dither = no flicker. Ship GIF only (no MP4).
+- **`content/` — the render workshop only** (standing organization rules live in `content/README.md`
+  — that's the one source of truth, don't duplicate its details here): `make-gif.cjs` + `assets/`
+  (brand images) + `sources/` (editable source visuals, e.g. `toolstack-*.html`) + `meme-templates/`
+  (reusable raw meme images) + `posts/<person>/linkedin/<date>-<slug>/` (final published deliverables
+  only, split into `media/`/`pinned-comment/`/`proof/`). Finished work does **not** pile up flat in
+  `content/` root — every generated visual has a defined home before it's considered done.
+  - **Render any visual → LinkedIn GIF:** `cd content && node make-gif.cjs <absolute-path-to-input.html> <output.gif> [width] [fps] [recMs] [winStart] [winLen]` (needs an absolute source path). Bundled `ffmpeg-static` + puppeteer, one shared palette + bayer dither = no flicker. Ship GIF only (no MP4).
 - **The record lives in the Posts tab now, not Notion (as of Stage 12, 2026-07-08).** Every post's likes/comments/views/worked-verdict is tracked in this Sheet's Posts tab (columns L-Q) via `scripts/sync-post-stats.mjs`, replacing the Notion Content Command Center's role. Lead magnets still publish to Notion for the doc itself (`/api/notion/publish`) — only the performance-tracking role moved. The old `content/REGISTRY.md` and the Notion CCC are both retired.
 - **Brand (all assets):** `../Bleed AI Branding/BRAND.md` is the master — dark `#07070d` + red `#b1130f`/`#ff3d38`, Inter + Instrument Serif + JetBrains Mono, the droplet. Never invent brand colors per-file.
 - **Content rules:** approval-first (pitch idea-pairs → Sophiya approves → THEN write; saves API/agency). Every post ships a lead magnet + a 1080×1350 visual. Weekly batches. Tag the tool brands in posts. Verify any price live before quoting. Sophiya's comments = short, warm, teammate-casual, no cost/bill talk.
