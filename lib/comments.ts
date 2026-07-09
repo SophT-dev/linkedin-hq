@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { generateText } from "./ai";
 import {
   BANNED_WORDS,
@@ -430,6 +432,147 @@ export function qualityGateComment(text: string): VoiceCheck {
   }
 
   // @mentions still banned (LinkedIn API mention syntax is fragile)
+  if (/@[a-z]/i.test(text)) {
+    return { ok: false, reason: "contains @mention" };
+  }
+
+  return { ok: true };
+}
+
+// ============================================================
+// Sophiya-voice comment generator — separate from generateExpertComment
+// above (which is Taha-only, untouched by this addition).
+//
+// Different purpose than Taha's peer-reaction engine: Sophiya's ask
+// (2026-07-09) is for expert, authority-driven commentary with a real
+// opinion, not a short casual reaction. Voice patterns are read live from
+// playbook/SOPHIYA-VOICE.md (the one source of truth — this file only
+// wires it in, never duplicates the prose) so editing that doc changes
+// behavior without touching this code.
+// ============================================================
+
+function loadSophiyaVoiceDoc(): string {
+  const p = path.join(process.cwd(), "playbook", "SOPHIYA-VOICE.md");
+  try {
+    return readFileSync(p, "utf8");
+  } catch {
+    throw new Error(`Could not read ${p} — Sophiya's voice doc is required for this generator`);
+  }
+}
+
+function buildSophiyaSystemPrompt(): string {
+  const voiceDoc = loadSophiyaVoiceDoc();
+  return `You write LinkedIn comments as Sophiya. Below is her real, distilled voice profile — extracted from her actual dictated messages, not invented. Follow it exactly, including which filler words to strip and which to keep.
+
+${voiceDoc}
+
+## THIS COMMENT'S JOB (Sophiya's explicit requirement, 2026-07-09)
+Unlike a casual peer reaction, this comment must read as EXPERT and AUTHORITY-DRIVEN. Someone reading it should think: "this person is knowledgeable, has a unique take, and is adding real value to this conversation" — not just agreeing or reacting.
+
+Concretely:
+- State a real opinion or insight, not just agreement. It's fine to add a genuinely different angle the post didn't cover, as long as it's respectful (never hostile, never dismissive of the author).
+- The insight must be genuine domain knowledge (cold email, outbound, AI agents, or a clearly adjacent business topic) — something a real practitioner would nod at, never invented or vague.
+- Ground it in a specific, concrete detail if one fits naturally (a real number, a real mechanism, a real firsthand observation) — per pattern #1 and #5 above. Never fabricate a stat.
+- No hedging her own opinion away ("I think", "maybe", "sort of") unless she's genuinely asking a question rather than stating a view.
+
+## LENGTH
+Longer than a quick reaction is fine here — she's making a real point, not just reacting. Target 10-35 words: enough room for the opinion plus the one concrete reason behind it, never padded beyond that.
+
+## HARD RULES (same hygiene as every comment on this platform, non-negotiable)
+- No em dashes (—) or en dashes (–).
+- No @mentions.
+- No corporate buzzwords: leverage, utilize, unlock, robust, comprehensive, streamlined, seamless, synergy, holistic, empower, elevate, revolutionize, delve, landscape, journey, ecosystem, actionable insights, value-add, moving the needle, game changer, needle mover, cutting-edge.
+- No decorative emoji — her real voice patterns above don't use them; keep it plain text.
+- No generic praise ("great post", "love this", "so insightful") — every word must earn its place per the anti-checklist above.
+
+## OUTPUT
+Just the comment text, 10-35 words. No preamble, no quotes around it, no explanation. Plain text that will be posted as-is.`;
+}
+
+export interface GeneratedSophiyaComment {
+  comment_text: string;
+  raw_model_output: string;
+  fallback_used?: string;
+}
+
+// Generates one expert/authority-voice comment for one post, in Sophiya's
+// own voice (not Taha's). No style-preset picker here — every comment in
+// this mode has the same job (real opinion + insight), unlike Taha's
+// multi-preset peer-reaction system above.
+export async function generateSophiyaComment(
+  post: CandidatePost
+): Promise<GeneratedSophiyaComment> {
+  const systemPrompt = buildSophiyaSystemPrompt();
+  const userPrompt = `LinkedIn post by ${post.creator_name}:
+
+"""
+${post.text.slice(0, 3000)}
+"""
+
+Write Sophiya's comment now. 10-35 words. No quotes around it, no preamble.`;
+
+  const res = await generateText(userPrompt, systemPrompt);
+  const raw = res.text.trim();
+  const cleaned = raw
+    .replace(/^["']|["']$/g, "")
+    .replace(/[—–]/g, ",")
+    .trim();
+
+  return {
+    comment_text: cleaned,
+    raw_model_output: raw,
+    ...(res.fallbackReason ? { fallback_used: res.fallbackReason } : {}),
+  };
+}
+
+// Quality gate for Sophiya-voice comments. Reuses the shared banned-word/
+// phrase lists and hygiene checks from qualityGateComment, but with a
+// wider word-count range (10-35, not 1-20) since this mode is a real
+// opinion + reason, not a quick reaction, and a stricter no-emoji rule
+// (her real voice patterns don't use decorative emoji at all).
+export function qualityGateSophiyaComment(text: string): VoiceCheck {
+  if (!text || text.trim().length === 0) {
+    return { ok: false, reason: "empty comment" };
+  }
+
+  const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
+  if (wordCount < 10) {
+    return { ok: false, reason: `too short (${wordCount} words, min 10 — needs room for a real opinion + reason)` };
+  }
+  if (wordCount > 35) {
+    return { ok: false, reason: `too long (${wordCount} words, max 35)` };
+  }
+
+  if (/[—–]/.test(text)) {
+    return { ok: false, reason: "contains em or en dash" };
+  }
+
+  if (EMOJI_REGEX.test(text)) {
+    return { ok: false, reason: "contains emoji — Sophiya's voice doesn't use decorative emoji" };
+  }
+
+  const lower = text.toLowerCase();
+
+  for (const word of BANNED_WORDS) {
+    const isMultiWord = word.includes(" ") || word.includes("-");
+    if (isMultiWord) {
+      if (lower.includes(word)) {
+        return { ok: false, reason: `banned word/phrase: "${word}"` };
+      }
+    } else {
+      const re = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`);
+      if (re.test(lower)) {
+        return { ok: false, reason: `banned word: "${word}"` };
+      }
+    }
+  }
+
+  for (const phrase of BANNED_PHRASES) {
+    if (lower.includes(phrase)) {
+      return { ok: false, reason: `banned phrase: "${phrase}"` };
+    }
+  }
+
   if (/@[a-z]/i.test(text)) {
     return { ok: false, reason: "contains @mention" };
   }

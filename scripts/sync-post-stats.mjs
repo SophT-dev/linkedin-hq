@@ -114,9 +114,20 @@ async function main() {
     let posts = [];
     try { posts = await scrapeProfile(profile); }
     catch (e) { console.error(`✗ scrape ${profile.creator}: ${e.message}`); continue; }
-    console.log(`${profile.creator}: ${posts.length} posts scraped`);
+    // The actor sometimes returns duplicate entries for the same post (and
+    // ignores our maxPosts hint) -- dedupe by normalized URL so a single
+    // row never gets written twice in the same run and "Updated N row(s)"
+    // stays an honest count. Confirmed real 2026-07-09 against a live run.
+    const seenUrls = new Set();
+    const dedupedPosts = posts.filter((p) => {
+      const key = norm(p.url);
+      if (seenUrls.has(key)) return false;
+      seenUrls.add(key);
+      return true;
+    });
+    console.log(`${profile.creator}: ${posts.length} posts scraped (${dedupedPosts.length} unique)`);
 
-    for (const post of posts) {
+    for (const post of dedupedPosts) {
       const row = rows.find((r) => norm(r.postedUrl) === norm(post.url));
       if (!row) continue;
       const worked = workedVerdict(post);
