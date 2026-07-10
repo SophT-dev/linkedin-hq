@@ -9,6 +9,9 @@ import { usePathname } from "next/navigation";
 // pattern Sidebar.tsx already uses to hide itself on those routes.
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isPublic = pathname?.startsWith("/lead-magnet");
+  // Only the public /lead-magnet/<slug> landing pages keep :root's brand colors.
+  // Match "/lead-magnet/" (trailing slash) so the internal /lead-magnets list
+  // page isn't wrongly treated as public and stripped of the .app-shell theme.
+  const isPublic = pathname === "/lead-magnet" || pathname?.startsWith("/lead-magnet/");
   return <div className={`${isPublic ? "" : "app-shell "}lg:flex lg:min-h-dvh`}>{children}</div>;
 }

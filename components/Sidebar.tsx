@@ -62,9 +62,12 @@ function NavContent({ pathname, onNavigate }: { pathname: string | null; onNavig
 export default function Sidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  // Hidden on public customer-facing lead-magnet landing pages -- same
-  // convention app/(public)/layout.tsx documents for the old BottomNav.
-  if (pathname?.startsWith("/lead-magnet")) return null;
+  // Hidden ONLY on public customer-facing lead-magnet landing pages
+  // (/lead-magnet/<slug>) -- NOT on the internal /lead-magnets list page.
+  // Must match the "/lead-magnet/" prefix (with trailing slash) so the plural
+  // internal route doesn't collide -- "/lead-magnets".startsWith("/lead-magnet")
+  // was true and wrongly nulled the whole sidebar on that page.
+  if (pathname === "/lead-magnet" || pathname?.startsWith("/lead-magnet/")) return null;
 
   return (
     <>
