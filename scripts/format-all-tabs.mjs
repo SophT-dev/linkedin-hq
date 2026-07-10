@@ -105,10 +105,10 @@ const TAB_CONFIGS = {
     statusCol: 10,
   },
   LeadMagnets: {
-    // id|post_id|slug|status|title|hero_text|value_props|cta_text|outline_md|body_md|notion_url|landing_url|gif_url|created_at|clicks|conversions
-    // |kind|source_person|source_post_url|key_takeaway|used_in_post  (Q-U, Stage 8: lead magnets we receive)
-    widths: [100, 100, 150, 120, 200, 220, 220, 220, 220, 220, 220, 220, 200, 130, 80, 100, 90, 150, 240, 260, 100],
-    statusCol: 3,
+    // source_person(=Source Creator)|id|post_id|slug|status|title|hero_text|value_props|cta_text|outline_md|body_md|notion_url|landing_url|gif_url|created_at|clicks|conversions|kind|source_post_url|key_takeaway|used_in_post|domain
+    // 2026-07-11: source_person moved to the FIRST column; app reads by header name so order is free to change.
+    widths: [200, 100, 100, 150, 120, 200, 220, 220, 220, 220, 220, 220, 220, 200, 130, 80, 100, 90, 240, 260, 100, 120],
+    statusCol: 4,
   },
   DailyReports: {
     // date|category|headline|summary|source_type|source_name|url  (revamped 2026-07-08, one row per item)
