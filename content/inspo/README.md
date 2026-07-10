@@ -20,6 +20,7 @@ just downloaded blind.
 | `numbered-rules-playbook-browser-mockup.jpg` | "How we prompt Claude for GTM" — 6 numbered rules in a browser-window frame, terminal-style CTA footer |
 | `annotated-email-breakdown-critique.jpg` | Mock email UI with numbered callouts pointing to a "what's wrong / do this instead" critique column |
 | `dashboard-leaderboard-lead-magnet-cover.jpg` | "I analyzed 400k+ creators" — dashboard/leaderboard UI screenshot as a lead magnet cover |
+| `offer-rewrite-hormozi-value-equation.jpg` | Aaron Shepherd / growthflare.io "before/after offer rewrite" — dark serif-heading breakdown: vague offer → Hormozi Value Equation 4-lever framework → the same service re-levered, all in clean cards |
 
 ## Simple / iconographic
 | File | What it is |
