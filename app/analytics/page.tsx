@@ -53,8 +53,14 @@ export default function Analytics() {
     })();
   }, []);
 
+  // ONLY pure original posts count as ours. Reposts (reshares of someone
+  // else's post) AND quote-reposts (a reshare with a comment) are both
+  // excluded everywhere -- only post_type "regular" is a real original post.
   const filtered = useMemo(
-    () => posts.filter((p) => who === "All" || p.creator === who).sort((a, b) => (a.posted_at || "").localeCompare(b.posted_at || "")),
+    () => posts
+      .filter((p) => who === "All" || p.creator === who)
+      .filter((p) => p.post_type === "regular")
+      .sort((a, b) => (a.posted_at || "").localeCompare(b.posted_at || "")),
     [posts, who]
   );
 
