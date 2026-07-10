@@ -1,6 +1,6 @@
 # LinkedIn Format Library — The Living Swipe File
 **Owner:** Claude (the brain). I keep this current — Sophiya doesn't have to ask.
-**Last updated:** 2026-07-08 — added F10/F11 from the 6,642-post tagged corpus (see Sources tab)
+**Last updated:** 2026-07-11 — added F13 (the "N tools that run my entire workflow" list) from four fresh creator swipes Sophiya flagged (see Template Library rows 185-188)
 **Source of truth for:** which post formats win, why, and how we adapt them for Taha + Sophiya.
 
 ---
@@ -182,6 +182,24 @@ but the compression itself signals authority).
 
 ---
 
+### F13 · The "N Things That Run My Entire [Workflow]"  🥇 hot right now
+**Structure (fill-in-the-blank):**
+- **Hook:** `[N] [tools / skills / repos] that [quietly] run my entire [workflow / daily life][ + payoff: "and save me $[X] a year in [year]"]. [Bookmark this. | Comment "[keyword]" and I'll DM all [N].]`
+- **Body — one line per item:** `[Tool/Skill name] — [what it does in ≤8 words] [→ replaces [paid tool] (~$[X]/mo) | → catches [problem] before [consequence]]`  (numbered or emoji-bulleted; keep each item to one scannable line)
+- **Close (pick the CTA that matches your goal):**
+  - *Save/reach engine:* `[100]% free. [100]% open source. Save this + share it with [the person still paying $X/mo for this].`
+  - *Comment/DM engine:* `Comment "[keyword]" and I'll DM all [N]. Connect with me first so it sends.`
+
+**Why it works:** the number + "my entire [workflow]" promises a *complete, battle-tested* system (not a random tip), and every line is a mini value-hit so people save it. The CTA is a fork that decides the engine — bookmark → reach + saves (F9-like), comment-gated → comment/DM volume (F3-like). Runs hot in the AI-tooling niche right now.
+
+- **Proven —** Ira Bodnar · **149 likes / 641 comments** (4.3 comment-to-like ratio — the tell of a firing comment-gate) · *"10 Claude skills that run my entire paid-ads workflow. Built for Google and Meta, not generic marketing 👇"* → comment "skills" for the DM. [view](https://www.linkedin.com/posts/bodnarira_10-claude-skills-that-run-my-entire-paid-ads-share-7481218589182578688-j3TM/)
+- **Proven —** Divyanshi Sharma · score 306 likes / 38 comments · *"10 GitHub repos that quietly run my daily life and save me $2,000 a year in 2026. Bookmark this list."* → save/share variant (each item = tool + the paid SaaS it replaces + $/mo). [view](https://www.linkedin.com/posts/divyanshis-saasleadgen_10-github-repos-that-quietly-run-my-daily-share-7481004055654322176-kL0M/)
+
+**Our version:** *"10 Claude skills that run our entire cold email operation. Comment 'SKILLS' and I'll DM all 10."* → each item = one real `campaign-master` skill (build-list, company-research, recipe-*), one line each. The DM'd resource IS the lead magnet (the skill pack / annotated breakdown). Swap "cold email operation" for whatever the batch is about.
+**Whose profile:** Sophiya (builder brand fits best) or Taha (authority). **Funnel:** TOFU (capture). **Note:** this overlaps F2 (tool stack) and F3/F9 (giveaway/resource) on purpose — F13 is the *personal "my whole workflow" framing* + the save-or-DM CTA fork, which is what's pulling right now.
+
+---
+
 ## PART 2 — OUR OWN FORMATS & PERFORMANCE
 
 **Status as of 2026-06-22: no data yet.** The Posts tab in our sheet is empty — nothing has been saved, so we have no engagement history on our own content. This fills in as we post.
@@ -213,6 +231,7 @@ Moves as we gather our own data. Until then, seeded from proven external pull.
 | F10 Live Event Teaser + Recap | 2846 comments / 1857 comments | — | ⭐ Working (inherited) — highest comment counts in our scrape |
 | F11 News Reaction + Insider Verdict | 3196 comments (1039 likes) | — | ⭐ Working (inherited) — highest combined engagement in our scrape |
 | F12 Synthesis / Mega-Playbook | 430 comments (115 likes) | — | ✅ Strong (inherited) — our Knowledge Base docs are this format, source-built |
+| F13 "N Things Run My Workflow" | 641 comments (149 likes) / 306 likes | — | ⭐ Working (inherited) — hot in AI-tooling now; save-or-DM CTA fork |
 
 Legend: ⭐ top priority · ✅ strong · 🧪 testing · ❌ not working (none yet)
 
