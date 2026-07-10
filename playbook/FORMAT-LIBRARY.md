@@ -1,6 +1,6 @@
 # LinkedIn Format Library — The Living Swipe File
 **Owner:** Claude (the brain). I keep this current — Sophiya doesn't have to ask.
-**Last updated:** 2026-07-11 — added F13 (the "N tools that run my entire workflow" list) from four fresh creator swipes Sophiya flagged (see Template Library rows 185-188)
+**Last updated:** 2026-07-11 — added a fresh F3 proven example (Divyanshi Sharma's "Ultimate AI outbound setup" — a whole-OS reveal comment-gate, 1,254 comments; visual = file-tree infographic, saved to inspo)
 **Source of truth for:** which post formats win, why, and how we adapt them for Taha + Sophiya.
 
 ---
@@ -56,8 +56,9 @@ Ranked roughly by proven pull. Each is something we can run on Taha's or Sophiya
 
 - **Proven —** Nikita (Maildoso) · **score 1293** (our #2) · *"This is going to be expensive and time-consuming, but f**k it. I'm giving everyone 300 inboxes for FREE."* [view](https://www.linkedin.com/posts/nikita-maildoso-2b6a6755_this-is-going-to-be-expensive-and-time-consuming-activity-7452003775994748928--_xa)
 - **Proven —** Eric Nowoslawski · score 354 · *"I put 29 Claude skills into this repository so anyone can launch a cold email campaign… get it for free"* [view](https://www.linkedin.com/posts/outboundphd_i-put-29-claude-skills-into-this-repository-activity-7452341047361429504-lvbP)
+- **Proven —** Divyanshi Sharma · **361 likes / 1,254 comments** (3.5 comment-to-like ratio — a firing comment-gate) · *"Holy sh*t, I made the Ultimate AI outbound setup 🤯"* → "Using Claude + Apollo.io I built an AI-powered outbound OS" (9-part system: ICP builder, Apollo enrichment, sequences, 244k-trained copy, multichannel, angle testing, reply handling, integrations, export workflows) → *"Comment 'LEADS' and I'll send you the setup."* [view](https://www.linkedin.com/posts/divyanshis-saasleadgen_apollopartner-apolloanywhere-share-7478006822264823809-sWwm/) — **the "Ultimate [X] OS" reveal** variant: the whole system shown as one file-tree infographic (saved to inspo as `apollo-anywhere-share-divyanshi.jpg`), comment-gated. Note the visual carries the value, the caption just teases the 9 parts.
 
-**Our version:** THIS is the post-with-lead-magnet engine. Every giveaway post = a real lead magnet (checklist, swipe file, template). The "free" thing is literally our lead magnet.
+**Our version:** THIS is the post-with-lead-magnet engine. The Divyanshi OS-reveal maps 1:1 onto us — *"I built an AI outbound OS inside Claude. ICP research → copy → sequences → reply handling, all in one command center. Comment 'SYSTEM' and I'll send you the setup."* → the file-tree of real `campaign-master` skills IS the visual, the skill pack / annotated breakdown IS the lead magnet. Every giveaway post = a real lead magnet (checklist, swipe file, template). The "free" thing is literally our lead magnet.
 **Whose profile:** either. **Funnel:** TOFU (capture).
 
 ---

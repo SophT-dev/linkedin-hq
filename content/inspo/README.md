@@ -23,6 +23,7 @@ just downloaded blind.
 | `offer-rewrite-hormozi-value-equation.jpg` | Aaron Shepherd / growthflare.io "before/after offer rewrite" — dark serif-heading breakdown: vague offer → Hormozi Value Equation 4-lever framework → the same service re-levered, all in clean cards |
 | `claude-agentic-ecosystem-radial-infographic.jpg` | Rakesh Gohel "Anthropic Claude Agentic AI Ecosystem" — large cream/terracotta radial hub-and-spoke map: Claude logo center, 6 spokes (Core Models / Framework & Tools / Production & Workspace / Memory & Storage / Security & Governance / Deployment & CI/CD) each branching into detailed labelled cards, newsletter CTA footer |
 | `claude-model-decision-tree-infographic.jpg` | Ruben Hassid "Claude Model Tree" — dark yes/no decision-tree flowchart for picking a Claude model (Haiku 4.5 / Sonnet 5 / Opus 4.8 / Fable 5), each branch ending in a colored model card + a real prompt-example box, how-to-ai.guide CTA footer |
+| `apollo-anywhere-share-divyanshi.jpg` | Divyanshi Sharma "Claude + Apollo Multichannel Outbound Setup" — cream **file-tree infographic**: left column is a color-coded folder/skills tree (`outreach-project/`, `skills/` = 40 skills across strategy·apollo·copywriting·outreach·campaign·replies-pipeline·automation, `data/`), right column pairs each file with a one-line description; black pill footer "comment **leads** and I'll send it". The whole-outbound-OS-as-a-file-tree reveal — directly mirrors what campaign-master actually is |
 
 ## Simple / iconographic
 | File | What it is |
