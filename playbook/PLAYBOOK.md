@@ -4,6 +4,8 @@
 
 > This is the tactical *how*: what the best did and why, the universal principles, Michel's operating laws, creative formats, and the pre-batch checklist.
 > The *why & who* (positioning, USP, dual-brand, roadmap) lives in [STRATEGY.md](STRATEGY.md). **Voice rules are owned only by [`SKILL.md`](../.claude/skills/linkedin-batch/SKILL.md)** — this doc points to them, never restates them.
+>
+> **⭐ For the full lesson-by-lesson curriculum** — Lara Acosta, Pierre Herubel, Adam Robinson, Justin Welsh, Jasmin Alić, Ruben Hassid + the 2025/26 algorithm science (360Brew, van der Blom, AuthoredUp) — read **[LINKEDIN-GROWTH-MASTERCLASS.md](LINKEDIN-GROWTH-MASTERCLASS.md)** (built 2026-07-11). This PLAYBOOK's 9 experts still hold; the masterclass extends them with new creators + hard algorithm data and ties everything into one teaching path.
 
 ---
 
