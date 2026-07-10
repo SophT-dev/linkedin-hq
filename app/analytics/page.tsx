@@ -1,374 +1,245 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from "recharts";
-import { Plus, X, BarChart2, TrendingUp, Activity, Award, Eye, PenLine } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { BarChart2, TrendingUp, Heart, MessageCircle, Repeat2, Trophy, ExternalLink, RefreshCw, Info } from "lucide-react";
 
-interface PostStat {
-  post_title: string;
-  date: string;
-  impressions: number;
-  likes: number;
+// Reads the "Account Posts" tab (A:M) -- our OWN posts (Taha + Sophiya) scraped
+// daily via scripts/sync-account-posts.mjs. Real reactions/comments/reposts.
+// Views/impressions/saves are deliberately absent -- no public scraper can get
+// them (owner-only). See the honest note at the bottom of the page.
+interface AccountPost {
+  creator: string;
+  posted_at: string;
+  posted_at_display: string;
+  post_type: string;
+  text: string;
+  reactions: number;
   comments: number;
-  shares: number;
-  profile_views: number;
-  format: string;
-  funnel_stage: string;
-  row: number;
-}
-
-// Real, non-manually-entered data from the Posts tab (columns A-Q). Only the
-// L-Q fields (posted_url|likes|comments|views|worked|stats_updated_at) plus
-// batch_date/format are used here — see sync-post-stats.mjs.
-interface RealPost {
-  id: string;
-  batch_date: string;
-  format: string;
-  posted_url: string;
-  likes: number;
-  comments: number;
-  views: number | null;
+  reposts: number;
   worked: string;
+  url: string;
+  last_scraped: string;
 }
-
-const FORMATS = ["Text", "Carousel", "Image", "Story", "Video"];
-const FUNNEL = ["TOFU", "MOFU", "BOFU"];
 
 const WORKED_ORDER = ["winner", "neutral", "flop"] as const;
 const WORKED_COLOR: Record<string, string> = {
-  winner: "oklch(0.72 0.19 145)", // green
-  neutral: "oklch(0.75 0.15 85)", // amber
-  flop: "oklch(0.6 0.22 25)", // red
+  winner: "oklch(0.65 0.17 150)", // green
+  neutral: "oklch(0.75 0.14 85)", // amber
+  flop: "oklch(0.62 0.19 25)", // red
 };
+const score = (p: AccountPost) => p.reactions + p.comments * 3;
 
 export default function Analytics() {
-  const [stats, setStats] = useState<PostStat[]>([]);
-  const [adding, setAdding] = useState(false);
-  const [form, setForm] = useState({ post_title: "", date: "", impressions: "", likes: "", comments: "", shares: "", profile_views: "", format: "Text", funnel_stage: "TOFU" });
-  const [saving, setSaving] = useState(false);
-  const [realPosts, setRealPosts] = useState<RealPost[]>([]);
-  const [realLoaded, setRealLoaded] = useState(false);
+  const [posts, setPosts] = useState<AccountPost[]>([]);
+  const [loaded, setLoaded] = useState(false);
+  const [who, setWho] = useState<"All" | "Taha" | "Sophiya">("Taha");
 
-  const load = async () => {
-    const res = await fetch("/api/sheets?tab=Analytics&range=A:J");
-    if (res.ok) {
-      const { rows } = await res.json();
-      setStats(
-        (rows as string[][]).slice(1).map((r, i) => ({
-          post_title: r[0], date: r[1],
-          impressions: parseInt(r[2]) || 0, likes: parseInt(r[3]) || 0,
-          comments: parseInt(r[4]) || 0, shares: parseInt(r[5]) || 0,
-          profile_views: parseInt(r[6]) || 0,
-          format: r[7], funnel_stage: r[8], row: i + 2,
-        })).filter((s) => s.post_title).reverse()
-      );
-    }
-  };
+  useEffect(() => {
+    (async () => {
+      const res = await fetch("/api/sheets?tab=Account%20Posts&range=A:M");
+      if (res.ok) {
+        const { rows } = await res.json();
+        setPosts(
+          (rows as string[][]).slice(1).filter((r) => r[0]?.trim()).map((r) => ({
+            creator: r[0], posted_at: r[2] || "", posted_at_display: r[3] || "",
+            post_type: r[4] || "post", text: r[5] || "",
+            reactions: parseInt(r[6]) || 0, comments: parseInt(r[7]) || 0, reposts: parseInt(r[8]) || 0,
+            worked: (r[9] || "").toLowerCase(), url: r[10] || "", last_scraped: r[12] || "",
+          }))
+        );
+      }
+      setLoaded(true);
+    })();
+  }, []);
 
-  // Real, automated tracking — Posts tab A-Q, populated by scripts/sync-post-stats.mjs
-  // via Apify scraping (not the manual Analytics tab above).
-  const loadReal = async () => {
-    const res = await fetch("/api/sheets?tab=Posts&range=A:Q");
-    if (res.ok) {
-      const { rows } = await res.json();
-      setRealPosts(
-        (rows as string[][]).slice(1).map((r) => ({
-          id: r[0], batch_date: r[1], format: r[4],
-          posted_url: r[11] || "",
-          likes: parseInt(r[12]) || 0, comments: parseInt(r[13]) || 0,
-          views: r[14] !== undefined && r[14] !== "" ? parseInt(r[14]) : null,
-          worked: (r[15] || "").toLowerCase(),
-        })).filter((p) => p.id)
-      );
-    }
-    setRealLoaded(true);
-  };
+  const filtered = useMemo(
+    () => posts.filter((p) => who === "All" || p.creator === who).sort((a, b) => (a.posted_at || "").localeCompare(b.posted_at || "")),
+    [posts, who]
+  );
 
-  useEffect(() => { load(); loadReal(); }, []);
+  const totals = useMemo(() => {
+    const reactions = filtered.reduce((a, p) => a + p.reactions, 0);
+    const comments = filtered.reduce((a, p) => a + p.comments, 0);
+    const reposts = filtered.reduce((a, p) => a + p.reposts, 0);
+    const winners = filtered.filter((p) => p.worked === "winner").length;
+    const n = filtered.length;
+    return {
+      n, reactions, comments, reposts,
+      avgEng: n ? Math.round((reactions + comments) / n) : 0,
+      winRate: n ? Math.round((winners / n) * 100) : 0,
+    };
+  }, [filtered]);
 
-  const save = async () => {
-    if (!form.post_title.trim()) return;
-    setSaving(true);
-    await fetch("/api/sheets", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        tab: "Analytics",
-        values: [form.post_title, form.date, form.impressions, form.likes, form.comments, form.shares, form.profile_views, form.format, form.funnel_stage],
-      }),
-    });
-    setSaving(false);
-    setAdding(false);
-    setForm({ post_title: "", date: "", impressions: "", likes: "", comments: "", shares: "", profile_views: "", format: "Text", funnel_stage: "TOFU" });
-    await load();
-  };
+  const trend = useMemo(
+    () => filtered.slice(-30).map((p) => ({ name: (p.posted_at || "").slice(5, 10), reactions: p.reactions, comments: p.comments })),
+    [filtered]
+  );
 
-  // Pattern insights
-  const byFormat = FORMATS.map((f) => {
-    const fStats = stats.filter((s) => s.format === f);
-    return { format: f, avg: fStats.length ? Math.round(fStats.reduce((a, s) => a + s.impressions, 0) / fStats.length) : 0, count: fStats.length };
-  }).filter((f) => f.count > 0).sort((a, b) => b.avg - a.avg);
+  const workedCounts = WORKED_ORDER.map((w) => ({ worked: w, count: filtered.filter((p) => p.worked === w).length }));
+  const hasWorked = workedCounts.some((w) => w.count > 0);
 
-  const byFunnel = FUNNEL.map((f) => {
-    const fStats = stats.filter((s) => s.funnel_stage === f);
-    return { funnel: f, avg: fStats.length ? Math.round(fStats.reduce((a, s) => a + s.impressions, 0) / fStats.length) : 0, count: fStats.length };
-  });
+  const byType = useMemo(() => {
+    const types = Array.from(new Set(filtered.map((p) => p.post_type).filter(Boolean)));
+    return types.map((t) => {
+      const ps = filtered.filter((p) => p.post_type === t);
+      return { type: t, avg: ps.length ? Math.round(ps.reduce((a, p) => a + score(p), 0) / ps.length) : 0, count: ps.length };
+    }).sort((a, b) => b.avg - a.avg);
+  }, [filtered]);
 
-  const top5 = [...stats].sort((a, b) => b.impressions - a.impressions).slice(0, 5);
-  const chartData = [...stats].reverse().slice(-20).map((s) => ({ name: s.date?.slice(5), impressions: s.impressions, likes: s.likes }));
-
-  // Real performance — only rows with a posted_url are actually-published, tracked posts.
-  const tracked = [...realPosts].filter((p) => p.posted_url.trim()).sort((a, b) => (a.batch_date || "").localeCompare(b.batch_date || ""));
-  const trendData = tracked.map((p) => ({ name: p.batch_date?.slice(5) || p.id, likes: p.likes, comments: p.comments }));
-  const viewsHaveData = tracked.some((p) => (p.views ?? 0) > 0);
-  const viewsData = tracked.map((p) => ({ name: p.batch_date?.slice(5) || p.id, views: p.views ?? 0 }));
-
-  const workedCounts = WORKED_ORDER.map((w) => ({
-    worked: w,
-    count: tracked.filter((p) => p.worked === w).length,
-  }));
-  const hasWorkedData = workedCounts.some((w) => w.count > 0);
-
-  const realByFormat = Array.from(new Set(tracked.map((p) => p.format).filter(Boolean)))
-    .map((f) => {
-      const fPosts = tracked.filter((p) => p.format === f);
-      const avgScore = fPosts.length ? Math.round(fPosts.reduce((a, p) => a + p.likes + p.comments * 3, 0) / fPosts.length) : 0;
-      return { format: f, avgScore, count: fPosts.length };
-    })
-    .sort((a, b) => b.avgScore - a.avgScore);
+  const topPosts = useMemo(() => [...filtered].sort((a, b) => score(b) - score(a)).slice(0, 6), [filtered]);
+  const lastScraped = useMemo(() => filtered.map((p) => p.last_scraped).filter(Boolean).sort().pop() || "", [filtered]);
 
   const tooltipStyle = {
-    contentStyle: { background: "var(--surface-2)", border: "1px solid var(--border-subtle)", borderRadius: "8px", fontSize: "12px", color: "oklch(0.985 0 0)" },
-    labelStyle: { color: "oklch(0.708 0 0)" },
+    contentStyle: { background: "var(--card)", border: "1px solid var(--border)", borderRadius: "12px", fontSize: "12px", color: "var(--foreground)", boxShadow: "0 4px 12px oklch(0 0 0 / 8%)" },
+    labelStyle: { color: "var(--muted-foreground)" },
   };
 
+  const kpis = [
+    { label: "Posts", value: totals.n, icon: BarChart2, tint: "var(--primary)" },
+    { label: "Reactions", value: totals.reactions.toLocaleString(), icon: Heart, tint: "oklch(0.62 0.19 25)" },
+    { label: "Comments", value: totals.comments.toLocaleString(), icon: MessageCircle, tint: "var(--chart-2)" },
+    { label: "Reposts", value: totals.reposts.toLocaleString(), icon: Repeat2, tint: "oklch(0.65 0.17 150)" },
+    { label: "Avg Eng / Post", value: totals.avgEng.toLocaleString(), icon: TrendingUp, tint: "var(--chart-3)" },
+    { label: "Winner Rate", value: `${totals.winRate}%`, icon: Trophy, tint: "oklch(0.75 0.14 85)" },
+  ];
+
+  const card = "rounded-2xl border bg-card border-border shadow-sm";
+
   return (
-    <div className="max-w-lg mx-auto px-4 py-6 space-y-5">
-      <div className="flex items-center justify-between">
+    <div className="max-w-lg lg:max-w-6xl mx-auto px-4 lg:px-8 py-6 space-y-6">
+      {/* Header + profile toggle */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Performance</p>
-          <h1 className="text-xl font-bold flex items-center gap-2"><BarChart2 size={20} className="text-indigo-400" /> Analytics</h1>
+          <h1 className="text-2xl font-bold flex items-center gap-2"><BarChart2 size={22} style={{ color: "var(--primary)" }} /> My Account Analytics</h1>
         </div>
-        <Button size="sm" onClick={() => setAdding(true)}><Plus size={16} className="mr-1" /> Log Post</Button>
+        <div className="flex gap-1 p-1 rounded-full bg-muted">
+          {(["Taha", "Sophiya", "All"] as const).map((w) => (
+            <button
+              key={w}
+              onClick={() => setWho(w)}
+              className="px-4 py-1.5 rounded-full text-sm font-medium transition-colors"
+              style={who === w ? { background: "var(--card)", color: "var(--foreground)", boxShadow: "0 1px 3px oklch(0 0 0 / 8%)" } : { color: "var(--muted-foreground)" }}
+            >
+              {w}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Real performance — automated, from Posts tab (Apify-scraped), not manual entry */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Activity size={16} className="text-green-400" />
-          <p className="text-sm font-semibold">Real Performance</p>
-          <span className="text-[10px] px-2 py-0.5 rounded-full border border-white/10 text-muted-foreground">from your published posts</span>
+      {!loaded ? (
+        <div className={`${card} p-8 text-center text-muted-foreground text-sm`}>Loading real post data…</div>
+      ) : filtered.length === 0 ? (
+        <div className={`${card} p-8 text-center text-sm text-muted-foreground`}>
+          No posts scraped yet for {who}. Run <code className="text-[11px] px-1.5 py-0.5 rounded bg-muted">doppler run -- node scripts/sync-account-posts.mjs --run</code> to pull them.
         </div>
-
-        {!realLoaded ? null : tracked.length === 0 ? (
-          <div className="rounded-2xl p-5 border text-center text-sm text-muted-foreground" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
-            No published posts tracked yet. Run <code className="text-[11px] px-1 py-0.5 rounded bg-black/20">node scripts/sync-post-stats.mjs --run</code> after your first post goes live to start tracking real performance.
+      ) : (
+        <>
+          {/* KPI hero row */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            {kpis.map(({ label, value, icon: Icon, tint }) => (
+              <div key={label} className={`${card} p-4`}>
+                <Icon size={18} style={{ color: tint }} />
+                <p className="text-2xl font-bold mt-2 tabular-nums">{value}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
+              </div>
+            ))}
           </div>
-        ) : (
-          <>
-            {/* Likes + comments over time */}
-            <div className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
-              <p className="text-sm font-semibold">Likes &amp; Comments Over Time</p>
-              <div className="h-40">
+
+          <div className="grid lg:grid-cols-3 gap-4">
+            {/* Engagement over time */}
+            <div className={`${card} p-5 space-y-3 lg:col-span-2`}>
+              <p className="text-sm font-semibold">Engagement Over Time <span className="text-muted-foreground font-normal">· last 30 posts</span></p>
+              <div className="h-56">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={trendData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 5%)" />
-                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "oklch(0.556 0 0)" }} tickLine={false} axisLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "oklch(0.556 0 0)" }} tickLine={false} axisLine={false} />
+                  <LineChart data={trend}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} tickLine={false} axisLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} tickLine={false} axisLine={false} width={28} />
                     <Tooltip {...tooltipStyle} />
-                    <Line type="monotone" dataKey="likes" stroke="oklch(0.488 0.243 264.376)" strokeWidth={2} dot={{ r: 3 }} />
-                    <Line type="monotone" dataKey="comments" stroke="oklch(0.75 0.15 85)" strokeWidth={2} dot={{ r: 3 }} />
+                    <Line type="monotone" dataKey="reactions" stroke="var(--primary)" strokeWidth={2.5} dot={{ r: 2 }} />
+                    <Line type="monotone" dataKey="comments" stroke="var(--chart-2)" strokeWidth={2.5} dot={{ r: 2 }} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
               <div className="flex gap-4 text-xs text-muted-foreground">
-                <span><span style={{ color: "oklch(0.488 0.243 264.376)" }}>●</span> Likes</span>
-                <span><span style={{ color: "oklch(0.75 0.15 85)" }}>●</span> Comments</span>
+                <span className="flex items-center gap-1"><span className="inline-block w-2.5 h-2.5 rounded-full" style={{ background: "var(--primary)" }} /> Reactions</span>
+                <span className="flex items-center gap-1"><span className="inline-block w-2.5 h-2.5 rounded-full" style={{ background: "var(--chart-2)" }} /> Comments</span>
               </div>
-              <p className="text-xs text-muted-foreground">{tracked.length} tracked post{tracked.length === 1 ? "" : "s"} (real, scraped via Apify)</p>
             </div>
 
-            {/* Worked verdict distribution */}
-            {hasWorkedData && (
-              <div className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
-                <div className="flex items-center gap-2">
-                  <Award size={16} className="text-indigo-400" />
-                  <p className="text-sm font-semibold">Worked Verdict</p>
-                </div>
-                <div className="h-32">
+            {/* Worked verdict */}
+            {hasWorked && (
+              <div className={`${card} p-5 space-y-3`}>
+                <p className="text-sm font-semibold flex items-center gap-2"><Trophy size={16} style={{ color: "oklch(0.75 0.14 85)" }} /> How Posts Land</p>
+                <div className="h-40">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={workedCounts}>
-                      <XAxis dataKey="worked" tick={{ fontSize: 11, fill: "oklch(0.556 0 0)" }} tickLine={false} axisLine={false} />
-                      <Tooltip {...tooltipStyle} formatter={(v) => [v, "Posts"]} />
-                      <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                      <XAxis dataKey="worked" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} tickLine={false} axisLine={false} />
+                      <Tooltip {...tooltipStyle} formatter={(v) => [v, "Posts"]} cursor={{ fill: "var(--muted)" }} />
+                      <Bar dataKey="count" radius={[6, 6, 0, 0]}>
                         {workedCounts.map((w) => <Cell key={w.worked} fill={WORKED_COLOR[w.worked]} />)}
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
+                <p className="text-xs text-muted-foreground">Score = reactions + comments×3. Winner ≥ 80, flop ≤ 15.</p>
               </div>
             )}
+          </div>
 
-            {/* Best-performing format (real data) */}
-            {realByFormat.length > 0 && (
-              <div className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
-                <div className="flex items-center gap-2">
-                  <TrendingUp size={16} className="text-green-400" />
-                  <p className="text-sm font-semibold">Best Format (real posts, likes + comments×3)</p>
-                </div>
-                <div className="h-32">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={realByFormat}>
-                      <XAxis dataKey="format" tick={{ fontSize: 11, fill: "oklch(0.556 0 0)" }} tickLine={false} axisLine={false} />
-                      <Tooltip {...tooltipStyle} formatter={(v) => [v, "Avg Score"]} />
-                      <Bar dataKey="avgScore" fill="oklch(0.488 0.243 264.376)" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            )}
-
-            {/* Views — real if manually filled, honest note if not */}
-            <div className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
-              <div className="flex items-center gap-2">
-                <Eye size={16} className="text-muted-foreground" />
-                <p className="text-sm font-semibold">Views / Impressions</p>
-              </div>
-              {viewsHaveData ? (
-                <>
-                  <div className="h-32">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={viewsData}>
-                        <XAxis dataKey="name" tick={{ fontSize: 10, fill: "oklch(0.556 0 0)" }} tickLine={false} axisLine={false} />
-                        <Tooltip {...tooltipStyle} formatter={(v) => [Number(v).toLocaleString(), "Views"]} />
-                        <Bar dataKey="views" fill="oklch(0.65 0.2 300)" radius={[4, 4, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
+          {/* Top posts */}
+          <div className={`${card} p-5 space-y-3`}>
+            <p className="text-sm font-semibold flex items-center gap-2"><TrendingUp size={16} style={{ color: "oklch(0.65 0.17 150)" }} /> Top Posts</p>
+            <div className="divide-y divide-border">
+              {topPosts.map((p, i) => (
+                <div key={p.url || i} className="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
+                  <span className="text-sm font-bold text-muted-foreground w-5 mt-0.5 tabular-nums">#{i + 1}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm line-clamp-2">{p.text || "(no text)"}</p>
+                    <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1"><Heart size={12} /> {p.reactions}</span>
+                      <span className="flex items-center gap-1"><MessageCircle size={12} /> {p.comments}</span>
+                      <span className="flex items-center gap-1"><Repeat2 size={12} /> {p.reposts}</span>
+                      <span>{p.posted_at_display}</span>
+                      {who === "All" && <span className="font-medium">{p.creator}</span>}
+                    </div>
                   </div>
-                  <p className="text-xs text-muted-foreground">Apify can&apos;t scrape views — any values shown here were entered manually from your own LinkedIn analytics.</p>
-                </>
-              ) : (
-                <p className="text-xs text-muted-foreground">View/impression tracking requires manual entry from your own LinkedIn analytics — Apify can&apos;t scrape this.</p>
-              )}
+                  {p.url && (
+                    <a href={p.url} target="_blank" rel="noopener noreferrer" className="p-1 flex-shrink-0" style={{ color: "var(--primary)" }}><ExternalLink size={15} /></a>
+                  )}
+                </div>
+              ))}
             </div>
-          </>
-        )}
-      </div>
-
-      {/* Manual log — divider */}
-      <div className="flex items-center gap-2 pt-2">
-        <PenLine size={16} className="text-muted-foreground" />
-        <p className="text-sm font-semibold text-muted-foreground">Manual Log (self-reported)</p>
-      </div>
-
-      {/* Summary cards */}
-      {stats.length > 0 && (
-        <div className="grid grid-cols-3 gap-3">
-          {[
-            { label: "Total Posts", value: stats.length },
-            { label: "Avg Impressions", value: Math.round(stats.reduce((a, s) => a + s.impressions, 0) / stats.length).toLocaleString() },
-            { label: "Avg Engagement", value: `${Math.round(stats.reduce((a, s) => a + (s.likes + s.comments), 0) / stats.length)}` },
-          ].map(({ label, value }) => (
-            <div key={label} className="rounded-xl p-3 border text-center" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
-              <p className="text-lg font-bold">{value}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Add form */}
-      {adding && (
-        <div className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold">Log Post Stats</span>
-            <button onClick={() => setAdding(false)} className="text-muted-foreground"><X size={18} /></button>
           </div>
-          <input value={form.post_title} onChange={(e) => setForm({ ...form, post_title: e.target.value })} placeholder="Post title *" className="w-full px-3 py-2.5 rounded-xl text-sm bg-black/20 border border-white/10 text-foreground placeholder:text-muted-foreground outline-none" />
-          <input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className="w-full px-3 py-2.5 rounded-xl text-sm bg-black/20 border border-white/10 text-foreground outline-none" />
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              { key: "impressions", label: "Impressions" },
-              { key: "likes", label: "Likes" },
-              { key: "comments", label: "Comments" },
-              { key: "shares", label: "Shares" },
-              { key: "profile_views", label: "Profile Views" },
-            ].map(({ key, label }) => (
-              <input key={key} type="number" value={form[key as keyof typeof form]} onChange={(e) => setForm({ ...form, [key]: e.target.value })} placeholder={label} className="w-full px-3 py-2.5 rounded-xl text-sm bg-black/20 border border-white/10 text-foreground placeholder:text-muted-foreground outline-none" />
-            ))}
-          </div>
-          <div className="flex gap-2 flex-wrap">
-            {FORMATS.map((f) => <button key={f} onClick={() => setForm({ ...form, format: f })} className={`text-xs px-3 py-1.5 rounded-full border ${form.format === f ? "bg-indigo-500/20 border-indigo-500/50 text-indigo-300" : "border-white/10 text-muted-foreground"}`}>{f}</button>)}
-          </div>
-          <div className="flex gap-2">
-            {FUNNEL.map((f) => <button key={f} onClick={() => setForm({ ...form, funnel_stage: f })} className={`flex-1 py-2 rounded-xl text-xs font-semibold border ${form.funnel_stage === f ? "bg-indigo-500/20 border-indigo-500/50 text-indigo-300" : "border-white/10 text-muted-foreground"}`}>{f}</button>)}
-          </div>
-          <Button onClick={save} disabled={!form.post_title.trim() || saving} className="w-full">{saving ? "Saving..." : "Save Stats"}</Button>
-        </div>
-      )}
 
-      {stats.length === 0 && !adding && (
-        <div className="text-center py-12 text-muted-foreground">
-          <BarChart2 size={40} className="mx-auto mb-3 opacity-30" />
-          <p className="text-sm">No data yet. Log your first post stats!</p>
-        </div>
-      )}
-
-      {/* Impressions chart */}
-      {chartData.length > 0 && (
-        <div className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
-          <p className="text-sm font-semibold">Impressions Over Time</p>
-          <div className="h-40">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 5%)" />
-                <XAxis dataKey="name" tick={{ fontSize: 10, fill: "oklch(0.556 0 0)" }} tickLine={false} axisLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: "oklch(0.556 0 0)" }} tickLine={false} axisLine={false} />
-                <Tooltip {...tooltipStyle} />
-                <Line type="monotone" dataKey="impressions" stroke="oklch(0.488 0.243 264.376)" strokeWidth={2} dot={false} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      )}
-
-      {/* Best format */}
-      {byFormat.length > 0 && (
-        <div className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
-          <div className="flex items-center gap-2">
-            <TrendingUp size={16} className="text-green-400" />
-            <p className="text-sm font-semibold">Best Format (avg impressions)</p>
-          </div>
-          <div className="h-36">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={byFormat}>
-                <XAxis dataKey="format" tick={{ fontSize: 11, fill: "oklch(0.556 0 0)" }} tickLine={false} axisLine={false} />
-                <Tooltip {...tooltipStyle} formatter={(v) => [Number(v).toLocaleString(), "Avg Impressions"]} />
-                <Bar dataKey="avg" fill="oklch(0.488 0.243 264.376)" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            <span className="text-indigo-300 font-medium">{byFormat[0]?.format}</span> performs best with avg {byFormat[0]?.avg.toLocaleString()} impressions
-          </p>
-        </div>
-      )}
-
-      {/* Top 5 posts */}
-      {top5.length > 0 && (
-        <div className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
-          <p className="text-sm font-semibold">Top 5 Posts by Impressions</p>
-          {top5.map((p, i) => (
-            <div key={p.row} className="flex items-start gap-3">
-              <span className="text-xs text-muted-foreground w-4 mt-0.5">#{i + 1}</span>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{p.post_title}</p>
-                <p className="text-xs text-muted-foreground">{p.impressions.toLocaleString()} impressions · {p.format} · {p.funnel_stage}</p>
+          {/* Post type performance */}
+          {byType.length > 1 && (
+            <div className={`${card} p-5 space-y-3`}>
+              <p className="text-sm font-semibold">Post Type — Avg Score</p>
+              <div className="h-40">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={byType} layout="vertical">
+                    <XAxis type="number" tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} tickLine={false} axisLine={false} />
+                    <YAxis type="category" dataKey="type" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} tickLine={false} axisLine={false} width={70} />
+                    <Tooltip {...tooltipStyle} formatter={(v, _n, item) => [`${v} avg · ${item?.payload?.count} posts`, "Score"]} cursor={{ fill: "var(--muted)" }} />
+                    <Bar dataKey="avg" fill="var(--primary)" radius={[0, 6, 6, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </div>
-          ))}
-        </div>
+          )}
+
+          {/* Honest note about what we can't scrape */}
+          <div className="rounded-2xl border border-border bg-muted/40 p-4 flex gap-3">
+            <Info size={16} className="text-muted-foreground flex-shrink-0 mt-0.5" />
+            <div className="text-xs text-muted-foreground space-y-1">
+              <p><span className="font-semibold text-foreground">Views, impressions &amp; saves aren&apos;t shown</span> — LinkedIn only reveals those to the post owner in native analytics; no scraper (ours or anyone&apos;s) can pull them. Everything above is real public data: reactions, comments, reposts.</p>
+              {lastScraped && <p className="flex items-center gap-1"><RefreshCw size={11} /> Last synced {lastScraped.slice(0, 10)} · refreshes daily via <code className="px-1 rounded bg-muted">sync-account-posts.mjs</code></p>}
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
