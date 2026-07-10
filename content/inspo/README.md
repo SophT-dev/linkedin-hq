@@ -48,6 +48,7 @@ just downloaded blind.
 | `terminal-typing-screen-recording.gif` (poster: `terminal-typing-screen-recording-poster.jpg`) | Screen recording of a terminal/chat window with text being typed live |
 | `content-system-flowchart-animated.gif` | "LinkedIn Content" system flowchart, node-by-node animated reveal from ICP to Closed Won |
 | `outbound-flow-diagram-animated.gif` | "Where Outbound Actually Converts" — connected-flow diagram with insight callouts and a tools-used sidebar |
+| `claude-code-hubspot-integration-flow-animated.gif` (poster: `claude-code-hubspot-integration-flow-animated-poster.jpg`) | "Claude Code for HubSpot" — dark-indigo branded **logo → terminal → logo** integration animation: Claude card (orange asterisk) → a "freckle CLI" terminal with animated dotted data streams flowing across → HubSpot card, a "Sarah Chen · Contact" card populating on the right, floating Notion/Google/freckle logo bubbles, "freckle_ × workflows.io" co-brand footer. The clean animated version of the "logo, arrow, logo" tool-integration reveal |
 
 *(The two largest GIFs — talking-head and terminal-typing — have a small `-poster.jpg` still frame
 saved alongside them for quick preview without opening the full 12–20MB file.)*
