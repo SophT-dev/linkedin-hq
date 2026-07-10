@@ -71,6 +71,7 @@ in progress, see `linkedin-hq/playbook/RESOURCES.md` or ask for status).
 |---|---|
 | `lead-magnet-toc-cover-light.jpg` | Simple light-background lead magnet cover — emoji + bold title + italic subtitle + emoji-bullet TOC |
 | `playbook-toc-two-column.jpg` | "The 2026 Cold Email Playbook" — icon + title + two-column categorized resource list |
+| `lead-magnet-toc-four-quadrant-platform-logos.jpg` | "The $10M eCom Ads Playbook" (Cory Dobbin) — light cover with Shopify logo + 2×2 quadrant TOC (Meta/Google/Programmatic/Email), each quadrant a platform logo + emoji-bulleted contents |
 
 ---
 Note: `media.licdn.com` links are signed and expire (the `e=` query param is a Unix timestamp) —
