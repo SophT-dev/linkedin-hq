@@ -1,0 +1,35 @@
+# Daily scrape of our OWN LinkedIn posts (Taha + Sophiya) + their public stats
+# (reactions / comments / reposts) into the "Account Posts" Sheet tab, via the
+# same Apify actor we use for tracked experts. Powers the Analytics "my account"
+# view. Upserts by urn, so it refreshes recent posts and captures new ones.
+#
+# NOT ACTIVE until these repo secrets are added (Settings -> Secrets -> Actions):
+#   GOOGLE_SERVICE_ACCOUNT_EMAIL, GOOGLE_PRIVATE_KEY, GOOGLE_SHEETS_ID, APIFY_TOKEN
+# and Actions is enabled. It costs Apify credits on every run (unsupervised
+# recurring spend) -- enable only when you're good with that. Run it by hand
+# first via the "Run workflow" button (workflow_dispatch) to sanity-check.
+
+name: sync-account-posts
+
+on:
+  schedule:
+    - cron: "0 6 * * *" # 06:00 UTC daily (~11am PKT)
+  workflow_dispatch: {} # manual "Run workflow" button
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install deps
+        run: npm ci || npm install googleapis
+      - name: Scrape + upsert account posts
+        env:
+          GOOGLE_SERVICE_ACCOUNT_EMAIL: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }}
+          GOOGLE_PRIVATE_KEY: ${{ secrets.GOOGLE_PRIVATE_KEY }}
+          GOOGLE_SHEETS_ID: ${{ secrets.GOOGLE_SHEETS_ID }}
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+        run: node scripts/sync-account-posts.mjs --run
