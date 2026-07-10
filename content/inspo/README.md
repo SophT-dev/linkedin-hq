@@ -22,6 +22,7 @@ just downloaded blind.
 | `dashboard-leaderboard-lead-magnet-cover.jpg` | "I analyzed 400k+ creators" — dashboard/leaderboard UI screenshot as a lead magnet cover |
 | `offer-rewrite-hormozi-value-equation.jpg` | Aaron Shepherd / growthflare.io "before/after offer rewrite" — dark serif-heading breakdown: vague offer → Hormozi Value Equation 4-lever framework → the same service re-levered, all in clean cards |
 | `claude-agentic-ecosystem-radial-infographic.jpg` | Rakesh Gohel "Anthropic Claude Agentic AI Ecosystem" — large cream/terracotta radial hub-and-spoke map: Claude logo center, 6 spokes (Core Models / Framework & Tools / Production & Workspace / Memory & Storage / Security & Governance / Deployment & CI/CD) each branching into detailed labelled cards, newsletter CTA footer |
+| `claude-model-decision-tree-infographic.jpg` | Ruben Hassid "Claude Model Tree" — dark yes/no decision-tree flowchart for picking a Claude model (Haiku 4.5 / Sonnet 5 / Opus 4.8 / Fable 5), each branch ending in a colored model card + a real prompt-example box, how-to-ai.guide CTA footer |
 
 ## Simple / iconographic
 | File | What it is |
