@@ -5,9 +5,8 @@ import { Plus, X, ExternalLink, Layers, TrendingUp, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
-// LeadMagnets tab schema (A:U, 21 columns) — see linkedin-hq/CLAUDE.md's tab reference.
-const COLS = 21;
-
+// LeadMagnets is read by HEADER NAME, not fixed column position (2026-07-11),
+// so columns can be reordered in the Sheet without breaking this view.
 interface LeadMagnet {
   id: string;
   post_id: string;
@@ -55,57 +54,71 @@ function parseTakeaway(text: string): string[] {
     .filter(Boolean);
 }
 
-function pad(row: string[], len: number): string[] {
-  const out = row.slice(0, len);
-  while (out.length < len) out.push("");
-  return out;
-}
+// "Ours" = lead magnets published on one of our own profiles, marked by the
+// Source Creator (source_person) column. Right now that's Taha Anwar's profile.
+const OUR_CREATORS = ["Taha Anwar"];
 
 export default function LeadMagnets() {
   const [magnets, setMagnets] = useState<LeadMagnet[]>([]);
+  const [headers, setHeaders] = useState<string[]>([]);
   const [tab, setTab] = useState("own");
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState({ title: "", hero_text: "", landing_url: "" });
   const [saving, setSaving] = useState(false);
 
   const load = async () => {
-    const res = await fetch("/api/sheets?tab=LeadMagnets&range=A:U");
+    const res = await fetch("/api/sheets?tab=LeadMagnets&range=A:Z");
     if (res.ok) {
       const { rows } = await res.json();
+      const hdr = ((rows[0] as string[]) || []).map((h) => String(h || "").trim());
+      setHeaders(hdr);
+      const idx: Record<string, number> = {};
+      hdr.forEach((h, i) => { if (h && idx[h] === undefined) idx[h] = i; });
+      const g = (r: string[], k: string) => { const i = idx[k]; return i === undefined ? "" : (r[i] ?? ""); };
       setMagnets(
-        (rows as string[][]).slice(1).map((raw, i) => {
-          const r = pad(raw, COLS);
-          return {
-            id: r[0], post_id: r[1], slug: r[2], status: r[3], title: r[4],
-            hero_text: r[5], value_props: r[6], cta_text: r[7], outline_md: r[8],
-            body_md: r[9], notion_url: r[10], landing_url: r[11], gif_url: r[12],
-            created_at: r[13], clicks: parseInt(r[14]) || 0, conversions: parseInt(r[15]) || 0,
-            kind: r[16] || "own", source_person: r[17], source_post_url: r[18],
-            key_takeaway: r[19], used_in_post: r[20], row: i + 2, raw: r,
-          };
-        }).filter((m) => m.title.trim())
+        (rows as string[][]).slice(1).map((raw, i) => ({
+          id: g(raw, "id"), post_id: g(raw, "post_id"), slug: g(raw, "slug"), status: g(raw, "status"), title: g(raw, "title"),
+          hero_text: g(raw, "hero_text"), value_props: g(raw, "value_props"), cta_text: g(raw, "cta_text"), outline_md: g(raw, "outline_md"),
+          body_md: g(raw, "body_md"), notion_url: g(raw, "notion_url"), landing_url: g(raw, "landing_url"), gif_url: g(raw, "gif_url"),
+          created_at: g(raw, "created_at"), clicks: parseInt(g(raw, "clicks")) || 0, conversions: parseInt(g(raw, "conversions")) || 0,
+          kind: g(raw, "kind"), source_person: g(raw, "source_person"), source_post_url: g(raw, "source_post_url"),
+          key_takeaway: g(raw, "key_takeaway"), used_in_post: g(raw, "used_in_post"), row: i + 2, raw,
+        })).filter((m) => m.title.trim())
       );
     }
   };
 
   useEffect(() => { load(); }, []);
 
-  const own = magnets.filter((m) => m.kind !== "received").sort((a, b) => b.clicks - a.clicks);
-  const received = magnets.filter((m) => m.kind === "received");
+  // Ours = our own profiles (Source Creator is one of us); everything else is Received.
+  const own = magnets.filter((m) => OUR_CREATORS.includes(m.source_person.trim())).sort((a, b) => b.clicks - a.clicks);
+  const received = magnets.filter((m) => !OUR_CREATORS.includes(m.source_person.trim()));
 
   const totalClicks = own.reduce((a, m) => a + m.clicks, 0);
   const totalConversions = own.reduce((a, m) => a + m.conversions, 0);
 
+  const headerIdx = (): Record<string, number> => {
+    const idx: Record<string, number> = {};
+    headers.forEach((h, i) => { if (h && idx[h] === undefined) idx[h] = i; });
+    return idx;
+  };
+
   const save = async () => {
     if (!form.title.trim()) return;
     setSaving(true);
-    // Full 21-column row, correct field positions (id/post_id/slug left blank — this is a
-    // manual UI add, not a skill-built magnet with a nanoid + post link).
-    const values = [
-      "", "", "", "published", form.title, form.hero_text, "", "", "", "", "",
-      form.landing_url, "", new Date().toISOString().split("T")[0], 0, 0,
-      "own", "", "", "", "",
-    ];
+    // Build the row by header name (order-independent). A manual add on the
+    // "Ours" tab is one of our own magnets, so it's tagged with our creator.
+    const idx = headerIdx();
+    const values: (string | number)[] = new Array(headers.length).fill("");
+    const set = (k: string, v: string | number) => { const i = idx[k]; if (i !== undefined) values[i] = v; };
+    set("status", "published");
+    set("title", form.title);
+    set("hero_text", form.hero_text);
+    set("landing_url", form.landing_url);
+    set("created_at", new Date().toISOString().split("T")[0]);
+    set("clicks", 0);
+    set("conversions", 0);
+    set("source_person", OUR_CREATORS[0]);
     await fetch("/api/sheets", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -119,8 +132,11 @@ export default function LeadMagnets() {
 
   const toggleReviewed = async (m: LeadMagnet) => {
     const newStatus = m.status === "reviewed" ? "unreviewed" : "reviewed";
+    const idx = headerIdx();
     const values = [...m.raw];
-    values[3] = newStatus;
+    while (values.length < headers.length) values.push("");
+    const si = idx["status"];
+    if (si !== undefined) values[si] = newStatus;
     await fetch("/api/sheets", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
