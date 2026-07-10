@@ -21,6 +21,7 @@ just downloaded blind.
 | `annotated-email-breakdown-critique.jpg` | Mock email UI with numbered callouts pointing to a "what's wrong / do this instead" critique column |
 | `dashboard-leaderboard-lead-magnet-cover.jpg` | "I analyzed 400k+ creators" — dashboard/leaderboard UI screenshot as a lead magnet cover |
 | `offer-rewrite-hormozi-value-equation.jpg` | Aaron Shepherd / growthflare.io "before/after offer rewrite" — dark serif-heading breakdown: vague offer → Hormozi Value Equation 4-lever framework → the same service re-levered, all in clean cards |
+| `claude-agentic-ecosystem-radial-infographic.jpg` | Rakesh Gohel "Anthropic Claude Agentic AI Ecosystem" — large cream/terracotta radial hub-and-spoke map: Claude logo center, 6 spokes (Core Models / Framework & Tools / Production & Workspace / Memory & Storage / Security & Governance / Deployment & CI/CD) each branching into detailed labelled cards, newsletter CTA footer |
 
 ## Simple / iconographic
 | File | What it is |
@@ -72,6 +73,7 @@ in progress, see `linkedin-hq/playbook/RESOURCES.md` or ask for status).
 | `lead-magnet-toc-cover-light.jpg` | Simple light-background lead magnet cover — emoji + bold title + italic subtitle + emoji-bullet TOC |
 | `playbook-toc-two-column.jpg` | "The 2026 Cold Email Playbook" — icon + title + two-column categorized resource list |
 | `lead-magnet-toc-four-quadrant-platform-logos.jpg` | "The $10M eCom Ads Playbook" (Cory Dobbin) — light cover with Shopify logo + 2×2 quadrant TOC (Meta/Google/Programmatic/Email), each quadrant a platform logo + emoji-bulleted contents |
+| `lead-magnet-cover-icon-grid-10-skills.jpg` | "Claude · 10 Skills for Paid Ads" (Ira Bodnar) — cream cover, serif title + Claude asterisk, 2×5 line-icon grid (one icon+label per skill), Google Ads + Meta Ads logos at bottom |
 
 ---
 Note: `media.licdn.com` links are signed and expire (the `e=` query param is a Unix timestamp) —
