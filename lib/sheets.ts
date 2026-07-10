@@ -685,6 +685,17 @@ export interface LeadMagnetRow {
 
 const LEAD_MAGNETS_TAB = "LeadMagnets";
 
+// Field -> spreadsheet column is resolved by HEADER NAME, not fixed position,
+// so the columns can be reordered in the Sheet without breaking the app.
+// (2026-07-11: moved source_person to the front + made this order-independent.)
+async function readLeadMagnetSheet(): Promise<{ headers: string[]; rows: string[][]; idx: Record<string, number> }> {
+  const all = await readSheet(LEAD_MAGNETS_TAB, "A:Z");
+  const headers = (all[0] || []).map((h) => String(h || "").trim());
+  const idx: Record<string, number> = {};
+  headers.forEach((h, i) => { if (h && idx[h] === undefined) idx[h] = i; });
+  return { headers, rows: all.slice(1), idx };
+}
+
 function kebab(s: string): string {
   return s
     .toLowerCase()
@@ -698,33 +709,26 @@ export async function createLeadMagnetRow(input: {
   title: string;
   status?: LeadMagnetRow["status"];
 }): Promise<{ id: string; slug: string; rowIndex: number }> {
-  const existing = await readSheet(LEAD_MAGNETS_TAB, "A:C");
-  const usedSlugs = new Set(existing.slice(1).map((r) => r[2]).filter(Boolean));
+  const { headers, rows, idx } = await readLeadMagnetSheet();
+  const slugCol = idx["slug"];
+  const usedSlugs = new Set(rows.map((r) => r[slugCol]).filter(Boolean));
   let slug = kebab(input.title) || "lead-magnet";
   if (usedSlugs.has(slug)) slug = `${slug}-${nanoid(4).toLowerCase()}`;
 
   const id = nanoid(10);
   const createdAt = new Date().toISOString();
-  const baseRowIndex = existing.length + 1;
+  const baseRowIndex = rows.length + 2; // +1 header, +1 for the new row
 
-  const row = [
-    id,
-    input.post_id,
-    slug,
-    input.status || "researching",
-    input.title,
-    "",  // hero_text
-    "",  // value_props
-    "",  // cta_text
-    "",  // outline_md
-    "",  // body_md
-    "",  // notion_url
-    "",  // landing_url
-    "",  // gif_url
-    createdAt,
-    0,   // clicks
-    0,   // conversions
-  ];
+  const row: (string | number)[] = new Array(headers.length).fill("");
+  const set = (k: string, v: string | number) => { const i = idx[k]; if (i !== undefined) row[i] = v; };
+  set("id", id);
+  set("post_id", input.post_id);
+  set("slug", slug);
+  set("status", input.status || "researching");
+  set("title", input.title);
+  set("created_at", createdAt);
+  set("clicks", 0);
+  set("conversions", 0);
 
   const auth = getAuth();
   const sheets = google.sheets({ version: "v4", auth });
@@ -738,36 +742,38 @@ export async function createLeadMagnetRow(input: {
   return { id, slug, rowIndex: baseRowIndex };
 }
 
-function parseLeadMagnetRow(r: string[], rowIndex: number): LeadMagnetRow {
+function parseLeadMagnetRow(r: string[], rowIndex: number, idx: Record<string, number>): LeadMagnetRow {
+  const g = (k: string) => { const i = idx[k]; return i === undefined ? "" : (r[i] || ""); };
   return {
-    id: r[0] || "",
-    post_id: r[1] || "",
-    slug: r[2] || "",
-    status: (r[3] || "researching") as LeadMagnetRow["status"],
-    title: r[4] || "",
-    hero_text: r[5] || "",
-    value_props: r[6] || "",
-    cta_text: r[7] || "",
-    outline_md: r[8] || "",
-    body_md: r[9] || "",
-    notion_url: r[10] || "",
-    landing_url: r[11] || "",
-    gif_url: r[12] || "",
-    created_at: r[13] || "",
-    clicks: Number(r[14]) || 0,
-    conversions: Number(r[15]) || 0,
+    id: g("id"),
+    post_id: g("post_id"),
+    slug: g("slug"),
+    status: (g("status") || "researching") as LeadMagnetRow["status"],
+    title: g("title"),
+    hero_text: g("hero_text"),
+    value_props: g("value_props"),
+    cta_text: g("cta_text"),
+    outline_md: g("outline_md"),
+    body_md: g("body_md"),
+    notion_url: g("notion_url"),
+    landing_url: g("landing_url"),
+    gif_url: g("gif_url"),
+    created_at: g("created_at"),
+    clicks: Number(g("clicks")) || 0,
+    conversions: Number(g("conversions")) || 0,
     rowIndex,
   };
 }
 
 export async function loadLeadMagnets(): Promise<LeadMagnetRow[]> {
   try {
-    const rows = await readSheet(LEAD_MAGNETS_TAB, "A:P");
-    if (rows.length <= 1) return [];
+    const { headers, rows, idx } = await readLeadMagnetSheet();
+    if (!headers.length) return [];
+    const idCol = idx["id"];
     const out: LeadMagnetRow[] = [];
-    for (let i = 1; i < rows.length; i++) {
-      if (!rows[i][0]) continue;
-      out.push(parseLeadMagnetRow(rows[i], i + 1));
+    for (let i = 0; i < rows.length; i++) {
+      if (idCol === undefined || !rows[i][idCol]) continue; // key off id presence, same as before
+      out.push(parseLeadMagnetRow(rows[i], i + 2, idx)); // header is row 1, data starts at row 2
     }
     return out;
   } catch {
@@ -790,39 +796,21 @@ function colLetter(i: number): string {
   return String.fromCharCode("A".charCodeAt(0) + i);
 }
 
-const LEAD_MAGNET_COLUMNS: Array<keyof LeadMagnetRow> = [
-  "id",
-  "post_id",
-  "slug",
-  "status",
-  "title",
-  "hero_text",
-  "value_props",
-  "cta_text",
-  "outline_md",
-  "body_md",
-  "notion_url",
-  "landing_url",
-  "gif_url",
-  "created_at",
-  "clicks",
-  "conversions",
-];
-
 export async function updateLeadMagnetRow(
   id: string,
   patch: Partial<Omit<LeadMagnetRow, "id" | "rowIndex">>
 ): Promise<void> {
   const row = await loadLeadMagnetById(id);
   if (!row) throw new Error(`LeadMagnet row not found for id=${id}`);
+  const { idx } = await readLeadMagnetSheet();
 
   const auth = getAuth();
   const sheets = google.sheets({ version: "v4", auth });
 
   const data: { range: string; values: (string | number)[][] }[] = [];
   for (const [key, value] of Object.entries(patch)) {
-    const colIndex = LEAD_MAGNET_COLUMNS.indexOf(key as keyof LeadMagnetRow);
-    if (colIndex < 0) continue;
+    const colIndex = idx[key];
+    if (colIndex === undefined) continue;
     data.push({
       range: `${LEAD_MAGNETS_TAB}!${colLetter(colIndex)}${row.rowIndex}`,
       values: [[value as string | number]],

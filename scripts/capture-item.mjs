@@ -74,14 +74,25 @@ async function main() {
       process.exit(1);
     }
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 60);
-    // Columns A-P are the own-built pipeline (blank here); Q-U are the
-    // received-magnet fields this row actually uses. landing_url (L) holds
-    // the actual resource link -- previously read as --link but never
-    // written anywhere.
-    const row = [
-      "", "", slug, "unreviewed", title, lmType, "", "", "", "", "", link, "", today, "", "",
-      "received", source, postUrl, takeaway, "",
-    ];
+    // Build the row by HEADER NAME, not fixed position, so the LeadMagnets
+    // columns can be reordered in the Sheet without breaking this script
+    // (2026-07-11). landing_url holds the actual resource link.
+    const hdrRes = await sheets.spreadsheets.values.get({ spreadsheetId: SHEET_ID, range: "LeadMagnets!1:1" });
+    const headers = (hdrRes.data.values?.[0] || []).map((h) => String(h || "").trim());
+    const idx = {};
+    headers.forEach((h, i) => { if (h && idx[h] === undefined) idx[h] = i; });
+    const row = new Array(headers.length).fill("");
+    const set = (k, v) => { const i = idx[k]; if (i !== undefined) row[i] = v; };
+    set("slug", slug);
+    set("status", "unreviewed");
+    set("title", title);
+    set("hero_text", lmType);
+    set("landing_url", link);
+    set("created_at", today);
+    set("kind", "received");
+    set("source_person", source);
+    set("source_post_url", postUrl);
+    set("key_takeaway", takeaway);
     await sheets.spreadsheets.values.append({
       spreadsheetId: SHEET_ID,
       range: "LeadMagnets!A1",
