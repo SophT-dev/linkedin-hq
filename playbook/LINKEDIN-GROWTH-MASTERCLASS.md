@@ -253,6 +253,10 @@ AuthoredUp, 3M+ posts (Mar 2025–Feb 2026), reach multiplier vs. average:
 **On video:** if used, **first 8 seconds + subtitles are non-negotiable** (35% watch without sound);
 longer (3+ min) beats ultra-short. **On carousels:** Lara says they're past their prime for small
 accounts, the data says they win *only* at scale — both true. **Match format to your follower count.**
+**The video vanity trap (Jasmin Alić):** video is the psychologically *richest* format (voice, energy,
+face) so do it to *connect* — but don't chase it for reach. LinkedIn's video feed had a "gifted views"
+honeymoon where posts got millions of views with **zero** matching profile views, clicks, or business.
+**Views ≠ profile views ≠ leads.** Optimize for the metric that converts, not the ego number.
 
 ### Lesson 7b — The viral content system (Matt Gray, 846K followers, 59M views/month)
 
@@ -512,6 +516,33 @@ Matthews: *"ChatGPT writes my posts, but I make them better… AI sucks at comme
 human voice is the only defensible moat left** (Lara). Our voice rules (`voice.md`, the
 banned-AI-words list) exist for exactly this.
 
+## Lesson 14b — The mindset laws (Jasmin Alić, live)
+
+The craft above only works on top of the right mindset. Seven laws from LinkedIn's most-followed copy coach:
+
+1. **The echo is the opportunity.** Everyone says LinkedIn is oversaturated with samey AI content —
+   *that's exactly why it's the best time to post.* The feed is full of posts that look, feel, and
+   sound the same; a real human voice cuts straight through it.
+2. **Share the person, not the information.** Everyone shares tips; almost nobody shares the *story
+   behind* the tips. *"How I crush my morning"* beats *"how to crush your morning"* — if people wanted
+   generic tips they'd be on Google. On LinkedIn they want a real person. (This is Lara's how-to → how-I,
+   from a second expert.)
+3. **H2H, not B2B.** There are no businesses talking to businesses — it's always people talking to
+   people. Sound like a human even in the most "corporate" niche. The second you sound like a news
+   outlet reporting information, you lose.
+4. **Experiment relentlessly — everyone has their own algorithm.** Format, length, hooks, visuals,
+   power-endings: you won't know what lands with *your* audience until you test it. Don't copy what
+   "works for someone else" without testing it on your own feed.
+5. **Don't copy — stand out, not fit in.** The "jasmification" trap: chasing another creator's exact
+   style. Personal branding is about being unmistakably you. Like hip-hop, the copycats don't blow up —
+   the ones with their own flavor do.
+6. **Build the writing muscle.** Write every day. The more you write, the less you need hook templates
+   and frameworks as crutches — *"thinking is the skill we don't practice enough, and it comes through
+   in writing."* Templates are training wheels, not the destination.
+7. **Share first, sell second — attraction, not sales.** *"The selling comes from the sharing."* If all
+   you do is ask, ask, ask instead of give, give, give, you never build the trust that attracts. LinkedIn
+   is a game of attraction. (Tools he lives in: **AuthoredUp** for writing + analytics, **Kondo** for DMs.)
+
 ---
 
 # MODULE 7 — The synthesis: what's settled vs. what you must choose
@@ -589,6 +620,8 @@ so the audience pays for itself.
 - **Matt Gray** (Founder OS) — profitable-profile / engagement-machine / content-system, own-a-word,
   4 post types, hook-in-3-lines, CTA science, 30+ engagers in 45 min, student-of-the-game.
 - **Casey Brown** — the commenting-to-$1.2M system (peer-not-fan, coffee-shop test, 5–15 not 50).
+- **Jasmin Alić (live interview)** — the 7 mindset laws (echo=opportunity, share the person, H2H,
+  experiment, don't copy, writing muscle, share-first-sell-second), the video vanity trap.
 - **Commenting-system + profile-teardown video transcripts** (2026-07-13/14) — the Power List, the
   4 comment types, the 15-min daily block, comment→lead (Trigify→enrich→HeyReach), and the
   profile-as-landing-page / product-shelf featured section (Lara Acosta's team).
