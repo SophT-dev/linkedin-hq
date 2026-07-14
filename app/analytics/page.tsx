@@ -106,23 +106,24 @@ export default function AnalyticsPage() {
             <BestDayToPost posts={original} />
           </div>
 
-          <TopPosts posts={original} who={who} />
-          <CommentHeatmap dates={commentDates} />
-
           <div className="grid lg:grid-cols-2 gap-5">
+            <CommentHeatmap dates={commentDates} />
             <PostTypes data={typeData} metricLabel="reactions" />
-            {/* Honest data note */}
-            <div className="rounded-2xl border border-border bg-muted/40 p-5 flex gap-3">
-              <Info size={16} className="text-muted-foreground flex-shrink-0 mt-0.5" />
-              <div className="text-xs text-muted-foreground space-y-1.5">
-                <p><span className="font-semibold text-foreground">Views &amp; impressions aren&apos;t shown</span> — LinkedIn only reveals those to the post owner in native analytics; no scraper can pull them. Everything here is real public data: reactions, comments, reposts.</p>
-                {lastScraped && (
-                  <p className="flex items-center gap-1">
-                    <RefreshCw size={11} /> Last synced {lastScraped.slice(0, 10)} · refreshes daily via{" "}
-                    <code className="px-1 rounded bg-muted">sync-account-posts.mjs</code>
-                  </p>
-                )}
-              </div>
+          </div>
+
+          <TopPosts posts={original} who={who} />
+
+          {/* Honest data note */}
+          <div className="rounded-2xl border border-border bg-muted/40 p-5 flex gap-3">
+            <Info size={16} className="text-muted-foreground flex-shrink-0 mt-0.5" />
+            <div className="text-xs text-muted-foreground space-y-1.5">
+              <p><span className="font-semibold text-foreground">Views &amp; impressions aren&apos;t shown</span> — LinkedIn only reveals those to the post owner in native analytics; no scraper can pull them. Everything here is real public data: reactions, comments, reposts.</p>
+              {lastScraped && (
+                <p className="flex items-center gap-1">
+                  <RefreshCw size={11} /> Last synced {lastScraped.slice(0, 10)} · refreshes daily via{" "}
+                  <code className="px-1 rounded bg-muted">sync-account-posts.mjs</code>
+                </p>
+              )}
             </div>
           </div>
         </>
