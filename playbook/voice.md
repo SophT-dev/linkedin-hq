@@ -44,10 +44,14 @@ paired with a concrete direction or addition.
 **3. Strong opinions stated as fact, not softened.** "The hook is 80% of the post. It is literally
 everything." A real conviction isn't hedged — when the take is genuinely held, state it flatly.
 
-**4. Casual register, not corporate.** Contractions, plain words, no jargon-for-its-own-sake.
-"Come on", "yeah", "okay", "honestly" / "to be honest" (genuine emphasis, keep it), and **"probably"**
-(a natural softener, keep it like "honestly"). Reads like a text from a smart friend, not a
-LinkedIn-voice post.
+**4. Casual register, not corporate — 6th-grade reading level.** Write at a **6th-grade reading
+level**: simple, everyday words you'd use texting a friend, nothing fancy. If a plainer word exists,
+use it. Contractions, "come on", "yeah", "okay", "honestly" / "to be honest" (genuine emphasis, keep
+it), and **"probably"** (a natural softener, keep it like "honestly"). Reads like a text from a smart
+friend, not a LinkedIn-voice post. **Critical caveat (hard-won):** simple does NOT mean dead. The
+mistake to avoid is turning plain words into a flat, choppy fact-list — keep the real reaction,
+conviction, and natural rhythm (see the "sound alive" rule in `lib/comments.ts`). Plain words + a
+real opinion, never plain words + no pulse.
 
 **4a. Write to ONE person.** Address a single reader throughout — heavy on personal pronouns ("you",
 "your", "I", "we", "me"), like a DM to one founder, not a broadcast to an audience. This is the
