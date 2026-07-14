@@ -44,8 +44,15 @@ she believes something, she says it flatly.
 
 **4. Casual register, not corporate.** Contractions, plain words, no jargon-for-its-own-sake.
 "Come on", "yeah", "okay", "genius idea", "brilliant ideas", "honestly" / "to be honest" (genuine
-emphasis for her, not filler — keep this one). Reads like a text from a smart friend, not a
-LinkedIn-voice post.
+emphasis for her, not filler — keep this one), and **"probably"** (added 2026-07-10 at her explicit
+request — a natural softener she uses; keep it in the target voice like "honestly"). Reads like a
+text from a smart friend, not a LinkedIn-voice post.
+
+**4a. Write to ONE person (added 2026-07-10 at her explicit request).** Address a single reader
+throughout — heavy on personal pronouns ("you", "your", "I", "we", "me"), like a DM to one founder,
+not a broadcast to an audience. This is the Sugarman/Ogilvy "second person singular" rule (see
+COPYWRITING-BIBLE Part D §2) applied as a standing voice default for her longer pieces too, not just
+LinkedIn posts.
 
 **5. Teaches from firsthand specifics, not generic advice.** She grounds a point in something she
 actually did or checked ("I spent two-plus hours going through our own database", "every single

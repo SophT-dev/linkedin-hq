@@ -356,6 +356,14 @@ Every post needs at least one specific tactic the reader can apply today. Not "r
 ## visual brief
 For each post, 2-3 sentences describing what to film or photograph plus any caption overlay. Example: "Phone screen recording of your inbox scrolling past four reply notifications. Caption overlay: 'Monday 9am. Four replies in twelve minutes. Here's the subject line.'"
 
+**This can now actually be produced, not just described.** `../linkedin-post/visual-generation.md`
+(added 2026-07-09) turns a `visual_brief` like the one above into a real rendered 1080×1350 visual
+— Claude Design, hand-coded HTML, or AI-illustration depending on content type. That sub-skill is
+written to be usable standalone, outside the `/linkedin-post` flow, so a `/linkedin-batch` post's
+`visual_brief` can be handed to it directly once a post is approved and saved. Not wired into this
+skill's own phases automatically (no new phase added here) — read that file when a batch post's
+visual actually needs producing.
+
 ## lead magnet (proposed during post generation, built later)
 - **name:** 4-8 words, evocative
 - **value_prop:** plain english, ≤120 chars

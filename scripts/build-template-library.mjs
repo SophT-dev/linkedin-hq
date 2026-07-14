@@ -6,6 +6,12 @@
 // real taxonomy), and writes a curated top slice into the "Template Library"
 // tab. Leaves format blank rather than guess when there's no confident match.
 //
+// Preserves manual additions: rows added by add-template-library-entry.mjs
+// (tagged engagement_tier="manual-add") are pulled out before the clear,
+// then re-appended after the corpus rewrite with their comment_to_like_ratio
+// formula re-pointed at the new row -- a corpus rebuild no longer wipes a
+// hook Sophiya found and added by hand.
+//
 // Usage: node scripts/build-template-library.mjs [--top=100]
 
 import { readFileSync, existsSync, readdirSync } from "node:fs";
@@ -166,6 +172,12 @@ async function main() {
 
   const meta = await sheets.spreadsheets.get({ spreadsheetId: SHEET_ID });
   const existingTabs = (meta.data.sheets || []).map((s) => s.properties?.title);
+  // engagement_tier (column I, index 8) marks rows added by
+  // add-template-library-entry.mjs as "manual-add" -- those are hooks
+  // Sophiya found by hand outside the tagged corpus (e.g. flagged from a
+  // LinkedIn post directly) and must survive a corpus rebuild, not just the
+  // clear+rewrite every other row gets.
+  let preservedManualRows = [];
   if (!existingTabs.includes(TAB)) {
     await sheets.spreadsheets.batchUpdate({
       spreadsheetId: SHEET_ID,
@@ -173,9 +185,12 @@ async function main() {
     });
     console.log(`Created "${TAB}" tab.`);
   } else {
-    // Idempotent re-run: clear existing data rows (keep header) before rewriting.
-    const existingRes = await sheets.spreadsheets.values.get({ spreadsheetId: SHEET_ID, range: `${TAB}!A:A` });
-    const existingRowCount = (existingRes.data.values || []).length;
+    // Idempotent re-run: pull out manual-add rows before clearing, so they
+    // can be re-appended after the corpus rewrite instead of being wiped.
+    const existingRes = await sheets.spreadsheets.values.get({ spreadsheetId: SHEET_ID, range: `${TAB}!A2:K` });
+    const existingRows = existingRes.data.values || [];
+    preservedManualRows = existingRows.filter((r) => r[8] === "manual-add");
+    const existingRowCount = existingRows.length + 1; // +1 for header row
     if (existingRowCount > 1) {
       await sheets.spreadsheets.values.clear({ spreadsheetId: SHEET_ID, range: `${TAB}!A2:Z${existingRowCount}` });
     }
@@ -194,6 +209,28 @@ async function main() {
     requestBody: { values: rows },
   });
   console.log(`Wrote ${rows.length} rows to "${TAB}".`);
+
+  if (preservedManualRows.length > 0) {
+    // Re-append preserved manual rows below the corpus rows, rewriting each
+    // one's comment_to_like_ratio formula to point at its new row number --
+    // the old formula (e.g. "=IF(E184=0,0,F184/E184)") would otherwise
+    // silently reference the wrong row after the corpus rewrite shifted
+    // everything.
+    const startRow = 2 + rows.length; // header is row 1
+    const reattached = preservedManualRows.map((r, i) => {
+      const rowNum = startRow + i;
+      const row = [...r];
+      row[7] = `=IF(E${rowNum}=0,0,F${rowNum}/E${rowNum})`;
+      return row;
+    });
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: SHEET_ID,
+      range: `${TAB}!A1`,
+      valueInputOption: "USER_ENTERED",
+      requestBody: { values: reattached },
+    });
+    console.log(`Re-attached ${preservedManualRows.length} manually-added row(s) that would otherwise have been wiped by this rebuild.`);
+  }
 
   const formatCounts = {};
   for (const r of rows) formatCounts[r[1] || "(unmatched)"] = (formatCounts[r[1] || "(unmatched)"] || 0) + 1;

@@ -17,9 +17,19 @@ every time you use this sub-skill; don't rely on a cached memory of it, since it
 Voice Rules governs *how it sounds*. This sub-skill governs *does it look and read as Bleed AI*,
 per `Bleed AI Branding/BRAND.md`:
 
-- [ ] Visual brief describes a dark `#07070d` background, ONE red `#b1130f`/`#ff3d38` emphasis
-      (not a rainbow), Inter heavy headline, droplet mark present — per BRAND.md §3-4. If the post
-      format is text-only with no visual, note that explicitly rather than skip the check.
+- [ ] Visual brief describes a dark `#07070d` background (or the day-mode variant, if that's what
+      was requested — see `Bleed AI Branding/CLAUDE-DESIGN-SYSTEM.md`), ONE red `#b1130f`/`#ff3d38`
+      emphasis (not a rainbow), Inter heavy headline, droplet mark present — per BRAND.md §3-4. If
+      the post format is text-only with no visual, note that explicitly rather than skip the check
+      — though per BRAND.md §4 this should not happen; every post gets a visual.
+- [ ] **Once `visual-generation.md` (Phase 7) has actually produced a rendered file**, check the
+      artifact itself, not just the brief that described it — the same four checks above (dark/day
+      background, one red emphasis, Inter headline, droplet mark) plus the 1080×1350 canvas. This
+      is a second, independent check because a brief can pass while the actual render drifts (see
+      the `tam-pie-visual.html` vs. `tam-pie-visual-branded-day.html` drift this whole visual
+      pipeline was built to catch). Point back to `visual-generation.md`'s taste checklist for
+      anything beyond brand tokens (does it read in 2 seconds, does it explain the idea) — don't
+      define a second competing version of that checklist here.
 - [ ] A specific number or concrete detail in the first line, not a vague claim.
 - [ ] No mega-cap company as the emotional anchor (Voice Rules already checks this; re-confirm).
 - [ ] Say the uncomfortable/true thing rather than a safe generality — BRAND.md's "truth over

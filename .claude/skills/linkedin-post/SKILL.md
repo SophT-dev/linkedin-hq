@@ -1,21 +1,22 @@
 ---
 name: linkedin-post
-description: Draft ONE LinkedIn post (Taha or Sophiya) from the Content Calendar, Post Ideas backlog, a Domain Synthesis doc, or a WinsLog entry — pulling proven hooks from the Template Library, always presenting 2-3 options each with 2-3 lead magnet suggestions. Reuses /linkedin-batch's existing lead-magnet build pipeline rather than a second one. Use when the user says /linkedin-post, "draft today's post", "what should I post", or similar. This is the single-post skill (Stage 13 of the content-system build) — /linkedin-batch remains the multi-post batch generator, untouched.
+description: Draft ONE LinkedIn post (Taha or Sophiya) from the Content Calendar, Post Ideas backlog, a Knowledge Base doc (`playbook/knowledge/`), or a WinsLog entry — pulling proven hooks from the Template Library, always presenting 2-3 options each with 2-3 lead magnet suggestions. Reuses /linkedin-batch's existing lead-magnet build pipeline rather than a second one. Use when the user says /linkedin-post, "draft today's post", "what should I post", or similar. This is the single-post skill (Stage 13 of the content-system build) — /linkedin-batch remains the multi-post batch generator, untouched.
 ---
 
 # linkedin-post skill — master orchestrator
 
 You are running the single-post drafting flow for Taha Anwar's and Sophiya's LinkedIn content
 (Bleed AI). This is the integration point for everything built in Stages 1-12 of the content
-system: the Sources map, Template Library, Domain Synthesis docs, Content Calendar, Post Ideas
+system: the Sources map, Template Library, Knowledge Base docs (`playbook/knowledge/`), Content Calendar, Post Ideas
 backlog, Visual Swipe, the capture mechanisms, and performance tracking. It does NOT replace
 `/linkedin-batch` — that remains available for multi-post batches; this is for one post, drafted
 with more source material behind it.
 
-**Structure:** this file routes by phase to five focused sub-skills in this same folder —
+**Structure:** this file routes by phase to six focused sub-skills in this same folder —
 `hook-selection.md`, `post-structure-selection.md`, `lead-magnet-suggestion.md`,
-`brand-compliance.md`, `pinned-comment-meme.md` — rather than trying to hold everything in one
-file. Read each sub-skill fresh when its phase comes up; don't rely on a cached memory of it.
+`brand-compliance.md`, `visual-generation.md`, `pinned-comment-meme.md` — rather than trying to
+hold everything in one file. Read each sub-skill fresh when its phase comes up; don't rely on a
+cached memory of it.
 
 **Standing rule (Sophiya's call, 2026-07-08): every draft uses a real hook template AND a real
 structure template — never freehand either one.** This applies for the first few weeks, until
@@ -36,7 +37,7 @@ picks a source, stop and show her the date/profile/angle/format and wait for an 
 (or a redirect) before Phase 2 starts. Never draft on a picked source she hasn't confirmed.
 
 **Standing rule (Sophiya's call, 2026-07-08): show progress as a visible checklist.** Use
-`TodoWrite` to track this skill's 9 phases as todos, updating status in real time (one
+`TodoWrite` to track this skill's 10 phases as todos, updating status in real time (one
 `in_progress` at a time) so she can see where the run actually is, not just the final output.
 
 ## Context about the project
@@ -55,7 +56,7 @@ already been distilled into:
 - Sheet tabs: `Sources`, `Template Library`, `Content Calendar`, `Post Ideas`, `WinsLog`, `Intel`
   (starred rows only), `LeadMagnets` (kind=received rows)
 - `playbook/COPYWRITING-BIBLE.md` and `playbook/FORMAT-LIBRARY.md`
-- A specific `playbook/DOMAIN-SYNTHESIS-*.md` doc if the source material points to one
+- A specific `playbook/knowledge/<domain>.md` Knowledge Base doc if the source material points to one
 
 If you find yourself wanting to open the raw corpus "just to double-check," that's a sign the
 distilled layer is missing something — flag it, don't route around it by reading raw data (that's
@@ -63,7 +64,7 @@ exactly the token-cost problem Stage 13 was built to avoid).
 
 ## Protocol
 
-**Before Phase 1: create the todo list.** Call `TodoWrite` with all 9 phases below as todos
+**Before Phase 1: create the todo list.** Call `TodoWrite` with all 10 phases below as todos
 (content = imperative, e.g. "Pick the source"; activeForm = present continuous, e.g. "Picking the
 source"). Mark Phase 1 `in_progress` immediately, and keep exactly one phase `in_progress` at a
 time as you move through the run — this is her visibility into where the run actually is.
@@ -73,8 +74,9 @@ Default: the next unposted slot in the **Content Calendar** (`node scripts/read-
 "Content Calendar"`, filter `status=planned`, take the earliest `date`). Tell the user which slot
 you picked (date, profile, angle, format).
 
-If the user names a different source instead — a specific Post Ideas row, a Domain Synthesis doc,
-a WinsLog win, or a totally off-calendar topic — use that instead and say so.
+If the user names a different source instead — a specific Post Ideas row, a Knowledge Base doc
+(`playbook/knowledge/`), a WinsLog win, or a totally off-calendar topic — use that instead and say
+so.
 
 **Topic guardrail check (do this before showing the angle):** is this angle actually cold
 email / outbound / email marketing / AI-automation / running the agency — or a clear ADJACENT
@@ -93,7 +95,7 @@ Pull only what this specific draft needs:
 - `node scripts/read-tab.mjs --tab "Template Library"` filtered to a matching domain
 - `node scripts/read-tab.mjs --tab "WinsLog"` for a real effort/process fact to cite (philosophy
   #2 — show the work, never invent a number)
-- The relevant `DOMAIN-SYNTHESIS-*.md` doc if Phase 1 pointed at one
+- The relevant `playbook/knowledge/<domain>.md` Knowledge Base doc if Phase 1 pointed at one
 - `node scripts/read-tab.mjs --tab "Intel" --range A1:M200` filtered to `starred=TRUE` if the
   angle is news/trend-reactive (F11 territory)
 
@@ -101,7 +103,7 @@ Pull only what this specific draft needs:
 Read **`hook-selection.md`** in this folder now. Use it to pick/adapt a hook for each of 2-3 draft
 options — checked against the 120-130 character hard limit before "...see more" truncation (full
 detail in that sub-skill). Each option must be able to cite: which Template Library row or
-F-number format it's built from, and one real fact from WinsLog/Intel/the Domain Synthesis doc —
+F-number format it's built from, and one real fact from WinsLog/Intel/the Knowledge Base doc —
 never invented.
 
 Then read **`post-structure-selection.md`** in this folder — a different, real proven layout
@@ -137,16 +139,26 @@ Show all drafts, numbered, each with its lead magnet options (one starred). Say 
 
 Loop on free-form edits until approved or canceled.
 
-### Phase 7 — pinned comment (meme only)
-Read **`pinned-comment-meme.md`** in this folder now. Once a draft is approved, produce a meme
-genuinely relevant to that post's angle for the pinned comment — nothing else goes in it. Lead
-magnets are delivered by comment-to-DM (the post body's own CTA line), never a link in the post
-or this comment. Show the meme concept to the user before moving on.
+### Phase 7 — visual generation
+Read **`visual-generation.md`** in this folder now. Produce the post's own main 1080×1350 visual
+from the approved draft's `visual_brief` field — **required for every post, no naked-text posts
+ship** (`Bleed AI Branding/BRAND.md` §4). This is the post's actual visual, not the pinned-comment
+meme (that's Phase 8, a separate and much smaller job). Show the rendered file to the user before
+moving on; if the taste checklist in `visual-generation.md` failed and couldn't be fixed, say so
+rather than proceeding with a known issue.
 
-### Phase 8 — save + lead magnet handoff
+### Phase 8 — pinned comment (meme only)
+Read **`pinned-comment-meme.md`** in this folder now. Once a draft is approved and its main visual
+exists (Phase 7), produce a meme genuinely relevant to that post's angle for the pinned comment —
+nothing else goes in it. Lead magnets are delivered by comment-to-DM (the post body's own CTA
+line), never a link in the post or this comment. Show the meme concept to the user before moving
+on.
+
+### Phase 9 — save + lead magnet handoff
 Save the approved draft to the **Posts** tab (same shape/columns `/linkedin-batch` uses — `id \|
 batch_date \| hook \| body \| format \| funnel_stage \| visual_brief \| lead_magnet \|
-sources_used \| authenticity_tag \| status`, via the existing `/api/posts/save` route).
+sources_used \| authenticity_tag \| status`, via the existing `/api/posts/save` route). Note the
+Phase 7 rendered visual's file path alongside when saving, so it's not orphaned from its post row.
 
 If a lead magnet was picked: hand off into **`/linkedin-batch`'s existing Phase 8 lead-magnet
 sub-flow** (deep research → outline → approve → body → approve → publish to Notion → save to
@@ -154,9 +166,9 @@ LeadMagnets → live landing page) — do not rebuild this pipeline, follow `../
 SKILL.md`'s Phase 8 exactly.
 
 If this slot came from the Content Calendar, update that row's `status` to `posted` once Sophiya
-confirms she's published it (Phase 9 below) — not before.
+confirms she's published it (Phase 10 below) — not before.
 
-### Phase 9 — the human loop (cannot be automated, don't try)
+### Phase 10 — the human loop (cannot be automated, don't try)
 Sophiya publishes the approved post on LinkedIn herself. Once she confirms it's live and gives you
 the `posted_url`:
 1. Write it into the Posts tab's `posted_url` column for this row.
