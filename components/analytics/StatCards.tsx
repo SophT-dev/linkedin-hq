@@ -11,6 +11,8 @@ export interface StatCard {
   spark: number[];
   icon: LucideIcon;
   tint: string;              // CSS var for icon + sparkline
+  subtitle?: string;         // overrides the default "vs previous 30 days"
+  hideTrend?: boolean;       // static snapshot (e.g. Followers) — no delta badge
 }
 
 function Sparkline({ data, tint, id }: { data: number[]; tint: string; id: string }) {
@@ -51,10 +53,10 @@ function DeltaBadge({ deltaPct }: { deltaPct: number | null }) {
   );
 }
 
-export default function StatCards({ cards }: { cards: StatCard[] }) {
+export default function StatCards({ cards, gridClass }: { cards: StatCard[]; gridClass?: string }) {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
-      {cards.map(({ label, value, deltaPct, spark, icon: Icon, tint }) => (
+    <div className={`grid gap-3 lg:gap-4 ${gridClass ?? "grid-cols-2 lg:grid-cols-4"}`}>
+      {cards.map(({ label, value, deltaPct, spark, icon: Icon, tint, subtitle, hideTrend }) => (
         <div
           key={label}
           className="rounded-2xl border bg-card border-border shadow-sm p-4 lg:p-5 flex flex-col gap-2 transition-shadow hover:shadow-md"
@@ -65,10 +67,10 @@ export default function StatCards({ cards }: { cards: StatCard[] }) {
           </div>
           <div className="flex items-end justify-between gap-2">
             <p className="text-2xl lg:text-3xl font-bold tabular-nums leading-none">{value}</p>
-            <DeltaBadge deltaPct={deltaPct} />
+            {!hideTrend && <DeltaBadge deltaPct={deltaPct} />}
           </div>
           <Sparkline data={spark} tint={tint} id={label.replace(/\s+/g, "")} />
-          <p className="text-[10px] text-muted-foreground -mt-1">vs previous 30 days</p>
+          <p className="text-[10px] text-muted-foreground -mt-1">{subtitle ?? "vs previous 30 days"}</p>
         </div>
       ))}
     </div>

@@ -11,13 +11,13 @@ import {
   BarChart3,
   Heart,
   MessageCircle,
-  Repeat2,
   TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProfileHeader from "@/components/ProfileHeader";
 import StatCards, { type StatCard } from "@/components/analytics/StatCards";
 import { fetchAccountPosts, originalPosts, totals, metricTrend, engagementTrend, sparkline, type AccountPost } from "@/lib/analytics";
+import { tahaProfile } from "@/lib/profile";
 
 // ---------------------------------------------------------------------------
 // Types (mirrors the exact tab column orders documented in CLAUDE.md)
@@ -102,9 +102,9 @@ export default function DashboardPage() {
     const posts = originalPosts(acctPosts, "Taha");
     const t = totals(posts);
     return [
+      { label: "Followers", value: tahaProfile.followers, deltaPct: null, spark: [], icon: Users, tint: "var(--cat-1)", hideTrend: true, subtitle: "Total on LinkedIn" },
       { label: "Reactions", value: t.reactions.toLocaleString(), deltaPct: metricTrend(posts, "reactions").deltaPct, spark: sparkline(posts, "reactions"), icon: Heart, tint: "var(--viz-2)" },
       { label: "Comments", value: t.comments.toLocaleString(), deltaPct: metricTrend(posts, "comments").deltaPct, spark: sparkline(posts, "comments"), icon: MessageCircle, tint: "var(--primary)" },
-      { label: "Reposts", value: t.reposts.toLocaleString(), deltaPct: metricTrend(posts, "reposts").deltaPct, spark: sparkline(posts, "reposts"), icon: Repeat2, tint: "var(--cat-1)" },
       { label: "Avg engagement", value: t.avgEng.toLocaleString(), deltaPct: engagementTrend(posts), spark: posts.map((p) => p.reactions + p.comments).slice(-16), icon: TrendingUp, tint: "var(--cat-4)" },
     ];
   }, [acctPosts]);

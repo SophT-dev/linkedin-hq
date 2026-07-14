@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Heart, MessageCircle, Repeat2, TrendingUp, Info, RefreshCw } from "lucide-react";
+import { Heart, MessageCircle, Repeat2, TrendingUp, Info, RefreshCw, Users, UserPlus } from "lucide-react";
+import { tahaProfile } from "@/lib/profile";
 import {
   fetchAccountPosts,
   fetchCommentDates,
@@ -47,10 +48,13 @@ export default function AnalyticsPage() {
 
   const cards: StatCard[] = useMemo(() => {
     const engTrend = engagementTrend(original);
+    const isTaha = who === "Taha";
     return [
+      { label: "Followers", value: isTaha ? tahaProfile.followers : "—", deltaPct: null, spark: [], icon: Users, tint: "var(--cat-1)", hideTrend: true, subtitle: "Total on LinkedIn" },
+      { label: "Connections", value: isTaha ? tahaProfile.connections : "—", deltaPct: null, spark: [], icon: UserPlus, tint: "var(--cat-3)", hideTrend: true, subtitle: "On LinkedIn" },
       { label: "Reactions", value: t.reactions.toLocaleString(), deltaPct: metricTrend(original, "reactions").deltaPct, spark: sparkline(original, "reactions"), icon: Heart, tint: "var(--viz-2)" },
       { label: "Comments", value: t.comments.toLocaleString(), deltaPct: metricTrend(original, "comments").deltaPct, spark: sparkline(original, "comments"), icon: MessageCircle, tint: "var(--primary)" },
-      { label: "Reposts", value: t.reposts.toLocaleString(), deltaPct: metricTrend(original, "reposts").deltaPct, spark: sparkline(original, "reposts"), icon: Repeat2, tint: "var(--cat-1)" },
+      { label: "Reposts", value: t.reposts.toLocaleString(), deltaPct: metricTrend(original, "reposts").deltaPct, spark: sparkline(original, "reposts"), icon: Repeat2, tint: "var(--chart-3)" },
       { label: "Avg engagement", value: t.avgEng.toLocaleString(), deltaPct: engTrend, spark: original.map((p) => p.reactions + p.comments).slice(-16), icon: TrendingUp, tint: "var(--cat-4)" },
     ];
   }, [original, t]);
@@ -98,7 +102,7 @@ export default function AnalyticsPage() {
         </div>
       ) : (
         <>
-          <StatCards cards={cards} />
+          <StatCards cards={cards} gridClass="grid-cols-2 lg:grid-cols-3" />
           <PerformanceChart posts={original} />
 
           <div className="grid lg:grid-cols-2 gap-5">
