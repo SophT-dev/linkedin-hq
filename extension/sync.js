@@ -12,7 +12,7 @@
 (function () {
   "use strict";
 
-  const THROTTLE_MS = 2 * 60 * 1000; // short during tuning; will raise back to 6h once confirmed
+  const THROTTLE_MS = 6 * 60 * 60 * 1000; // at most once every 6h (low-volume, LinkedIn-safe)
   const V = "https://www.linkedin.com/voyager/api";
   const log = (...a) => console.log("[BleedSync]", ...a);
   const warn = (...a) => console.warn("[BleedSync]", ...a);
