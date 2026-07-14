@@ -83,33 +83,24 @@ Follower count isn't tracked in the app (LinkedIn hides it from scrapers) — **
 
 ---
 
-## 1. Branding & profile (first 48 hours — it's a reach setting, not vanity)
-LinkedIn now reads your **entire profile as an AI prompt** to decide who sees your posts. Blurry profile
-= your content goes nowhere. Every field must scream *cold email / outbound*.
+## 1. Profile & branding — ⏸️ DEFERRED to Week 3 (see §12)
+Per Sophiya (2026-07-14): profile is a *conversion surface*, not the reach bottleneck. **Keeping the
+current headline for now.** The full rewrite (headline polish + About-as-sales-page + Featured 3-tier
+shelf) is parked at **§12** and executed in **Week 3**, once posts are actually driving profile traffic.
+The engine — pillars → content → commenting — leads. (Banner is already ✅ strong; leave it.)
 
-- **Headline** — target + outcome + proof. Current: *"Engineering B2B Outbound Around Real Market Signals
-  | Founder @ Bleed AI."* Solid start; sharpen toward who + result + proof. Draft options:
-  1. *"I help B2B teams book meetings with signal-based cold email | Founder @ Bleed AI (23M+ emails sent)."*
-  2. *"Cold email that books meetings, not spam complaints | Building Bleed AI's outbound engine in public."*
-  3. *"I turn cold email into a predictable meeting machine for B2B founders | Founder @ Bleed AI."*
-- **Banner** — ✅ already strong ("We don't hope for replies. We engineer them" + 4 credibility logos +
-  reply visuals). Leave it. Only tweak: consider adding one hard metric (e.g. "X meetings booked").
-- **About** — write it like a sales page: hook → the reader's problem (bad reply rates / burned domains) →
-  the dream outcome → your authority/proof → CTA to a free lead magnet.
-- **Featured = 3-tier product shelf** (clean clickable thumbnails, no paragraphs):
-  - **Tier 1 (free):** the LinkedIn Growth Masterclass + cold-email lead magnets we already built (comment-to-DM).
-  - **Tier 2 (mid):** a cold-email audit / teardown offer.
-  - **Tier 3 (high):** the Bleed AI agency application.
-- **Experience + skills + "About the company"** — all point at cold email/outbound. One clean signal.
-- **Own the word:** "cold email" (or "outbound"). Say it everywhere.
-
-## 2. Content pillars (one lane, three veins)
+## 2. Content pillars (one lane, three veins) — LOCK THESE FIRST
 Your niche is *a* niche — stay in it (off-topic posts drop distribution across everything).
-1. **Cold-email tactics with proof** — teardowns, client case-studies, the stat-nuggets. (Highest-median formats.)
+1. **Cold-email tactics WITH proof** — teardowns, client results, the real metrics. Bread and butter,
+   but every post now carries a number + a lesson.
 2. **Building the AI-powered agency in public** — Claude Code / Clay / n8n. *Your unfair advantage* — the
-   hottest wave in the niche, and you're actually doing it.
-3. **Operator POV / contrarian takes** — rationed (lowest-median format; don't over-serve).
-- Plus **~1 personal-story post/week** — your 91-comment winner was comment-driven; stories + a comment CTA travel furthest.
+   hottest wave in the niche, and you're actually doing it. Nobody can copy your real build.
+3. **⭐ Contrarian operator takes — THE missing pillar.** This is the fix for "commodity + safe." Plant
+   flags: *"volume outbound is dead,"* *"your reply rate is a vanity metric,"* *"90% of personalization
+   is theater."* Keep them **sharp and specific** (generic hot-takes are commodity; earned, proof-backed
+   contrarian takes are your differentiator). This is what makes people follow *you*, not just save a tip.
+- Plus **~1 personal / build-in-public story post/week** — your 91-comment winner was comment-driven;
+  stories + a comment CTA travel furthest, and it's your biggest untapped emotional lever.
 
 ## 3. The content system (how each post gets made)
 - **Draft with `/linkedin-post`** (pulls Template Library + corpus + Posts win-data — your Level-4 vault already exists).
@@ -190,11 +181,30 @@ Flow: thoughtful comment → they reply → move to DM with **value, not a pitch
 - **Accountability:** if you skip posting/commenting/DMs, I flag it and we recover the same day.
 
 ## 11. 30-day milestones
-- **Week 1:** profile rewrite LIVE · cadence started (3 posts) · commenting ON (50 comments) · Power List built.
+- **Week 1:** pillars locked · cadence started (3 posts) · **commenting ON (50 comments)** · Power List built.
 - **Week 2:** 3–4 posts · 70+ comments · first engineered comment-magnet winner · 100+ new connections · first inbound DMs.
-- **Weeks 3–4:** 4–5 posts/wk · 100+ comments/wk · 2+ winners · inbound conversations flowing · ramp the engine.
+- **Week 3:** 4–5 posts/wk · 100+ comments/wk · **profile rewrite (§12) goes live** · 2+ winners.
+- **Week 4:** ramp the engine · inbound conversations flowing · review + double down on winners.
 - **End-of-sprint targets:** impressions ~5× · profile views 3–5× · winner rate 15%+ · followers +250–600/wk.
 
+## 12. Profile refresh (Week 3 — deferred from §1)
+Do this once posts are driving profile traffic. Every field must scream *cold email / outbound* (LinkedIn
+reads the whole profile as an AI prompt to decide who sees you).
+- **Headline** — currently kept as-is: *"Engineering B2B Outbound Around Real Market Signals | Founder @
+  Bleed AI."* When we polish: target + outcome + proof. Options parked:
+  1. *"I help B2B founders engineer cold email that books meetings, not spam complaints | Founder @ Bleed AI."*
+  2. *"Cold email that books meetings on autopilot for B2B teams | Founder @ Bleed AI · 100+ leads/client."*
+  3. *"I turn cold outbound into a predictable meeting machine | Founder @ Bleed AI · 23M+ emails sent."*
+- **Banner** — ✅ already strong; leave it (maybe add one hard metric).
+- **About** — rewrite as a sales page: hook → the reader's problem (bad reply rates / burned domains) →
+  dream outcome → your authority/proof (inject real numbers) → CTA to the free audit. (Current About is
+  "about me," not "about them," and has no proof numbers.)
+- **Featured = 3-tier shelf** (clean clickable thumbnails, no paragraphs): Tier 1 free (the Cold Email
+  Audit the About already promises + the lead magnets we built) · Tier 2 mid (paid audit/workshop) ·
+  Tier 3 high (Bleed AI agency application). Fixes the current broken promise (About points to a free
+  audit that isn't in Featured).
+- **Experience + skills** — all point at one lane. **Own the word:** "cold email."
+
 ---
-**Today's single action:** rewrite the profile (Section 1). It's the reach setting everything else rides on.
-Pick a headline option, and I'll write the banner + About + Featured with you.
+**Today's action:** lock the 3 content pillars (§2), then stand up the commenting Power List (§4).
+Profile is parked to Week 3. The engine leads.
