@@ -677,6 +677,11 @@ The mechanics are settled; the *strategy* is a set of lanes. Pick deliberately:
 
 # MODULE 8 — Taha's pro strategy (everything, combined)
 
+> 📍 **The DECIDED, canonical Taha strategy now lives in [STRATEGY.md](STRATEGY.md)** (SMPV positioning,
+> the stamped 3 pillars + 3×5 map, the contrarian bank) and this month's execution in
+> [JULY-2026-STRATEGY.md](JULY-2026-STRATEGY.md). This module is the textbook-level summary; the two docs
+> above are the source of truth.
+
 **The thesis:** Taha's fastest path to cold-email-celebrity is to **fuse Michel's system (visual,
 comment-driven, build-in-public, wired to revenue) with Adam's radical transparency and Josh Braun's
 authentic story** — anchored to the one thing nobody can copy: **he's building a real AI-powered

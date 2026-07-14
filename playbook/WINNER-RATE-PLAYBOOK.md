@@ -171,6 +171,10 @@ Run: `node linkedin-hq/scripts/analyze-posting-cadence.mjs`
 
 ## 5. The revamped strategy — Taha → cold-email celebrity, as fast as possible
 
+> 📍 **Superseded by the canonical strategy in [STRATEGY.md](STRATEGY.md)** (decided pillars + contrarian
+> bank + SMPV positioning) and [JULY-2026-STRATEGY.md](JULY-2026-STRATEGY.md) (this month's execution).
+> This section is kept for the corpus-diagnosis reasoning; the pillar decisions above now live in STRATEGY.md.
+
 The bottleneck is reach + reps, and the two proven models are **Michel** (systematic, build-in-public,
 visual, comment-driven) and **Josh** (authentic story). Taha's fastest path fuses them, anchored to
 the one thing nobody else can copy: **he's building a real GTM engine in Claude Code.**

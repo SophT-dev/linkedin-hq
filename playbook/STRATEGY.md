@@ -1,9 +1,9 @@
 # Bleed AI — LinkedIn Strategy (the WHY & WHO)
 
-**Owner:** Taha Anwar / Bleed AI · **Goal:** #1 cold-email + outbound-systems voice on LinkedIn within 12 months · **Updated:** June 2026
+**Owner:** Taha Anwar / Bleed AI · **Goal:** #1 cold-email + outbound-systems voice on LinkedIn · **Updated:** July 2026
 
-> **This is the strategy — positioning, USP, profile, dual-brand, roadmap, the rules.**
-> The tactical *how* (expert lessons, formats, hook craft, checklists) lives in its sibling, [PLAYBOOK.md](PLAYBOOK.md).
+> 🏛️ **This is the CONSTITUTION — the single source of truth for positioning, pillars, contrarian takes, dual-brand, and the rules.** Everything decided (SMPV positioning, the canonical pillar set, the contrarian bank) lives here and nowhere else.
+> **Doc map (each references this, none duplicates it):** execution for the current month → [JULY-2026-STRATEGY.md](JULY-2026-STRATEGY.md) · the textbook (experts, algorithm, why) → [LINKEDIN-GROWTH-MASTERCLASS.md](LINKEDIN-GROWTH-MASTERCLASS.md) · corpus diagnosis + scoring → [WINNER-RATE-PLAYBOOK.md](WINNER-RATE-PLAYBOOK.md) · tactical craft/formats → [PLAYBOOK.md](PLAYBOOK.md).
 > Voice rules are owned only by [`.claude/skills/linkedin-batch/SKILL.md`](../.claude/skills/linkedin-batch/SKILL.md) — never duplicated here.
 
 > ⚠️ **Pricing paranoia:** anything customer-facing must match the **live** source — **calculator.bleedai.com** (trials + packages; no pay-per-lead, no free trials). Never quote pricing from repo code or an old banner. Confirm with Taha before any pricing-related post goes live.
@@ -17,6 +17,17 @@
 
 You are **the operator who builds systems that save B2B founders time and deliver results at a speed nobody else can match.** Cold email is the proof of concept. The system is the moat.
 
+### The positioning, decided — Lara Acosta's SMPV, applied ✅
+> Run through SMPV (find the intersection of Skill × Market × Problem × Value = your lived experience):
+- **S — Skill (what you're most *useful* at):** engineering AI-powered outbound *systems* that book meetings — the rare stack of cold email + automation (Claude Code / Clay / n8n) + copy + customer psychology.
+- **M — Market:** B2B founders & agency owners at **$500K–$10M ARR** stuck on referrals, burned domains, or a missed-target SDR team.
+- **P — Problem (what they actually want):** **predictable booked meetings** without volume-spam, burned domains, or hiring 5 SDRs.
+- **V — Value / your lived-experience moat:** you actually **run the agency** (real client numbers) **and** you're building the AI-automated version **in public.** Uncopyable.
+
+**⭐ STAMPED POSITIONING:** *"The operator who engineers cold-email **systems** that book meetings — and builds them in public with AI."*
+- **The word you own (Matt Gray's "own one word"):** **"systems"** — *cold email is a systems problem.* Say it in every hook, bio, and CTA. Anchor verb, straight off your banner: **"engineer."**
+- **Anti-commodity test (Pierre Herubel):** a competitor literally *cannot* post your content, because it's your real build + your real numbers. Generic tips fail this test; your deployed-engine-with-receipts passes it. That gap is the moat.
+
 This positioning does 4 things generic cold-email creators can't:
 1. **Expands the content universe** beyond cold email without losing coherence (Clay workflows, Claude automations, n8n flows all fit under "the system").
 2. **Aligns with Hormozi's Time > Info frame** — info is free; the premium is the operator who turns it into results faster.
@@ -29,11 +40,26 @@ B2B founders and agency owners at **$500K–$10M ARR** stuck on referrals, burni
 Sub-segments: B2B agency owners (<20 people) who hit a referral ceiling · B2B SaaS founders plateauing on PLG · B2B service businesses (IT, consultancies, dev shops, recruitment) with a clear ICP but no outbound motion.
 **Geography:** US-based founders primarily; US business English. The Karachi base is an asset (Part 6), not a liability.
 
-### The Prolific-Zone takes (content fuel for 12 months)
-Headline take:
-> *"The cold email game isn't won by who writes the best email. It's won by who built the best system around the email."*
+### The Contrarian-Take Bank — decided & ranked (Pillar 3 fuel)
+**Why this exists (the data):** in the corpus, contrarian-take is the *most-used, lowest-median* format — so generic hot takes are commodity. But Taha currently posts **~zero** contrarian takes, and his account is forgettable *because* there's nothing to react to. The fix isn't generic outrage; it's **sharp, specific, proof-backed** flags that only he can defend (Pierre's proprietary-insight rule + Adam Robinson's polarizing hooks). Psychology: a claim that violates expectation is a **prediction error** → attention; debate → comments (worth 3× a like).
 
-Supporting takes: **AI personalization** ("AI slop at scale is the problem, not AI") · **info overload** ("the bottleneck is execution speed, not information") · **volume** ("volume is the last refuge of bad targeting — 423 leads → $45K pipeline") · **deliverability** ("your reply rate isn't a copy problem; 30% of your list is dead") · **signals** ("scraping job titles is a 2022 playbook; trigger on live buy signals") · **the 1-in-10 standard** ("1 in 10 leads we contact books a meeting; below that you have a system problem").
+**Every take below must be backed by his real experience/numbers** — that's the costly-signal credibility that makes a contrarian take land instead of read as a troll.
+
+| # | The take | Backed by |
+|---|---|---|
+| **1 ✅** | **"Volume outbound is dead. 10k emails/day is a deliverability suicide note, not a strategy."** | His signal-based thesis + banner ("engineer replies"). Industry-splitting. |
+| **2 ✅** | **"Your reply rate is a vanity metric. Positive reply rate is the only number that predicts revenue."** | He already posted a version — he has the data (1 lead / ~105 emails, 32% positive reply). |
+| **3 ✅** | **"Hiring an SDR army in 2026 is lighting money on fire. One operator + AI agents beats a 5-person SDR team."** | Ties straight to Pillar 1 (build-in-public), very spicy, he can *show* the build. |
+| **4 ✅** | **"More cold-email tools are making you worse. You're just automating a broken process faster."** | His real "$10k+ wasted on tools" post — lived proof. |
+| **5 ✅** | **"90% of 'personalization' is theater. {first_name} and 'saw your post' don't book meetings — relevance does."** | Highly relatable, debate-magnet, on-thesis (signals > spray). |
+| 6 | "Deliverability is the whole game and nobody talks about it because it's boring. Your copy is irrelevant if you're in spam." | 30% of lists are dead; Richard Illingworth's owned angle. |
+| 7 | "Booking a demo is a terrible CTA. Nobody wants your demo. Change the offer." | Josh Braun's offer thesis. |
+| 8 | "Scraping job titles is a 2022 playbook. If you're not triggering on live buy-signals, you're spam." | His signals angle. |
+| 9 | "AI slop at scale is the problem, not AI. If there's no *you* in the copy, it's just faster spam." | Jasmin Alić's H2H / "the I must be in it." |
+| 10 | "Spray-and-pray agencies charging for volume are a scam. If they can't show positive reply rate per campaign, run." | His high-touch, low-volume USP. |
+
+**⭐ Lead with #1–#5** (the stamped five). Rotate the rest. Headline banner-take that sits above the whole bank:
+> *"The cold email game isn't won by who writes the best email. It's won by who built the best **system** around the email."*
 
 ### Why this wins
 | Competitors sell | You sell |
@@ -105,16 +131,42 @@ Small roster · deep attention per client · campaigns discussed specifically no
 
 ## PART 4 — CONTENT SYSTEM
 
-### Pillar stack
-| Pillar | Mix | Funnel job |
+### The pillars, decided — Pierre Herubel's model (max 3 pillars), applied ✅
+
+**Step 1 — the 10 candidates** (every pillar a cold-email authority *could* run, with the data/expert behind it):
+| # | Candidate pillar | Backed by |
 |---|---|---|
-| Campaign Teardowns | 20% | Authority + saves |
-| Cold Email Systems & Strategy | 20% | Authority |
-| AI & Automation Workflows | 20% | Authority + growth |
-| Contrarian / Hot Takes | 15% | Growth (reach) |
-| Tool Deep Dives | 10% | Authority + growth |
-| Operator / Behind-the-Scenes | 10% | Personal (memorable) |
-| Conversion | 5% | Conversion |
+| 1 | Campaign teardowns (dissect a real campaign) | corpus: teardown 58 median |
+| 2 | Client case-studies & results **with numbers** | corpus: case-study **76 median (2nd highest)**; Adam Robinson transparency |
+| 3 | Building the AI outbound engine in public (Claude Code/Clay/n8n) | the 2026 wave; Adam (build-in-public), Matt Gray (BTS), kenny/sacha |
+| 4 | Cold-email systems & strategy | authority (your one-hill) |
+| 5 | Contrarian takes on outbound | the differentiator; prediction-error → comments |
+| 6 | Deliverability & infrastructure | Richard Illingworth's owned, under-served pillar |
+| 7 | Metrics & benchmarks (positive reply rate, CPL) | save-worthy data (saves = #1 signal) |
+| 8 | Tool deep-dives / tech-stack breakdowns | corpus: Michel's stack posts = 1,500+ likes |
+| 9 | Operator / founder story / BTS | Josh Braun + Lara: stories = the biggest virals |
+| 10 | Lead-gen / GTM strategy for founders | broader TOFU reach (Michel/Pierre 2026 reach paradox) |
+
+**Step 2 — the stamped TOP 3** (Pierre: never more than 3; chosen for *unfair advantage* + *highest-median formats* + *fixes the audit gaps*):
+
+1. **⭐ PILLAR 1 — Building the AI-powered outbound engine in public.** (folds #3 + #8 + #4) Your **uncopyable moat** and the hottest wave in the niche; naturally announcement/case-study/teardown = the highest-median formats. *Experts: Adam Robinson (founder-led/transparency), Matt Gray (behind-the-scenes), Michel Lieben (tool stacks).*
+2. **⭐ PILLAR 2 — Cold-email systems & results, with proof.** (folds #1 + #2 + #7 + #6) Teardowns + client case-studies + real metrics + deliverability. Your existing strength, upgraded so **every post carries a number** (Adam's radical transparency). *Corpus: case-study 76 / teardown 58 median.*
+3. **⭐ PILLAR 3 — Contrarian takes on outbound.** (#5) The **missing** pillar and the fix for "commodity + safe" — it drives the comments you don't get and turns you from a tips account into a *voice*. Rationed but present; fuel = the Contrarian-Take Bank in Part 1. *Experts: Adam (polarizing hooks); psychology (prediction error).*
+- **Woven, not a 4th pillar:** ~**1 personal / founder-story post per week** (Josh Braun, Lara) — your biggest untapped emotional lever and how your 91-comment winner behaved.
+
+**Step 3 — the 3×5 content map** (Pierre: break each pillar into ~5 subtopics = your whole content universe):
+- **Pillar 1 →** a Claude/Clay/n8n build walkthrough · an AI-agent doing an SDR's job · a "1 operator = 10 agents" result · a tool I replaced with a 20-line automation · what broke and how I fixed it (in public).
+- **Pillar 2 →** a campaign teardown with the exact numbers · a client result (before/after) · the metric that actually predicts revenue · a deliverability fix (SEG/domains/warmup) · a subject-line / sequence A-B result.
+- **Pillar 3 →** volume-is-dead · reply-rate-is-vanity · SDR-army-vs-AI · tools-make-you-worse · personalization-is-theater (= the stamped 5 from the bank).
+
+**Step 4 — the mix** (Pierre's authority-first 70/20/10, tuned up on contrarian to fix Taha's comment gap):
+| Bucket | Mix | Weekly (of ~4 posts) |
+|---|---|---|
+| Authority (Pillars 1 + 2) | ~60% | 1 build-in-public + 1 case-study/proof |
+| Contrarian (Pillar 3) | ~25% | 1 contrarian |
+| Personal / story | ~15% | 1 story (rotating in) |
+
+Every post still obeys the two non-negotiable rules below (lead magnet in first comment + a visual with a second hook).
 
 ### The two non-negotiable content rules
 1. **Every post ships a lead magnet** giving quantifiable value — placed **first comment, never post body**. (Hard floor: ≥50% of posts; in practice every one.)
@@ -147,7 +199,7 @@ Asset, not liability. Posts to write: running a US-facing operation from Karachi
 
 | Metric | Now | Day 90 |
 |---|---|---|
-| Followers | 6,664 | 10,000+ |
+| Followers | 6,795 (2026-07-14) | 10,000+ |
 | Avg post engagement | 2–6 likes | 50–150 likes |
 | Audit downloads | 0 | 100+/mo |
 | Email list | — | 300+ |
@@ -169,6 +221,6 @@ Asset, not liability. Posts to write: running a US-facing operation from Karachi
 
 **Automate vs keep human:** distribution/scheduling/monitoring + auto-connects → fully automate · creator comment loop → draft + 30-sec Slack approval, never full-auto · post creation → drafts only, human shapes · hot-lead replies → always human.
 
-**Systems inventory (status):** batch generator (live) · lead-magnet builder (live) · auto-comment loop (built, n8n not activated) · creator intel feed (template ready, Apify key rotation pending) · auto-post scheduler (not built) · **Slack ✅-reaction detection (known bug — debug via Vercel logs)** · analytics feedback loop → **superseded by the Notion Content Command Center + AUTO-9 stats scrape** (see [`../../bleed-ai-brain/AUTOMATION-PLAN.md`](../../bleed-ai-brain/AUTOMATION-PLAN.md)).
+**Systems inventory (status, refreshed 2026-07-14):** batch generator (live) · lead-magnet builder (live) · auto-comment loop (built, n8n not activated) · creator intel feed (template ready, Apify key rotation pending) · auto-post scheduler (not built) · **Slack ✅-reaction detection (known bug — debug via Vercel logs)** · analytics/record → **the Posts + Account Posts tabs are the record now** (Notion Content Command Center was RETIRED 2026-07-08; stats via `scripts/sync-post-stats.mjs` + `scripts/sync-account-posts.mjs`).
 
 **Pending extractions (do before archiving the old Drive docs):** 18 hook formulas (LinkedIn Control Centre) → SKILL.md · post-type library → SKILL.md format rules · "New Learning" notes (LinkedIn Command Centre) → SKILL.md voice.

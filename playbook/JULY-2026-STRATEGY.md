@@ -89,18 +89,12 @@ current headline for now.** The full rewrite (headline polish + About-as-sales-p
 shelf) is parked at **§12** and executed in **Week 3**, once posts are actually driving profile traffic.
 The engine — pillars → content → commenting — leads. (Banner is already ✅ strong; leave it.)
 
-## 2. Content pillars (one lane, three veins) — LOCK THESE FIRST
-Your niche is *a* niche — stay in it (off-topic posts drop distribution across everything).
-1. **Cold-email tactics WITH proof** — teardowns, client results, the real metrics. Bread and butter,
-   but every post now carries a number + a lesson.
-2. **Building the AI-powered agency in public** — Claude Code / Clay / n8n. *Your unfair advantage* — the
-   hottest wave in the niche, and you're actually doing it. Nobody can copy your real build.
-3. **⭐ Contrarian operator takes — THE missing pillar.** This is the fix for "commodity + safe." Plant
-   flags: *"volume outbound is dead,"* *"your reply rate is a vanity metric,"* *"90% of personalization
-   is theater."* Keep them **sharp and specific** (generic hot-takes are commodity; earned, proof-backed
-   contrarian takes are your differentiator). This is what makes people follow *you*, not just save a tip.
-- Plus **~1 personal / build-in-public story post/week** — your 91-comment winner was comment-driven;
-  stories + a comment CTA travel furthest, and it's your biggest untapped emotional lever.
+## 2. Content pillars — see the CONSTITUTION (don't redefine here)
+The canonical decided pillars, the 3×5 content map, the mix, and the contrarian-take bank live in
+**[STRATEGY.md](STRATEGY.md) → "The pillars, decided" + "The Contrarian-Take Bank."** In one line, this
+month we execute: **P1 Building the AI outbound engine in public · P2 Cold-email systems & results with
+proof · P3 Contrarian takes** + ~1 story/week. Weekly mix (of ~4 posts): **1 build-in-public + 1
+case-study/proof + 1 contrarian + 1 story.** Every post: lead magnet in first comment + a visual.
 
 ## 3. The content system (how each post gets made)
 - **Draft with `/linkedin-post`** (pulls Template Library + corpus + Posts win-data — your Level-4 vault already exists).
