@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
   // Explicitly include the voice doc in every route that generates comments.
   outputFileTracingIncludes: {
     "/api/comments/suggest": ["./playbook/voice.md"],
+    "/api/comments/suggest-from-ocr": ["./playbook/voice.md"],
+    "/api/comments/suggest-from-url": ["./playbook/voice.md"],
     "/api/comments/plan": ["./playbook/voice.md"],
     "/api/comments/sophiya-review": ["./playbook/voice.md"],
   },
