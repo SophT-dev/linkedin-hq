@@ -1,18 +1,18 @@
-// Live profile sync (Phase 1) — runs on linkedin.com. Because this script runs
-// in the linkedin.com origin, fetch() to LinkedIn's own Voyager API auto-sends
-// your logged-in session cookies (we never read or exfiltrate the auth cookie).
-// It reads ONLY your follower + connection counts and hands them to the
-// background worker, which POSTs them to linkedin-hq. Read-only, throttled to
-// once every few hours. Nothing is written to LinkedIn.
+// Live profile sync (Phase 1) — runs on linkedin.com. Reads ONLY your own
+// follower + connection counts and hands them to the background worker, which
+// POSTs them to linkedin-hq. Read-only; nothing is written to LinkedIn.
 //
-// Debug: open DevTools (F12) on any linkedin.com tab and filter the console for
-// "[BleedSync]" to see exactly what happens each run.
+// LinkedIn deprecated the clean Voyager `/networkinfo` REST endpoint (returns
+// 410 as of 2025). So the reliable method now is AuthoredUp-style: read the
+// numbers off your own profile page's DOM. We still try a modern API call first
+// as a bonus (it gives the EXACT connection count, which the DOM caps at 500+).
 //
-// See docs/LIVE-LINKEDIN-DATA-RESEARCH.md for how/why this works + the risks.
+// Debug: open DevTools (F12) on linkedin.com and filter the console for
+// "[BleedSync]". See docs/LIVE-LINKEDIN-DATA-RESEARCH.md for how/why + risks.
 (function () {
   "use strict";
 
-  const THROTTLE_MS = 6 * 60 * 60 * 1000; // at most once every 6h
+  const THROTTLE_MS = 6 * 60 * 60 * 1000;
   const V = "https://www.linkedin.com/voyager/api";
   const log = (...a) => console.log("[BleedSync]", ...a);
   const warn = (...a) => console.warn("[BleedSync]", ...a);
@@ -20,66 +20,77 @@
   function csrfHeaders() {
     const m = document.cookie.match(/JSESSIONID="?([^;"]+)"?/);
     if (!m) return null;
-    return {
-      "csrf-token": m[1],
-      "x-restli-protocol-version": "2.0.0",
-      "accept": "application/vnd.linkedin.normalized+json+2.1",
-    };
+    return { "csrf-token": m[1], "x-restli-protocol-version": "2.0.0", "accept": "application/vnd.linkedin.normalized+json+2.1" };
   }
 
-  async function voyager(path, headers) {
-    const res = await fetch(V + path, { credentials: "include", headers });
-    if (!res.ok) throw new Error(`voyager ${path} -> ${res.status}`);
-    return res.json();
-  }
-
-  // The publicIdentifier / profile urn can live in a few places depending on
-  // the decoration. Check them all.
-  function extractProfileId(me) {
-    if (me?.data?.miniProfile?.publicIdentifier) return me.data.miniProfile.publicIdentifier;
-    if (me?.data?.publicIdentifier) return me.data.publicIdentifier;
-    for (const x of me?.included || []) {
-      if (x && x.publicIdentifier) return x.publicIdentifier;
-    }
-    // Fall back to the entity urn id (works with networkinfo too).
-    const urn = me?.data?.miniProfile?.entityUrn || me?.data?.["*miniProfile"] || me?.data?.entityUrn;
-    if (typeof urn === "string") {
-      const m = urn.match(/urn:li:fs?_?miniProfile:([^,)]+)/) || urn.match(/([A-Za-z0-9_-]{10,})$/);
-      if (m) return m[1];
-    }
+  async function meProfileId(headers) {
+    try {
+      const res = await fetch(V + "/me", { credentials: "include", headers });
+      if (!res.ok) throw new Error(`/me -> ${res.status}`);
+      const me = await res.json();
+      if (me?.data?.miniProfile?.publicIdentifier) return me.data.miniProfile.publicIdentifier;
+      if (me?.data?.publicIdentifier) return me.data.publicIdentifier;
+      for (const x of me?.included || []) if (x && x.publicIdentifier) return x.publicIdentifier;
+    } catch (e) { warn("/me failed:", e.message); }
     return null;
   }
 
-  function firstNum(obj, ...keys) {
-    for (const k of keys) if (obj && typeof obj[k] === "number") return obj[k];
-    return null;
+  function parseHuman(s) {
+    if (s == null) return null;
+    const t = ("" + s).replace(/,/g, "").trim();
+    const m = t.match(/^([\d.]+)\s*([KMB]?)/i);
+    if (!m) return null;
+    let v = parseFloat(m[1]);
+    const u = (m[2] || "").toUpperCase();
+    if (u === "K") v *= 1e3; else if (u === "M") v *= 1e6; else if (u === "B") v *= 1e9;
+    return Math.round(v);
   }
 
-  // Returns true only if we actually sent numbers (so the throttle isn't set
-  // on an empty/failed run — that was silently blocking retries for 6h).
+  // Bonus: exact connection count via the still-live relationships dash endpoint.
+  async function exactConnections(headers) {
+    try {
+      const res = await fetch(V + "/relationships/dash/connections?q=search&start=0&count=0", { credentials: "include", headers });
+      if (!res.ok) return null;
+      const j = await res.json();
+      const total = j?.data?.paging?.total ?? j?.paging?.total;
+      return typeof total === "number" ? total : null;
+    } catch { return null; }
+  }
+
+  // Read follower + connection counts from your OWN profile page's DOM.
+  function domCounts(profileId) {
+    const slug = (location.pathname.split("/in/")[1] || "").replace(/\/.*/, "");
+    if (!slug) { log("not on a profile page — open linkedin.com/in/" + (profileId || "you") + " to sync via the page."); return null; }
+    if (profileId && slug !== profileId) { log("on someone else's profile (" + slug + "), skipping to avoid reading their counts."); return null; }
+    const text = (document.querySelector("main") || document.body).innerText || "";
+    const fm = text.match(/([\d.,]+[KMB]?)\s*followers/i);
+    const cm = text.match(/([\d,]+\+?)\s*connections/i);
+    const followers = fm ? parseHuman(fm[1]) : null;
+    const connections = cm ? cm[1].replace(/,/g, "") : null; // may be "500+"
+    if (followers == null && connections == null) return null;
+    return { followers, connections };
+  }
+
   async function run() {
     const headers = csrfHeaders();
-    if (!headers) { warn("no JSESSIONID cookie — are you logged in to LinkedIn in this browser?"); return false; }
-    log("session cookie found, calling /me…");
+    if (!headers) { warn("no JSESSIONID cookie — log in to LinkedIn in this browser."); return false; }
 
-    const me = await voyager("/me", headers);
-    const profileId = extractProfileId(me);
+    const profileId = await meProfileId(headers);
     log("profileId:", profileId);
-    if (!profileId) { warn("could not extract profileId from /me response:", me); return false; }
 
-    const ni = await voyager(`/identity/profiles/${encodeURIComponent(profileId)}/networkinfo`, headers);
-    const src =
-      ni?.data && (ni.data.followersCount != null || ni.data.connectionsCount != null)
-        ? ni.data
-        : (ni?.included || []).find((x) => x && (x.followersCount != null || x.connectionsCount != null)) || ni?.data || {};
+    const dom = domCounts(profileId);
+    if (!dom) { log("no counts read this page. (Sync happens on your own profile page.)"); return false; }
 
-    const followers = firstNum(src, "followersCount", "followerCount");
-    const connections = firstNum(src, "connectionsCount", "connections");
-    log("parsed followers:", followers, "connections:", connections);
-    if (followers == null && connections == null) { warn("networkinfo had no counts:", ni); return false; }
+    // Upgrade the capped "500+" DOM connections to the exact number if we can.
+    let connections = dom.connections;
+    if (typeof connections === "string" && connections.includes("+")) {
+      const exact = await exactConnections(headers);
+      if (exact != null) connections = exact;
+    }
 
+    log("sending followers:", dom.followers, "connections:", connections);
     chrome.runtime.sendMessage(
-      { type: "BLEED_SYNC", payload: { followers, connections, profileId } },
+      { type: "BLEED_SYNC", payload: { followers: dom.followers, connections, profileId } },
       (resp) => {
         if (chrome.runtime.lastError) warn("send failed:", chrome.runtime.lastError.message);
         else log("posted to linkedin-hq:", resp);
@@ -93,11 +104,14 @@
       const KEY = "bleed_last_profile_sync";
       const store = await chrome.storage.local.get(KEY);
       const since = Date.now() - (store[KEY] || 0);
-      if (since < THROTTLE_MS) { log(`throttled — last sync ${Math.round(since / 60000)}m ago (<6h). Skipping.`); return; }
+      if (since < THROTTLE_MS) { log(`throttled — last sync ${Math.round(since / 60000)}m ago. Skipping.`); return; }
       const sent = await run();
       if (sent) await chrome.storage.local.set({ [KEY]: Date.now() });
     } catch (e) {
       warn("sync errored:", e && e.message ? e.message : e);
     }
+    // Re-scan once after the SPA finishes rendering the profile (LinkedIn loads
+    // the follower count a beat after navigation).
+    setTimeout(() => { domCounts.__done || run().then((s) => { if (s) chrome.storage.local.set({ bleed_last_profile_sync: Date.now() }); }); }, 4000);
   })();
 })();
