@@ -40,7 +40,9 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const followers = numOrEmpty(body.followers);
-    const connections = numOrEmpty(body.connections);
+    // Keep connections as a raw string so LinkedIn's capped "500+" survives
+    // (numOrEmpty would strip the + to 500). Exact numbers pass through fine.
+    const connections = body.connections == null ? "" : String(body.connections).trim();
     if (followers === "" && connections === "") {
       return NextResponse.json({ ok: false, error: "no followers/connections in payload" }, { status: 400 });
     }

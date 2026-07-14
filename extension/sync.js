@@ -12,7 +12,7 @@
 (function () {
   "use strict";
 
-  const THROTTLE_MS = 6 * 60 * 60 * 1000;
+  const THROTTLE_MS = 2 * 60 * 1000; // short during tuning; will raise back to 6h once confirmed
   const V = "https://www.linkedin.com/voyager/api";
   const log = (...a) => console.log("[BleedSync]", ...a);
   const warn = (...a) => console.warn("[BleedSync]", ...a);
@@ -57,16 +57,38 @@
     } catch { return null; }
   }
 
+  // Collect the text of leaf elements whose whole text is "<n> followers" /
+  // "<n> connections" — far more precise than scanning all of main's innerText
+  // (which would also match "People also viewed" cards further down the page).
+  function leafMatches(re) {
+    const main = document.querySelector("main") || document.body;
+    const out = [];
+    main.querySelectorAll("span,div,li,a,strong,p,h2").forEach((el) => {
+      if (el.children.length > 0) return; // leaf nodes only
+      const t = (el.textContent || "").replace(/\s+/g, " ").trim();
+      const m = t.match(re);
+      if (m) out.push(m[1]);
+    });
+    return out;
+  }
+
   // Read follower + connection counts from your OWN profile page's DOM.
   function domCounts(profileId) {
     const slug = (location.pathname.split("/in/")[1] || "").replace(/\/.*/, "");
     if (!slug) { log("not on a profile page — open linkedin.com/in/" + (profileId || "you") + " to sync via the page."); return null; }
-    if (profileId && slug !== profileId) { log("on someone else's profile (" + slug + "), skipping to avoid reading their counts."); return null; }
-    const text = (document.querySelector("main") || document.body).innerText || "";
-    const fm = text.match(/([\d.,]+[KMB]?)\s*followers/i);
-    const cm = text.match(/([\d,]+\+?)\s*connections/i);
-    const followers = fm ? parseHuman(fm[1]) : null;
-    const connections = cm ? cm[1].replace(/,/g, "") : null; // may be "500+"
+    if (profileId && slug !== profileId) { log("on someone else's profile (" + slug + "), skipping."); return null; }
+
+    const fRaw = leafMatches(/^([\d.,]+[KMB]?)\s*followers?$/i).map(parseHuman).filter((n) => n != null);
+    const cRaw = leafMatches(/^([\d,]+\+?)\s*connections?$/i);
+    log("follower candidates:", fRaw, "| connection candidates:", cRaw);
+
+    // Prefer the EXACT follower count (never a round hundred) over LinkedIn's
+    // rounded header number (e.g. 6795 over 6800).
+    const followers = fRaw.find((n) => n % 100 !== 0) ?? fRaw[0] ?? null;
+    // Prefer an exact connection number over the capped "500+".
+    const cExact = cRaw.find((s) => !s.includes("+"));
+    const connections = ((cExact || cRaw[0] || "").replace(/,/g, "")) || null; // may stay "500+"
+
     if (followers == null && connections == null) return null;
     return { followers, connections };
   }
