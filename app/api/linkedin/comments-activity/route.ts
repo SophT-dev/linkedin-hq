@@ -28,8 +28,8 @@ export async function POST(req: NextRequest) {
     if (req.headers.get("x-sync-token") !== expected) {
       return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
     }
-    const body = (await req.json()) as { items?: { url?: string; author?: string; minutesAgo?: number }[] };
-    const items = (Array.isArray(body.items) ? body.items : []).filter((i) => i.url) as { url: string; author?: string; minutesAgo?: number }[];
+    const body = (await req.json()) as { items?: { url?: string; author?: string; minutesAgo?: number; text?: string }[] };
+    const items = (Array.isArray(body.items) ? body.items : []).filter((i) => i.url) as { url: string; author?: string; minutesAgo?: number; text?: string }[];
     const result = await saveMyComments(items);
     return NextResponse.json({ ok: true, ...result });
   } catch (e) {
