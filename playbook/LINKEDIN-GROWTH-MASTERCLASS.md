@@ -97,6 +97,11 @@ Once you have the lane, **Pierre's model** turns it into an infinite content eng
 - Break each pillar into **~5 subtopics** → a 3×5 grid = 15 evergreen veins you rotate forever.
   This is the cure for the blank page.
 - **Positioning is cumulative:** *"you build it over hundreds of posts that connect, not one viral hit."*
+- **One lane — "you are not the niche, your niche is a niche" (Lara Acosta).** Going off-topic even
+  occasionally adds *noise* to the picture the algorithm is building of you, and distribution drops
+  across **everything**, not just that post. Pick one core topic + adjacent subtopics that all tie back
+  to it. The algorithm (and human memory) rewards specialists, not generalists. Clean, consistent
+  signal = the system can confidently place you and go find your audience.
 
 **The founder-brand thesis on top (Adam Robinson):** *"Building a personal brand on LinkedIn is the
 fastest, highest-leverage way to grow a startup that has ever existed."* Because when you sell to your
@@ -156,7 +161,7 @@ agree — **comments are the currency.**
 
 | Killer | Penalty | Rule |
 |---|---|---|
-| Outbound link in post body | **−40% to −70%** | Put links in the **first comment** (only ~−5–10%). Still worth it in 2026. |
+| Outbound link in post body | **contested** (see Lesson 4b) | van der Blom's data shows −40–70%; Lara Acosta + LinkedIn's own product director say the penalty ended ~2 years ago and the *real* killers are a link with no story or a link that doesn't match the post. Safest play stays: strong native post, link in first comment. |
 | AI-obvious text | −30% reach, −55% engagement | Sound human. Emoji-walls now read as AI. |
 | Editing after ~30 min | −30% to −50% impressions | Fix typos within 10 min or wait until reach is spent. Edits *pause then lower* distribution. |
 | Engagement pods | detectable, plateauing/negative | Don't. Reciprocal non-relevant engagement is flagged. |
@@ -164,6 +169,58 @@ agree — **comments are the currency.**
 | 6+ hashtags | "seriously sabotages reach" | **2–4 relevant tags**, never a wall. |
 | 3+ same-format posts in a row | −20% | Vary formats. |
 | Posting >1×/24h | 2nd post cannibalizes the 1st | **The 24-hour rule** — space posts ≥24h apart. |
+
+## Lesson 4b — LinkedIn's 360Brew paper, decoded (Lara Acosta's breakdown)
+
+In 2025 LinkedIn published (then quietly withdrew) the research paper describing the new feed. Lara
+Acosta — who'd been teaching this from her own data for years — decoded it. This is the deepest,
+most current read on how the machine actually thinks, and it *corrects* several "expert" myths:
+
+**Your profile is a prompt.** The system converts your *entire* profile — headline, experience,
+skills, certifications, every field — into text and feeds it into an AI prompt to decide who your
+content is for. A profile that says *"brand designer"* gets a completely different audience than
+*"I help D2C founders build brand identities that convert"* — **same person, same post, different
+distribution, purely from profile wording.** Vague profile = nothing to match = your content goes
+nowhere no matter how good it is. (This is the sharpest version of the Lesson 3 profile↔post match.)
+
+**Connected vs. unconnected content (confirmed by LinkedIn's Sr Dir of Product, Oct 2024).** Your feed
+now has two streams: **connected** (people you follow) and **unconnected** (content LinkedIn surfaces
+by *interest* and *what your network engages with*, from people you've never met). A post reaches a
+stranger because *someone they follow* liked, commented, or reshared it — and it **doesn't need to be
+viral**, just useful/relevant enough for one person to engage. **→ Your network isn't just your
+audience, it's your distribution system.** Shareability + comment-worthiness matter more than ever
+(this is *why* the commenting system in Lesson 8b is so powerful now).
+
+**The beginner's advantage is real now.** The old system needed years of interaction data, so it was
+biased toward big accounts (more followers = more auto-reach). The new one understands you from *text
+alone*, so **the performance gap favors small accounts most** — a great, specific post from a 500-follower
+account can genuinely outperform a mediocre one from a 100K account. There has never been a better time
+to start.
+
+**Relevancy over recency (the second wave).** The old algo judged a post in the first day, then forgot
+it. The new one **re-assesses posts continuously and can give a great post a second wave weeks later**
+(like YouTube resurfacing an old video). **One genuinely useful post keeps generating leads for weeks** —
+so front-load quality, not just frequency.
+
+**The myths this paper kills (nuanced):**
+- ❌ *"Educational is the best viral format."* No — education vs. storytelling shows **no significant
+  performance difference.** What matters is **content-founder-fit** (Lesson 7c below).
+- ❌ *"Text-only is the worst format."* No — text-only is going viral constantly right now, especially
+  from beginners and domain experts with something real to say, clearly written.
+- ❌ *"External links kill reach."* Not anymore (changed ~2 yrs ago; LinkedIn confirmed). Link posts
+  fail when they have **no story/insight** or the **link doesn't match the post** — not because of the link itself.
+- ❌ *"Video doesn't work on LinkedIn."* It does, done right: a **3-second visual hook that compresses
+  the whole concept** + **~500 words of post copy above the video** + genuine relevance to a pro audience.
+
+**The 3 Ps (the packaging test):** **Positioning** (crystal clarity on what you do — makes people find
+and follow you) · **Packaging** (framing ideas simply enough that people want to read and use them) ·
+**Proof** (screenshots, testimonials, measurable results — makes people believe and buy). It's the old
+"known, liked, trusted," updated.
+
+**The midwit curve (where to be):** *beginners* who post authentically often do well; the *right side*
+understands it comes down to being good at one thing, staying consistent, and letting the algo find the
+audience; the **midwits in the middle** obsess over posting times and hacking every signal and get the
+*worst* results. **Don't be a midwit — move right.**
 
 ---
 
@@ -296,6 +353,20 @@ magnet to the subject is what lifts click-through and lead volume.
 creators' winners; double down on the patterns. Compounding math: **10% better each post = ~18,000×
 better by post 100.** Velocity of learning is the leading indicator of growth.
 
+### Lesson 7c — Content-founder-fit (Lara Acosta): pick the format that fits YOUR brain
+
+The single biggest reason people copy a "winning format" and get worse results: **there is no universal
+best format — only the one that matches how you naturally think and communicate.** Two brain types:
+- **Logical brain** — wired for frameworks, breakdowns, step-by-step. (Guy Macy, Chris Donnelly, Jake
+  Ward.) Their educational content hits *because it fits them.*
+- **Creative brain** — wired for stories, experiences, hot takes. (Henry from Salt, Jasmin Alić, Lara.)
+  Their narrative content hits for the same reason.
+
+Copying the *other* type's format underperforms — the platform (and the reader) can feel the mismatch.
+**Find your pocket and stay in it; results compound.** This is why the Lesson 7 "money table" is a
+*starting* guide, not gospel — aggregate averages, then override with what fits you and your audience.
+(Even Lara, mostly educational, finds her personal-story posts outperform everything — so test the blend.)
+
 ---
 
 # MODULE 4 — Distribution (getting seen)
@@ -323,6 +394,12 @@ The biggest strategic split among experts — and the highest-leverage lesson:
 
 **The choreography for every post:** engage 30 min before → post → drop link/CTA in first comment →
 reply to every comment within minutes for the first hour → keep replying through the 6–8h window.
+
+**Your engagement habits decide who sees YOU (Lara, from the 360Brew paper).** What you like and comment
+on doesn't just shape *your* feed — it tells the algorithm who you are and therefore who your posts get
+shown to. A freelance designer who spends months engaging with generic motivational content gets filed
+into *that* world and shown to *those* people, not startup founders. **Audit who you engage with; if
+they're not who you want in front of, shift your engagement to your ICP's world.** Every like is a signal.
 
 ### Lesson 8b — The commenting SYSTEM (the deepest-leverage tactic, and the one nobody can throttle)
 
@@ -507,6 +584,29 @@ Nobody sane writes fresh content daily. The pros run production systems:
 **Our free edge:** these creators pay for Taplio's inspiration feed. **We already have the 6,642-post
 corpus + `FORMAT-LIBRARY.md` built from it** — the same capability, free. Mine it for winning formats.
 
+## Lesson 13b — The AI content engine: the 4 Levels of Claude
+
+One creator went **1,200 → 14,000 followers in 90 days** by climbing four levels of AI leverage. This
+maps almost exactly onto what we've *already half-built* in `linkedin-hq` — the point is to actually use
+the higher levels.
+
+- **Level 1 — chat prompting.** Ask Claude for a post; turn on web research to pull a **hard statistic
+  into the opening hook** (stat-led hooks over-perform). Fine for one-offs, but it "sounds like no one."
+- **Level 2 — Claude Projects.** A saved system prompt + files (tone-of-voice guide, social proof,
+  personal stories). Predictable, on-brand output without re-prompting each time.
+- **Level 3 — Skills that take action.** A skill that researches (web + Reddit for ICP pain), writes in
+  your voice, **and publishes to LinkedIn itself** via the Playwright browser CLI (logs in once, saves
+  cookies). No copy-paste. **We already have the `/linkedin-post` skill and a comment system — this is
+  the level to push them to.**
+- **Level 3.5 — routines/schedule.** A scheduled run ("write + post daily at 8am, cycle a keyword
+  list") so you never miss a day. (Our roadmap's daily-post automation lives here — ToS risk noted.)
+- **Level 4 — the knowledge vault.** The superpower: a full knowledge base (story, proof, testimonials,
+  **performance data of what's already worked** so it doesn't repeat) that powers the skill. It scrapes
+  Reddit for your ICP's complaints, proposes 3 ideas, you pick one, it writes in your voice using your
+  win-data, posts, and **auto-DMs everyone who comments** (via a lead tool). **This is exactly what
+  `linkedin-hq` + the corpus + the Posts-tab performance data should become** — our vault already exists,
+  it just isn't wired into the skill yet. (Auto-DM + auto-post carry ToS risk — keep a human in the loop.)
+
 ## Lesson 14 — AI as co-pilot, never author
 
 Universal consensus (Hassid, Matthews, Welsh, Lara): **AI for ideation and scaffolding; human for
@@ -611,7 +711,11 @@ so the audience pays for itself.
 ---
 
 ## Appendix — the source researchers (for deeper mining)
-- **Lara Acosta** — SMPV, SLAY, "every line is a hook," email>followers, EduSales funnel.
+- **Lara Acosta** — SMPV, SLAY, "every line is a hook," email>followers, EduSales funnel; the 360Brew
+  paper decoded (profile-as-prompt, connected vs unconnected, beginner's advantage, 3 Ps, midwit curve,
+  content-founder-fit, "your niche is a niche"). Kleo (her AI writing tool).
+- **The "4 Levels of Claude" build** (1,200→14K in 90 days) — AI content-engine levels 1–4 (chat →
+  Projects → action-taking Skills w/ Playwright → routines → knowledge-vault + auto-DM). Maps to our own tooling.
 - **Pierre Herubel** — Authority-First (70/20/10), 3×5 content map, anti-commodity test, Repurposing Factory.
 - **Adam Robinson** — founder-led growth, radical transparency, free-tool flywheel, 3 Cs, 25%-on-the-hook.
 - **Justin Welsh** — LinkedIn/Content OS, hub-and-spoke, Trailer/Meat/CTC, master one platform.
