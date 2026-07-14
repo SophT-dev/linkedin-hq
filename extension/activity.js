@@ -86,20 +86,38 @@
     });
   }
 
-  // Gently auto-scroll to lazy-load your recent comments (human-paced).
+  // Click a "Show more results" button if LinkedIn shows one instead of pure
+  // infinite-scroll (happens intermittently on the activity feed).
+  function clickShowMore() {
+    const btns = document.querySelectorAll("button.scaffold-finite-scroll__load-button, button[aria-label*='more results' i]");
+    for (const b of btns) {
+      if (b.offsetParent !== null) { b.click(); return true; }
+    }
+    return false;
+  }
+
+  // Gently auto-scroll to lazy-load your recent comments (human-paced). We stop
+  // based on "no NEW comments appeared" — not page height, which lags behind the
+  // lazy-load and used to make us quit early (that's why you only got ~32).
   async function autoLoad() {
     await sleep(2500);
     harvest();
-    let lastH = 0, stagnant = 0;
-    for (let i = 0; i < 60 && seen.size < TARGET; i++) {
+    let stagnant = 0;
+    // Up to 120 scrolls, and be patient: only give up after 6 straight passes
+    // with zero new comments (≈15s of nothing), and always try "Show more" first.
+    for (let i = 0; i < 120 && seen.size < TARGET; i++) {
+      const before = seen.size;
       window.scrollTo(0, document.body.scrollHeight);
-      await sleep(1300);
+      const clicked = clickShowMore();
+      await sleep(clicked ? 2400 : 2000);
       harvest();
-      const h = document.body.scrollHeight;
-      if (h === lastH) { if (++stagnant >= 3) break; } else stagnant = 0;
-      lastH = h;
+      // nudge the scroll position so the observer refires even if height held
+      window.scrollBy(0, -400);
+      await sleep(300);
+      window.scrollTo(0, document.body.scrollHeight);
+      if (seen.size === before) { if (++stagnant >= 6) break; } else stagnant = 0;
     }
-    log(`auto-load done — ${seen.size} comment(s) captured. Scroll up to read normally.`);
+    log(`auto-load done — ${seen.size} post(s) scanned (own posts skipped, rest sent). Scroll up to read normally.`);
   }
 
   autoLoad();
