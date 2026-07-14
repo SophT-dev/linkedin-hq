@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import {
-  generateExpertComment,
-  qualityGateComment,
-  pickStylePreset,
-  StylePreset,
+  generateInsightComment,
+  qualityGateInsightComment,
+  InsightMode,
 } from "@/lib/comments";
 
 export const dynamic = "force-dynamic";
@@ -19,12 +18,15 @@ const DEFAULT_SUGGEST_TOKEN = "3088768ac5a002b7e72a6955a52fa07c1d5704addc143516"
 //
 // The brain behind the inline comment-suggestion browser extension (MVP A).
 // Given the text of a LinkedIn post you're looking at, returns up to 3 ready
-// comments in Taha's voice. Suggest-only: nothing is posted, the human inserts
-// + edits + sends. Reuses the existing voice engine in lib/comments.ts — no
-// Sheet writes, no Slack, no side effects.
+// comments in the Michel x Sophiya "insight" voice — one of each JOB:
+// educational, witty/funny/relatable, and compliment-plus-a-real-question.
+// Suggest-only: nothing is posted, the human inserts + edits + sends. Reuses
+// generateInsightComment in lib/comments.ts — no Sheet writes, no Slack, no
+// side effects.
 //
 // Request body:  { "postText": string, "creatorName"?: string }
 // Response:      { "suggestions": [{ "text": string, "style": string }] }
+//                (style is the mode: "educational" | "witty" | "question")
 //
 // Auth: a shared secret in the `x-suggest-token` header, compared against
 // SUGGEST_TOKEN env. Keeps the endpoint from being a free public comment API.
@@ -59,48 +61,29 @@ export async function POST(req: Request) {
   }
   const creatorName = (body.creatorName || "the author").slice(0, 80);
 
-  // Build a varied set of styles: whatever the heuristic picks for THIS post
-  // first (most-fitting), then two distinct fallbacks so the three options
-  // feel different (an insight, a witty take, a curious follow-up). Lead-magnet
-  // posts are special-cased — if that's the pick, keep it first so the trigger
-  // word lands.
-  const primary = pickStylePreset(postText);
-  const pool: StylePreset[] = [
-    primary,
-    "agree_add",
-    "agree_witty",
-    "agree_curious",
-  ];
-  const styles: StylePreset[] = [];
-  for (const s of pool) {
-    if (!styles.includes(s)) styles.push(s);
-    if (styles.length === 3) break;
-  }
-
   const post = {
     url: "",
     text: postText,
     creator_name: creatorName,
   };
 
-  // Generate the three in parallel; one emoji slot allowed (the first).
+  // Three genuinely different jobs, all in the one alive voice, generated in
+  // parallel: an expert insight, a witty/relatable take, and a compliment plus
+  // a real question. Skips (post too thin) and quality-gate failures are
+  // dropped — the extension already handles an empty list gracefully.
+  const modes: InsightMode[] = ["educational", "witty", "question"];
   const settled = await Promise.allSettled(
-    styles.map((style, i) =>
-      generateExpertComment(post, {
-        forcePreset: style,
-        allowEmoji: i === 0,
-      })
-    )
+    modes.map((mode) => generateInsightComment(post, { mode }))
   );
 
   const suggestions = settled
     .filter(
-      (r): r is PromiseFulfilledResult<Awaited<ReturnType<typeof generateExpertComment>>> =>
+      (r): r is PromiseFulfilledResult<Awaited<ReturnType<typeof generateInsightComment>>> =>
         r.status === "fulfilled"
     )
     .map((r) => r.value)
-    .filter((g) => qualityGateComment(g.comment_text).ok)
-    .map((g) => ({ text: g.comment_text, style: g.style_preset }));
+    .filter((g) => !g.skip && qualityGateInsightComment(g.comment_text).ok)
+    .map((g) => ({ text: g.comment_text, style: g.mode ?? "insight" }));
 
   return NextResponse.json({ suggestions });
 }

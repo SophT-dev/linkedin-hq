@@ -580,6 +580,259 @@ export function qualityGateSophiyaComment(text: string): VoiceCheck {
   return { ok: true };
 }
 
+// ============================================================
+// Insight-voice comment generator (2026-07-11) — THE production comment voice.
+//
+// Blends Michel Lieben's expert/educational comment style with Sophiya's real
+// voice (playbook/SOPHIYA-VOICE.md, read live) written at a 4th-grade reading
+// level: plain words, short sentences, but a genuinely expert point that
+// teaches the reader one concrete thing. Positive, never negative. This is the
+// voice both the auto-bot (/api/comments/plan) and the manual Suggest button
+// (/api/comments/suggest) now serve, replacing the older Taha peer-reaction
+// engine above (generateExpertComment) as the default.
+//
+// Two behaviors baked in per Sophiya (2026-07-11):
+//  - SKIP: if the post is too thin to add real value (a bare link, a one-liner),
+//    the model returns the literal token "SKIP" and callers drop it instead of
+//    fabricating a comment. This is the safety rule that stops the bot inventing
+//    a comment unrelated to the post.
+//  - CTA all-caps: if the post asks readers to comment a keyword to receive a
+//    lead magnet, that keyword is guaranteed into the comment IN ALL CAPS so the
+//    author's automation fires and Sophiya/Taha receives the resource.
+//
+// Voice prose is NOT duplicated here — it's read from SOPHIYA-VOICE.md at call
+// time (loadSophiyaVoiceDoc, shared with the Sophiya generator above).
+// ============================================================
+
+// Detect the lead-magnet trigger word in a "comment X for the guide" style
+// post. Returns the word UPPERCASED, or null if the post isn't asking for a
+// specific keyword. Only fires on an EXPLICIT word — a vague "comment below
+// and I'll DM you" with no word returns null (nothing to force in caps).
+export function detectCtaTriggerWord(postText: string): string | null {
+  const text = postText || "";
+  // Quoted word/short phrase after an action verb: comment "GUIDE", type 'inbox'
+  let m = text.match(
+    /(?:comment|type|drop|reply with|reply|say)\s+["']([a-zA-Z][a-zA-Z ]{1,18})["']/i
+  );
+  if (m) return m[1].trim().toUpperCase();
+  // Bare all-caps word after an action verb: comment GUIDE, type INBOX
+  m = text.match(/(?:comment|type|drop|reply with|reply|say)\s+([A-Z]{2,20})\b/);
+  if (m) return m[1].trim().toUpperCase();
+  return null;
+}
+
+// The three distinct JOBS a suggestion can take. Each is a genuinely different
+// KIND of comment (not a reworded twin), so the Suggest button's 3 chips are a
+// real choice. All three still speak in the one alive voice below.
+export type InsightMode = "educational" | "witty" | "question";
+
+const MODE_DIRECTIVES: Record<InsightMode, string> = {
+  educational:
+    "\n\n## THIS COMMENT'S JOB: EDUCATIONAL\nBe the expert in the room. Teach ONE real, concrete thing that builds on the post, the kind of line another practitioner would screenshot. Opinionated and expert, but still alive and plain-spoken, never a dry lecture.",
+  witty:
+    "\n\n## THIS COMMENT'S JOB: WITTY / FUNNY / RELATABLE\nBe genuinely funny and relatable, the friend at the table who finally says the thing everyone is thinking. Light, warm humor or a knowing nod. It should make the author smile. NEVER mean, never put down any tool, person, or company, even as a joke. No forced puns, no metaphors (no 'X is the Y of Z'). If nothing funny truly fits, go relatable instead of forcing a joke.",
+  question:
+    "\n\n## THIS COMMENT'S JOB: COMPLIMENT + A REAL QUESTION\nStart with a genuine, SPECIFIC compliment about something they actually said, point to the exact part you liked, not a generic 'great post'. Then ask ONE real clarifying question you'd honestly want them to answer. Warm and curious.",
+};
+
+function buildInsightSystemPrompt(
+  ctaWord: string | null,
+  mode: InsightMode | null
+): string {
+  const voiceDoc = loadSophiyaVoiceDoc();
+  const modeBlock = mode ? MODE_DIRECTIVES[mode] : "";
+  const ctaBlock = ctaWord
+    ? `\n\n## THIS POST ASKS FOR A KEYWORD (lead magnet)\nThe author will DM a resource to anyone who comments a specific word. That word is "${ctaWord}". Your comment MUST include ${ctaWord} in ALL CAPS, spelled exactly like that, so the author's automation sends the resource. Work it in naturally, usually at the very end. Keep the rest of the comment in the normal voice. Do NOT output SKIP for this post.`
+    : "";
+
+  return `You write ONE LinkedIn comment. You just read a post from someone in cold email, outbound, or AI agents, and you want to add a comment that actually adds something real.
+
+Your voice blends two things:
+1) Michel Lieben's comment style: expert, has a real opinion, educational, always positive, never negative or dismissive. You build on the post with a real angle or a simple reason it didn't spell out.
+2) Sophiya's real voice, profiled below. Follow it exactly, including which filler to strip and which to keep.
+
+===== SOPHIYA VOICE PROFILE =====
+${voiceDoc}
+===== END VOICE PROFILE =====
+
+## SOUND ALIVE, NOT LIKE A SUMMARY (the most important rule)
+You are a real person who just read this and actually HAD a reaction. You have a take. You feel something about it. Write like you're texting a smart friend who gets this world. Simple words, but full of life and a real point of view.
+
+The number one thing to avoid: sounding like a flat summary or a textbook. Dead comments line up facts with no pulse. Alive comments have a reaction, a strong opinion, and a natural rhythm.
+
+DEAD (never write like this, this is the exact problem):
+- "This works because you make your value the firm part. Buyers see you believe in it. That stops the discount ask."
+- "The big difference is how much work it feels like. An audit means homework. A Loom is quick info they can watch."
+
+ALIVE (write like this instead):
+- "This is such a power move. The second you start explaining your price, you've already lost. Sitting in that silence makes them argue their way back to yes."
+- "Nobody says yes to a 'free audit' anymore, we all know a pitch is coming right after. But a quick Loom? That feels like a gift, not a trap."
+
+These two are ONLY examples of the style and energy. NEVER reuse their exact words, phrases, or scenario. Write something fresh for the actual post in front of you. Same simple words, real opinion, a little emotion, flowing like a person talking.
+
+## THE VOICE
+- Plain, everyday words. No jargon, nothing fancy. Sound like a smart friend, not a consultant. (Never these fancy words: perceived, high-commitment, mechanism, optimize, facilitate, infrastructure, differentiator, leverage. Say the plain version.)
+- But NOT choppy or robotic. Let it breathe. Read it in your head, it should sound like a person, not a list.
+- Have a real opinion and say it with conviction. React. It is good to sound like you actually care about this.
+- A genuine reaction to what they SAID is great ("this is such a power move", "wild how fast this changed"). Generic praise about the post as a thing is not ("great post", "so true", "so insightful"). React to the content, with feeling.
+- Positive and kind. Never put down any tool, person, or company, even if the post does.
+
+## LENGTH — KEEP IT TO 2 LINES MAX
+Two short sentences at most. Roughly 12 to 28 words total. React and land ONE point, then stop. Never a third sentence, never a wall of text. Short and punchy beats complete.
+
+## IF THE POST IS TOO THIN
+If the post is just a link, a bare one-liner, or has no real idea to build on, you cannot add real value. Then output ONLY this one word: SKIP
+
+## HARD RULES
+- No em dashes or en dashes. Use commas or periods.
+- No @mentions.
+- No markdown. No asterisks, no underscores for emphasis. Plain text only.
+- No made-up numbers, no invented client wins.
+- No corporate buzzwords: leverage, utilize, unlock, robust, comprehensive, streamlined, seamless, synergy, holistic, empower, elevate, revolutionize, delve, landscape, journey, ecosystem, actionable insights, value-add, moving the needle, game changer, needle mover, cutting-edge.
+- Do NOT start the comment with "Honestly" or "Probably". They are part of her voice, but only as rare mid-sentence emphasis, never the first word. Drop all other filler ("sort of", "kind of", "basically", "I think" used as a hedge).
+
+## OUTPUT
+Just the comment text, or the single word SKIP. No quotes, no preamble, no explanation.${modeBlock}${ctaBlock}`;
+}
+
+export interface GeneratedInsightComment {
+  comment_text: string;
+  skip: boolean;
+  mode: InsightMode | null;
+  raw_model_output: string;
+  cta_word?: string;
+  fallback_used?: string;
+}
+
+// Generates one insight-voice comment for one post. `opts.mode` picks the job
+// (educational / witty / question) — omit it for the plain default voice.
+// Detects a lead-magnet CTA word first (so the prompt can require it and we can
+// guarantee it after), strips dashes/markdown, forces off any leading
+// "Honestly,"/"Probably,", and reports skip=true when the model judged the post
+// too thin. Caller runs qualityGateInsightComment before using the text.
+export async function generateInsightComment(
+  post: CandidatePost,
+  opts: { mode?: InsightMode } = {}
+): Promise<GeneratedInsightComment> {
+  const mode = opts.mode ?? null;
+  const ctaWord = detectCtaTriggerWord(post.text);
+  const systemPrompt = buildInsightSystemPrompt(ctaWord, mode);
+  const userPrompt = `LinkedIn post by ${post.creator_name}:
+
+"""
+${post.text.slice(0, 3000)}
+"""
+
+Write the comment now, or the single word SKIP if the post is too thin. No quotes, no preamble.`;
+
+  const res = await generateText(userPrompt, systemPrompt);
+  const raw = res.text.trim();
+  let cleaned = raw
+    .replace(/^["']|["']$/g, "")
+    .replace(/[—–]/g, ",")
+    .replace(/[*_`]/g, "") // strip markdown emphasis so it posts clean
+    .trim();
+
+  if (/^skip\.?$/i.test(cleaned)) {
+    return {
+      comment_text: "",
+      skip: true,
+      mode,
+      raw_model_output: raw,
+      ...(res.fallbackReason ? { fallback_used: res.fallbackReason } : {}),
+    };
+  }
+
+  // Hard guarantee over the prompt rule: never let a comment LEAD with
+  // "Honestly,"/"Probably," (the model still opens with them ~1-in-3, and two
+  // suggestion chips both starting that way reads botty). Strip the leading
+  // filler and re-capitalize the next word. Mid-sentence uses are left alone.
+  cleaned = cleaned
+    .replace(/^(honestly|probably)\b[,]?\s+/i, "")
+    .replace(/^([a-z])/, (m) => m.toUpperCase());
+
+  // Guarantee the lead-magnet trigger word is present in ALL CAPS. If the model
+  // included it (any case), force that occurrence to caps; if it dropped it,
+  // append it so the author's automation still fires.
+  if (ctaWord) {
+    const re = new RegExp(`\\b${ctaWord.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
+    if (re.test(cleaned)) {
+      cleaned = cleaned.replace(re, ctaWord);
+    } else {
+      cleaned = cleaned.replace(/[.!?\s]+$/, "") + `. ${ctaWord}`;
+    }
+  }
+
+  return {
+    comment_text: cleaned,
+    skip: false,
+    mode,
+    raw_model_output: raw,
+    ...(ctaWord ? { cta_word: ctaWord } : {}),
+    ...(res.fallbackReason ? { fallback_used: res.fallbackReason } : {}),
+  };
+}
+
+// Quality gate for the insight voice. Wider word range than Taha's 1-20
+// (this voice is 2-4 short sentences, ~15-40 words, plus room for an appended
+// CTA word). Plain text only — no emoji, no markdown, no dashes, no @mentions,
+// no banned buzzwords/phrases. Uppercase is allowed here (unlike Taha's
+// lowercase gate) because the CTA trigger word is intentionally ALL CAPS.
+export function qualityGateInsightComment(text: string): VoiceCheck {
+  if (!text || text.trim().length === 0) {
+    return { ok: false, reason: "empty comment" };
+  }
+
+  const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
+  if (wordCount < 6) {
+    return { ok: false, reason: `too short (${wordCount} words, min 6 — needs room for a real point)` };
+  }
+  // 2-line max voice: ~12-28 words, +a little slack for an appended CTA word.
+  if (wordCount > 34) {
+    return { ok: false, reason: `too long (${wordCount} words, max 34 — keep it to 2 lines)` };
+  }
+
+  if (/[—–]/.test(text)) {
+    return { ok: false, reason: "contains em or en dash" };
+  }
+
+  if (/[*_`#]/.test(text)) {
+    return { ok: false, reason: "contains markdown formatting" };
+  }
+
+  if (EMOJI_REGEX.test(text)) {
+    return { ok: false, reason: "contains emoji — the insight voice is plain text" };
+  }
+
+  const lower = text.toLowerCase();
+
+  for (const word of BANNED_WORDS) {
+    const isMultiWord = word.includes(" ") || word.includes("-");
+    if (isMultiWord) {
+      if (lower.includes(word)) {
+        return { ok: false, reason: `banned word/phrase: "${word}"` };
+      }
+    } else {
+      const re = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`);
+      if (re.test(lower)) {
+        return { ok: false, reason: `banned word: "${word}"` };
+      }
+    }
+  }
+
+  for (const phrase of BANNED_PHRASES) {
+    if (lower.includes(phrase)) {
+      return { ok: false, reason: `banned phrase: "${phrase}"` };
+    }
+  }
+
+  if (/@[a-z]/i.test(text)) {
+    return { ok: false, reason: "contains @mention" };
+  }
+
+  return { ok: true };
+}
+
 // Pulls the 19-digit activity id out of a LinkedIn post URL and wraps it
 // in the canonical URN format the comment endpoint expects.
 //

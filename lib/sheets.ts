@@ -201,6 +201,7 @@ export type CommentStatus =
   | "approved"
   | "rejected"
   | "quality_failed"
+  | "skipped"
   | "posted"
   | "post_failed"
   | "deleted";

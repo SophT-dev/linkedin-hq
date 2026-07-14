@@ -278,19 +278,53 @@ Legacy v1 pages (`/ai-studio`, `/analytics`, `/calendar`, `/creators`, `/ideas`,
 - `POST /api/lead-magnet/save` — creates LeadMagnets row, rewrites source Post's lead_magnet cell with landing URL, revalidates landing page
 - **Legacy** (v1 pages still on disk): `/api/ai/comment`, `/api/ai/hook`, `/api/ai/ideas`, `/api/ai/brief`, `/api/ai/strategy`, `/api/ai/creator`, `/api/checklist`, `/api/reddit`, `/api/sheets`
 
-## Manual comment system — live now (verified 2026-07-09)
+## ⭐ Comment voice — the "insight voice" (Michel × Sophiya, 2026-07-11) — the CURRENT voice for ALL comments
+The comment voice was completely reworked 2026-07-11 after Sophiya reviewed real generated comments
+and rejected the old Taha short peer-reaction voice ("spot on!", "Cool", 1-20 word quips) as too
+thin. The new voice — `generateInsightComment` / `qualityGateInsightComment` in `lib/comments.ts` —
+blends **Michel Lieben's expert/educational comment style** with **Sophiya's real voice**
+(`playbook/SOPHIYA-VOICE.md`, read live at call time — the one source of truth, don't duplicate the
+prose). Key rules baked into the prompt (all from her direct feedback that day):
+- **Sound ALIVE, not like a summary.** The literal "4th-grade, 6-12 words per sentence" first draft
+  came back "dead, lifeless, very AI, emotionless" — simple words got turned into choppy fact-lists.
+  The fix: plain words BUT a real reaction, conviction, natural rhythm. The prompt carries explicit
+  DEAD-vs-ALIVE examples (marked "style only, never reuse the words/scenario").
+- **2 lines max** (~12-28 words, gate hard-caps at 34). No walls of text.
+- **Three JOBS** (`InsightMode` = `educational | witty | question`): the Suggest button returns one of
+  each (educational insight, witty/funny/relatable, compliment + a real question) so the 3 chips are
+  a genuine choice, not 3 rewordings. The auto-bot (`/api/comments/plan`) rotates the 3 across the
+  daily batch.
+- **CTA all-caps:** `detectCtaTriggerWord` finds a lead-magnet keyword ("comment GUIDE below") and the
+  comment is guaranteed to include it IN ALL CAPS so the author's automation DMs the resource.
+- **SKIP:** if a post is too thin to add real value (bare link, one-liner), the model returns `SKIP`
+  and the caller drops it instead of fabricating — the safety rule that stops off-topic hallucinated
+  comments (it correctly skipped a bare-link post in testing).
+- Leading `Honestly,`/`Probably,` is code-stripped (the model overused it as an opener).
+- **Deploy gotcha (learned the hard way):** the generator reads `SOPHIYA-VOICE.md` at runtime, and
+  Next's serverless bundler drops non-traced files → every generation threw ENOENT and the endpoint
+  silently returned `[]` on Vercel. Fixed via `outputFileTracingIncludes` in `next.config.ts` for the
+  three comment routes. If you add another route that reads a repo file at runtime, add it there too.
+- **Free-tier note:** comments run on Gemini free → Groq free fallback (`lib/ai.ts`). Groq's daily
+  token cap (~100k TPD) is real and heavy *testing* can exhaust both, making the endpoint return `[]`
+  transiently. Normal use (a few clicks/day, auto-bot cap 5/day) never comes close.
+- Test harness: `scripts/test-comment-voices.mjs` (batch review → `COMMENT-VOICE-TEST.md`;
+  `--demo3` prints 3-mode takes for a few real posts). Keeps its own copy of the prompt for offline
+  review — `lib/comments.ts` is the production source of truth.
+
+## Manual comment system — live now (verified 2026-07-09, voice reworked 2026-07-11)
 Before the automated bot below, there's a simpler, already-working manual layer: the **Chrome
 extension** at [extension/](extension/) ("Bleed AI — LinkedIn Comment Assistant"). It injects a
 ✨ Suggest comment button above the comment box on any LinkedIn post — desktop only, suggest-only,
 nothing auto-posts. Calls the live `POST /api/comments/suggest` route (reuses `lib/comments.ts`'s
-same voice engine + quality gate as the bot, no Sheet writes, no Slack), returns 3 varied drafts
-(an insight, a witty take, a curious follow-up), Sophiya/Taha pick one, edit, send themselves.
-**Confirmed live 2026-07-09** — hit the deployed endpoint directly with a real post and got 3
-real, quality-gated suggestions back. One-time install is in [extension/README.md](extension/README.md)
-(`chrome://extensions` → Developer mode → Load unpacked → select the `extension/` folder) — if
-it isn't already loaded in Chrome, that's the only step left. This is the "prove the cadence and
-voice manually" phase before flipping on the automated bot below (same prove-before-automating
-pattern as the rest of this build).
+insight-voice engine + quality gate as the bot, no Sheet writes, no Slack), returns 3 drafts — one
+**educational**, one **witty/relatable**, one **compliment + question** (see the insight-voice
+section above) — Sophiya/Taha pick one, edit, send themselves. One-time install is in
+[extension/README.md](extension/README.md) (`chrome://extensions` → Developer mode → Load unpacked →
+select the `extension/` folder). **iPhone:** the extension is desktop-only; the chosen plan (full detail
+in `IPHONE-COMMENT-SHORTCUT-PLAN.md`) is an iOS **AssistiveTouch/Back-Tap Shortcut** that screenshots →
+on-device OCR → `/api/comments/suggest` → picker → clipboard (a true third-party overlay over LinkedIn
+is impossible on iOS). Fallback: `/api/comments/suggest-from-url` via LinkedIn's public JSON-LD
+`articleBody`. Not built yet as of 2026-07-11.
 
 ## Auto-comment loop on LinkedIn creator posts (v2, shipped 2026-04-14)
 

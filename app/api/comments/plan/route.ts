@@ -8,10 +8,11 @@ import {
   IntelRow,
 } from "@/lib/sheets";
 import {
-  generateExpertComment,
-  qualityGateComment,
+  generateInsightComment,
+  qualityGateInsightComment,
   extractPostUrn,
   CandidatePost,
+  InsightMode,
 } from "@/lib/comments";
 import { sendReviewMessage } from "@/lib/slack";
 
@@ -43,11 +44,11 @@ export async function POST() {
       stranded_drafts: 0,
       fresh_candidates: 0,
       quality_failed: 0,
+      skipped_thin: 0,
       skipped_per_profile_cap: 0,
       skipped_too_old: 0,
       capped: 0,
       returned: 0,
-      emoji_slots: 0,
     };
 
     const [config, postedToday, allIntel] = await Promise.all([
@@ -169,19 +170,10 @@ export async function POST() {
       return text.slice(0, 137) + "...";
     };
 
-    // Emoji ratio: at most 1 in every 4 comments per batch gets an emoji.
-    // Slots are spread evenly across the batch so they don't cluster at
-    // the start or end. With fewer than 4 candidates, no slots qualify —
-    // small batches are all plain text, which matches how humans comment.
-    const emojiSlots = new Set<number>();
-    const maxEmojiCount = Math.floor(selected.length / 4);
-    if (maxEmojiCount > 0) {
-      const spacing = selected.length / maxEmojiCount;
-      for (let i = 0; i < maxEmojiCount; i++) {
-        emojiSlots.add(Math.floor(i * spacing));
-      }
-    }
-    stats.emoji_slots = maxEmojiCount;
+    // Rotate the three comment jobs across the batch so a day's comments read
+    // like a real person, not one template repeated: an expert insight, a
+    // witty/relatable take, then a compliment-plus-question, and repeat.
+    const MODE_ROTATION: InsightMode[] = ["educational", "witty", "question"];
 
     for (let idx = 0; idx < selected.length; idx++) {
       const row = selected[idx];
@@ -229,19 +221,18 @@ export async function POST() {
         continue;
       }
 
-      // Fresh candidate — generate a new comment.
+      // Fresh candidate — generate a new comment in the rotating job's voice.
       const post: CandidatePost = {
         url: row.url,
         text: row.summary || row.title,
         creator_name: row.source || "linkedin",
         reactions: row.score,
       };
+      const mode = MODE_ROTATION[idx % MODE_ROTATION.length];
 
       let generated;
       try {
-        generated = await generateExpertComment(post, {
-          allowEmoji: emojiSlots.has(idx),
-        });
+        generated = await generateInsightComment(post, { mode });
       } catch (e) {
         await attachCommentToIntelRow(row.url, {
           comment_status: "quality_failed",
@@ -253,12 +244,23 @@ export async function POST() {
         continue;
       }
 
-      const gate = qualityGateComment(generated.comment_text);
+      // Post too thin to add real value — skip it instead of fabricating.
+      if (generated.skip) {
+        await attachCommentToIntelRow(row.url, {
+          comment_status: "skipped",
+          comment_text: "skipped: post too thin to add real value",
+          comment_style: mode,
+        });
+        stats.skipped_thin++;
+        continue;
+      }
+
+      const gate = qualityGateInsightComment(generated.comment_text);
       if (!gate.ok) {
         await attachCommentToIntelRow(row.url, {
           comment_status: "quality_failed",
           comment_text: generated.comment_text,
-          comment_style: generated.style_preset,
+          comment_style: mode,
         });
         stats.quality_failed++;
         continue;
@@ -274,7 +276,7 @@ export async function POST() {
           post_text: row.summary || row.title,
           url: row.url,
           comment_text: generated.comment_text,
-          style_preset: generated.style_preset,
+          style_preset: generated.mode ?? "insight",
         });
       } catch {
         // Slack send failed — still save draft so it's not lost.
@@ -284,7 +286,7 @@ export async function POST() {
         comment_text: generated.comment_text,
         comment_status: "pending_review",
         comment_posted_at: slackTs, // store Slack ts for thread reply lookup
-        comment_style: generated.style_preset,
+        comment_style: generated.mode ?? "insight",
       });
 
       approved.push({
@@ -292,7 +294,7 @@ export async function POST() {
         post_urn,
         comment_text: generated.comment_text,
         creator_name: post.creator_name,
-        style_preset: generated.style_preset,
+        style_preset: generated.mode ?? "insight",
         post_preview: preview,
       });
     }
