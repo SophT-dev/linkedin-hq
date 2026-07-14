@@ -1,8 +1,16 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Upload, ExternalLink, ImageOff } from "lucide-react";
+import { Upload, ImageOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Lightbox from "@/components/Lightbox";
+
+// Google Drive thumbnailLinks come capped tiny (…=s220) → blurry when shown
+// larger. Bump the size token so screenshots are sharp and readable inline.
+function hiRes(url?: string, size = 1200): string | undefined {
+  if (!url) return url;
+  return url.replace(/=s\d+(-[a-z]+)?$/i, `=s${size}`).replace(/=w\d+-h\d+$/i, `=s${size}`);
+}
 
 interface DriveFile {
   id: string;
@@ -24,6 +32,7 @@ export default function ScreenshotGallery({
   const [files, setFiles] = useState<DriveFile[] | null>(null);
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [zoom, setZoom] = useState<DriveFile | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async () => {
@@ -74,41 +83,41 @@ export default function ScreenshotGallery({
       {files === null && !error && <p className="text-sm text-muted-foreground">Loading...</p>}
 
       {files && files.length === 0 && (
-        <div
-          className="rounded-2xl border border-dashed p-8 text-center text-sm text-muted-foreground"
-          style={{ borderColor: "var(--border-subtle)" }}
-        >
+        <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
           <ImageOff size={22} className="mx-auto mb-2 opacity-50" />
           {emptyHint}
         </div>
       )}
 
+      {/* Natural rectangular layout (masonry columns) so screenshots keep their
+          real shape and stay readable without opening them. */}
       {files && files.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+        <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 [column-fill:_balance]">
           {files.map((f) => (
-            <a
+            <button
               key={f.id}
-              href={f.webViewLink || f.webContentLink}
-              target="_blank"
-              rel="noreferrer"
-              className="group relative rounded-xl overflow-hidden border block aspect-square"
-              style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}
+              onClick={() => setZoom(f)}
+              className="mb-4 block w-full break-inside-avoid rounded-xl overflow-hidden border bg-card border-border shadow-sm hover:shadow-md transition-shadow cursor-zoom-in"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={f.thumbnailLink || f.webContentLink}
+                src={hiRes(f.thumbnailLink) || f.webContentLink}
                 alt={f.name}
-                className="w-full h-full object-cover"
+                className="w-full h-auto object-contain"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-end p-2 opacity-0 group-hover:opacity-100">
-                <span className="text-[11px] text-white truncate flex items-center gap-1">
-                  <ExternalLink size={11} /> {f.name}
-                </span>
-              </div>
-            </a>
+            </button>
           ))}
         </div>
+      )}
+
+      {zoom && (
+        <Lightbox
+          src={hiRes(zoom.thumbnailLink, 2000) || zoom.webContentLink || ""}
+          alt={zoom.name}
+          caption={zoom.name}
+          onClose={() => setZoom(null)}
+        />
       )}
     </div>
   );

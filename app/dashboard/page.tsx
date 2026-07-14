@@ -13,14 +13,11 @@ import {
   MessageCircle,
   Repeat2,
   TrendingUp,
-  Trophy,
-  Meh,
-  Frown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProfileHeader from "@/components/ProfileHeader";
 import StatCards, { type StatCard } from "@/components/analytics/StatCards";
-import { fetchAccountPosts, originalPosts, totals, metricTrend, sparkline, type AccountPost } from "@/lib/analytics";
+import { fetchAccountPosts, originalPosts, totals, metricTrend, engagementTrend, sparkline, type AccountPost } from "@/lib/analytics";
 
 // ---------------------------------------------------------------------------
 // Types (mirrors the exact tab column orders documented in CLAUDE.md)
@@ -46,15 +43,6 @@ interface Creator {
   post_frequency: string;
   primary_format: string;
   notes: string;
-  row: number;
-}
-
-interface TrackedPost {
-  posted_url: string;
-  likes: string;
-  comments: string;
-  views: string;
-  worked: string;
   row: number;
 }
 
@@ -117,7 +105,7 @@ export default function DashboardPage() {
       { label: "Reactions", value: t.reactions.toLocaleString(), deltaPct: metricTrend(posts, "reactions").deltaPct, spark: sparkline(posts, "reactions"), icon: Heart, tint: "var(--viz-2)" },
       { label: "Comments", value: t.comments.toLocaleString(), deltaPct: metricTrend(posts, "comments").deltaPct, spark: sparkline(posts, "comments"), icon: MessageCircle, tint: "var(--primary)" },
       { label: "Reposts", value: t.reposts.toLocaleString(), deltaPct: metricTrend(posts, "reposts").deltaPct, spark: sparkline(posts, "reposts"), icon: Repeat2, tint: "var(--cat-1)" },
-      { label: "Avg engagement", value: t.avgEng.toLocaleString(), deltaPct: metricTrend(posts, "reactions").deltaPct, spark: posts.map((p) => p.reactions + p.comments).slice(-16), icon: TrendingUp, tint: "var(--cat-4)" },
+      { label: "Avg engagement", value: t.avgEng.toLocaleString(), deltaPct: engagementTrend(posts), spark: posts.map((p) => p.reactions + p.comments).slice(-16), icon: TrendingUp, tint: "var(--cat-4)" },
     ];
   }, [acctPosts]);
 
@@ -172,28 +160,6 @@ export default function DashboardPage() {
     })();
   }, []);
 
-  // --- Posts tracking ------------------------------------------------------
-  const [trackedPosts, setTrackedPosts] = useState<TrackedPost[] | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      const res = await fetch("/api/sheets?tab=Posts&range=A:Q");
-      if (!res.ok) { setTrackedPosts([]); return; }
-      const { rows } = await res.json();
-      const posts: TrackedPost[] = (rows as string[][]).slice(1).map((r, i) => ({
-        posted_url: r[11], likes: r[12], comments: r[13], views: r[14], worked: r[15],
-        row: i + 2,
-      })).filter((p) => p.posted_url);
-      setTrackedPosts(posts);
-    })();
-  }, []);
-
-  const totalLikes = trackedPosts?.reduce((sum, p) => sum + (parseInt(p.likes, 10) || 0), 0) ?? 0;
-  const totalComments = trackedPosts?.reduce((sum, p) => sum + (parseInt(p.comments, 10) || 0), 0) ?? 0;
-  const winners = trackedPosts?.filter((p) => p.worked?.toLowerCase() === "winner").length ?? 0;
-  const neutrals = trackedPosts?.filter((p) => p.worked?.toLowerCase() === "neutral").length ?? 0;
-  const flops = trackedPosts?.filter((p) => p.worked?.toLowerCase() === "flop").length ?? 0;
-
   return (
     <div className="max-w-lg lg:max-w-5xl mx-auto px-4 lg:px-6 py-6 space-y-6">
       {/* Live profile snapshot + greeting */}
@@ -229,7 +195,8 @@ export default function DashboardPage() {
             <button
               onClick={() => unusedIdeas && setShownIdeas(shuffle3(unusedIdeas))}
               disabled={!unusedIdeas || unusedIdeas.length === 0}
-              className="text-xs flex items-center gap-1 text-indigo-300 disabled:opacity-40 disabled:pointer-events-none"
+              className="text-xs flex items-center gap-1 disabled:opacity-40 disabled:pointer-events-none"
+              style={{ color: "var(--primary)" }}
             >
               <RefreshCw size={12} /> New ideas
             </button>
@@ -249,7 +216,7 @@ export default function DashboardPage() {
                 <p className="text-sm font-medium line-clamp-3">{idea.idea_angle}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {idea.suggested_format && (
-                    <span className="text-[10px] px-2 py-0.5 rounded-full border border-white/10 text-muted-foreground">{idea.suggested_format}</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full border border-border text-muted-foreground">{idea.suggested_format}</span>
                   )}
                   {idea.funnel_stage && (
                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold badge-${idea.funnel_stage.toLowerCase()}`}>{idea.funnel_stage}</span>
@@ -288,7 +255,7 @@ export default function DashboardPage() {
                   {c.niche && <p className="text-xs text-muted-foreground">{c.niche}</p>}
                 </div>
                 {c.primary_format && (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full border border-white/10 text-muted-foreground inline-block">{c.primary_format}</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full border border-border text-muted-foreground inline-block">{c.primary_format}</span>
                 )}
                 <Link href="/networking" className="block">
                   <Button size="sm" variant="outline" className="w-full">Repurpose posts</Button>
@@ -316,42 +283,6 @@ export default function DashboardPage() {
         <Link href="/engagement" className="block">
           <Button size="sm" className="w-full">Go to Engagement Hub</Button>
         </Link>
-      </div>
-
-      {/* 4. Tracking dashboard */}
-      <div className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
-        <SectionHeader icon={<BarChart3 size={16} className="text-blue-400" />} title="Your profile, at a glance" />
-
-        {trackedPosts === null && <p className="text-sm text-muted-foreground">Loading...</p>}
-
-        {trackedPosts !== null && trackedPosts.length === 0 && (
-          <EmptyState>No published posts tracked yet — run <code>sync-post-stats.mjs</code> after your first post goes live.</EmptyState>
-        )}
-
-        {trackedPosts && trackedPosts.length > 0 && (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <div className="rounded-xl border p-3 space-y-1" style={{ background: "var(--surface-3)", borderColor: "var(--border-subtle)" }}>
-              <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Posts tracked</p>
-              <p className="text-xl font-bold">{trackedPosts.length}</p>
-            </div>
-            <div className="rounded-xl border p-3 space-y-1" style={{ background: "var(--surface-3)", borderColor: "var(--border-subtle)" }}>
-              <p className="text-[11px] text-muted-foreground uppercase tracking-wide flex items-center gap-1"><Heart size={11} /> Total likes</p>
-              <p className="text-xl font-bold">{totalLikes}</p>
-            </div>
-            <div className="rounded-xl border p-3 space-y-1" style={{ background: "var(--surface-3)", borderColor: "var(--border-subtle)" }}>
-              <p className="text-[11px] text-muted-foreground uppercase tracking-wide flex items-center gap-1"><MessageCircle size={11} /> Total comments</p>
-              <p className="text-xl font-bold">{totalComments}</p>
-            </div>
-            <div className="rounded-xl border p-3 space-y-1.5" style={{ background: "var(--surface-3)", borderColor: "var(--border-subtle)" }}>
-              <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Worked verdict</p>
-              <div className="flex items-center gap-2 text-xs">
-                <span className="flex items-center gap-1 text-green-400"><Trophy size={11} /> {winners}</span>
-                <span className="flex items-center gap-1 text-amber-400"><Meh size={11} /> {neutrals}</span>
-                <span className="flex items-center gap-1 text-red-400"><Frown size={11} /> {flops}</span>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Toast */}

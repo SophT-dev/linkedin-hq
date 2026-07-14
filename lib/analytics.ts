@@ -123,6 +123,12 @@ export function totals(posts: AccountPost[]): Totals {
 
 // Sum a metric over posts within the last `days`, and the % change vs the
 // equally-long window before it → drives the trend badges on the KPI cards.
+//
+// deltaPct is null (badge renders "new") unless the comparison is genuinely
+// meaningful: we need (a) real history spanning TWO full windows, and (b) a
+// non-trivial prior baseline. Without this, a scraper with only a few days of
+// data divides current activity by a near-empty prior window and reports
+// absurd swings like +1100%. Honest > flashy.
 export function metricTrend(
   posts: AccountPost[],
   metric: Metric,
@@ -133,14 +139,26 @@ export function metricTrend(
   const prevCutoff = subDays(now, days * 2);
   let cur = 0;
   let prev = 0;
+  let earliest: Date | null = null;
   for (const p of posts) {
     const d = safeDate(p.posted_at);
     if (!d) continue;
+    if (!earliest || d < earliest) earliest = d;
     if (d >= cutoff) cur += p[metric];
     else if (d >= prevCutoff) prev += p[metric];
   }
-  const deltaPct = prev === 0 ? (cur === 0 ? 0 : null) : Math.round(((cur - prev) / prev) * 100);
+  // Enough history only once the data actually reaches back two full windows.
+  const enoughHistory = earliest ? differenceInCalendarDays(now, earliest) >= days * 2 : false;
+  const deltaPct = !enoughHistory || prev === 0 ? null : Math.round(((cur - prev) / prev) * 100);
   return { value: cur, deltaPct };
+}
+
+// Trend for a derived metric (avg engagement = reactions + comments per post).
+export function engagementTrend(posts: AccountPost[], days = 30): number | null {
+  const r = metricTrend(posts, "reactions", days).deltaPct;
+  const c = metricTrend(posts, "comments", days).deltaPct;
+  if (r === null && c === null) return null;
+  return Math.round(((r ?? 0) + (c ?? 0)) / 2);
 }
 
 // A small per-post series (chronological) for the KPI card sparklines.

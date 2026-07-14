@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Lightbox from "@/components/Lightbox";
 
 interface InspoFile {
   file: string;
@@ -12,6 +13,7 @@ interface InspoFile {
 export default function InspoGallery() {
   const [files, setFiles] = useState<InspoFile[] | null>(null);
   const [error, setError] = useState("");
+  const [zoom, setZoom] = useState<InspoFile | null>(null);
 
   useEffect(() => {
     fetch("/api/inspo")
@@ -35,13 +37,10 @@ export default function InspoGallery() {
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">{category}</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
             {items.map((f) => (
-              <a
+              <button
                 key={f.file}
-                href={f.url}
-                target="_blank"
-                rel="noreferrer"
-                className="group relative rounded-xl overflow-hidden border block aspect-square"
-                style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}
+                onClick={() => setZoom(f)}
+                className="group relative rounded-xl overflow-hidden border bg-card border-border shadow-sm hover:shadow-md transition-shadow block aspect-square cursor-zoom-in"
                 title={f.description}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -51,11 +50,15 @@ export default function InspoGallery() {
                     <span className="text-[10px] text-white leading-tight">{f.description}</span>
                   </div>
                 )}
-              </a>
+              </button>
             ))}
           </div>
         </div>
       ))}
+
+      {zoom && (
+        <Lightbox src={zoom.url} alt={zoom.description || zoom.file} caption={zoom.description} onClose={() => setZoom(null)} />
+      )}
     </div>
   );
 }

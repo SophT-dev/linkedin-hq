@@ -8,7 +8,7 @@ import { commentHeatmap, heatLevel } from "@/lib/analytics";
 const LEVEL_VAR = ["--heat-0", "--heat-1", "--heat-2", "--heat-3", "--heat-4"] as const;
 const ROW_LABELS = ["Mon", "", "Wed", "", "Fri", "", ""]; // Mon-first rows
 
-export default function CommentHeatmap({ dates, weeks = 53 }: { dates: string[]; weeks?: number }) {
+export default function CommentHeatmap({ dates, weeks = 5 }: { dates: string[]; weeks?: number }) {
   const cols = useMemo(() => commentHeatmap(dates, weeks), [dates, weeks]);
   const max = useMemo(() => Math.max(1, ...cols.flat().map((c) => c.count)), [cols]);
   const total = useMemo(() => cols.flat().reduce((a, c) => a + c.count, 0), [cols]);
@@ -32,7 +32,7 @@ export default function CommentHeatmap({ dates, weeks = 53 }: { dates: string[];
       <div
         key={c.date}
         title={c.inFuture ? "" : `${c.date} · ${c.count} comment${c.count === 1 ? "" : "s"}`}
-        className="w-3 h-3 rounded-[3px]"
+        className="w-5 h-5 rounded-md"
         style={{ background: `var(${LEVEL_VAR[level]})`, opacity: c.inFuture ? 0 : 1 }}
       />
     );
@@ -41,31 +41,31 @@ export default function CommentHeatmap({ dates, weeks = 53 }: { dates: string[];
   return (
     <div className="rounded-2xl border bg-card border-border shadow-sm p-4 lg:p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-base font-bold">Your commenting activity <span className="text-muted-foreground font-normal text-sm">· last 12 months</span></h2>
+        <h2 className="text-base font-bold">Your commenting activity <span className="text-muted-foreground font-normal text-sm">· last 30 days</span></h2>
         <span className="text-xs text-muted-foreground tabular-nums">{total} comments</span>
       </div>
 
       <div className="overflow-x-auto pb-1">
         <div className="inline-flex flex-col gap-1.5 min-w-max">
           {/* month row */}
-          <div className="flex gap-1 pl-9">
+          <div className="flex gap-1.5 pl-10">
             {monthLabels.map((m, i) => (
-              <div key={i} className="w-3 text-[10px] text-muted-foreground relative">
+              <div key={i} className="w-5 text-[11px] text-muted-foreground relative">
                 {m && <span className="absolute -top-0.5 left-0 whitespace-nowrap">{m}</span>}
               </div>
             ))}
           </div>
           {/* 7 day-rows */}
-          <div className="flex gap-1">
+          <div className="flex gap-1.5">
             {/* left day labels */}
-            <div className="flex flex-col gap-1 pr-1 w-8 shrink-0">
+            <div className="flex flex-col gap-1.5 pr-1 w-9 shrink-0">
               {ROW_LABELS.map((l, i) => (
-                <div key={i} className="h-3 text-[10px] text-muted-foreground leading-3 text-right">{l}</div>
+                <div key={i} className="h-5 text-[11px] text-muted-foreground leading-5 text-right">{l}</div>
               ))}
             </div>
             {/* week columns */}
             {cols.map((week, wi) => (
-              <div key={wi} className="flex flex-col gap-1">
+              <div key={wi} className="flex flex-col gap-1.5">
                 {week.map((c) => cell(c))}
               </div>
             ))}
@@ -75,7 +75,7 @@ export default function CommentHeatmap({ dates, weeks = 53 }: { dates: string[];
 
       <div className="flex items-center justify-end gap-1.5 text-[11px] text-muted-foreground">
         Less
-        {LEVEL_VAR.map((v) => <span key={v} className="w-3 h-3 rounded-[3px]" style={{ background: `var(${v})` }} />)}
+        {LEVEL_VAR.map((v) => <span key={v} className="w-4 h-4 rounded" style={{ background: `var(${v})` }} />)}
         More
       </div>
     </div>

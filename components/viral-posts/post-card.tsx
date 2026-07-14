@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ThumbsUp, MessageCircle, Repeat2, Sparkles, Bookmark, BookmarkCheck, Wand2 } from "lucide-react";
+import { ThumbsUp, MessageCircle, Repeat2, Sparkles, Bookmark, BookmarkCheck, Wand2, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -47,10 +47,18 @@ export function PostCard({
   const ratio = Number.parseFloat(post.comment_to_like_ratio);
 
   return (
-    <div
-      className="rounded-2xl border p-4 flex flex-col gap-3"
-      style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}
-    >
+    <div className="rounded-2xl border bg-card border-border shadow-sm p-4 flex flex-col gap-3 transition-shadow hover:shadow-md">
+      {/* Prominent format badge on its own row so it always reads at a glance */}
+      {post.suggested_format && (
+        <span
+          className="self-start inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full border"
+          style={{ background: "var(--accent)", color: "var(--primary)", borderColor: "var(--border-accent)" }}
+        >
+          <Tag size={12} strokeWidth={2.5} />
+          {post.suggested_format}
+        </span>
+      )}
+
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="font-semibold text-sm truncate">{post.expert || "Unknown creator"}</p>
@@ -58,11 +66,6 @@ export function PostCard({
             <p className="text-[11px] text-muted-foreground truncate">{post.domain}</p>
           )}
         </div>
-        {post.suggested_format && (
-          <span className="flex-shrink-0 text-[10px] px-2 py-0.5 rounded-full border border-white/10 bg-indigo-500/10 text-indigo-300 font-medium">
-            {post.suggested_format}
-          </span>
-        )}
       </div>
 
       <p className="text-sm leading-snug line-clamp-5">{post.hook}</p>
@@ -81,7 +84,8 @@ export function PostCard({
           href={post.url}
           target="_blank"
           rel="noreferrer"
-          className="text-[11px] text-indigo-300 underline truncate"
+          className="text-[11px] underline truncate"
+          style={{ color: "var(--primary)" }}
         >
           View original post
         </a>

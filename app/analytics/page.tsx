@@ -8,6 +8,7 @@ import {
   originalPosts,
   totals,
   metricTrend,
+  engagementTrend,
   sparkline,
   byPostType,
   type AccountPost,
@@ -45,13 +46,7 @@ export default function AnalyticsPage() {
   const t = useMemo(() => totals(original), [original]);
 
   const cards: StatCard[] = useMemo(() => {
-    const engTrend = (() => {
-      // Avg-engagement delta computed on (reactions + comments) per window.
-      const r = metricTrend(original, "reactions").deltaPct;
-      const c = metricTrend(original, "comments").deltaPct;
-      if (r === null && c === null) return null;
-      return Math.round(((r ?? 0) + (c ?? 0)) / 2);
-    })();
+    const engTrend = engagementTrend(original);
     return [
       { label: "Reactions", value: t.reactions.toLocaleString(), deltaPct: metricTrend(original, "reactions").deltaPct, spark: sparkline(original, "reactions"), icon: Heart, tint: "var(--viz-2)" },
       { label: "Comments", value: t.comments.toLocaleString(), deltaPct: metricTrend(original, "comments").deltaPct, spark: sparkline(original, "comments"), icon: MessageCircle, tint: "var(--primary)" },
