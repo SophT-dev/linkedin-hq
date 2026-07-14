@@ -787,3 +787,314 @@ Charles Tenot is a French go-to-market executive (ex-CFO/COO/CRO/CEO across tech
 2. **Build-in-public via giveaways = his growth engine, and it's replicable.** His biggest videos exist because he **gave away the repo/skills** and made "paste this link into Claude Code" the CTA. Taha could package a Bleed AI **cold-email skill or Clay-table template** as a public giveaway with the DFY upsell behind it.
 3. **Lead with a big real number + a "destroys/forever" hook.** His view data is unambiguous: quantified-proof hooks and provocation drive 10x the median. Taha should mine Bleed AI's real campaign data for headline numbers and stop publishing narrow how-tos without a proof-hook.
 4. **Adopt his deliverability + sequence defaults as cheap wins:** disposable domains (don't rehab), **2–3 emails max (email one is the best performer)**, cut generic AI personalization entirely (−143% replies), don't name unknown case-study logos, and **the free-first-campaign risk-reversal offer** — which he says out-performed every copy optimization he ever tried. That last one is the single highest-leverage steal for Bleed AI's own outbound.
+
+---
+
+# 🔗 Post links — every creator's top 15 posts (by likes)
+
+Direct LinkedIn URLs for every top-post referenced above (ranked by likes; the top ~10 of each match the "Top 10 posts" lists in the reports). Format: **rank · likes · date · [abstract](LinkedIn URL)**.
+*(eric-nowoslawski is YouTube-only in the corpus — his content lives at [youtube.com/@growthenginex](https://www.youtube.com/@outboundphd); the LinkedIn person is `outboundphd` above.)*
+
+### kenny-damian
+1. **1267L** · 2025-09-12 · [Deploy 6 n8n AI agents (37 agents for $6M ARR agency)](https://www.linkedin.com/posts/kenny-damian-90aba221a_i-set-up-37-ai-agents-for-our-6m-arr-outbound-activity-7372266433856204800-q6_C)
+2. **1033L** · 2026-03-23 · [Claude Code cheat sheet (600+ hours)](https://www.linkedin.com/posts/kenny-damian-90aba221a_ive-spent-600-hours-inside-claude-code-activity-7441843440847560705-nWy9)
+3. **871L** · 2026-03-16 · [Claude Code can prospect, enrich, write, launch](https://www.linkedin.com/posts/kenny-damian-90aba221a_claude-code-can-now-prospect-enrich-write-activity-7439306490634502144-VgVp)
+4. **802L** · 2025-11-12 · [Claude builds 90% of enterprise n8n workflows](https://www.linkedin.com/posts/kenny-damian-90aba221a_claude-can-now-build-90-of-enterprise-level-activity-7394388262787866624-LJpk)
+5. **405L** · 2026-02-17 · [Open-sourced 15 Claude Code skills](https://www.linkedin.com/posts/kenny-damian-90aba221a_i-just-open-sourced-the-15-claude-code-skills-activity-7429548688932327424-KjiR)
+6. **380L** · 2025-02-26 · [Giving away n8n pre-sales-call research workflow](https://www.linkedin.com/posts/kenny-damian-90aba221a_giving-away-this-n8n-pre-sales-call-research-activity-7300511778893967378-CfDB)
+7. **285L** · 2026-01-20 · [New position: Head of GTM at ColdIQ](https://www.linkedin.com/posts/kenny-damian-90aba221a_im-happy-to-share-that-im-starting-a-new-activity-7419389901944713216-KcP1)
+8. **208L** · 2026-02-27 · [1,400+ watched a live Claude Code build](https://www.linkedin.com/posts/kenny-damian-90aba221a_yesterday-1400-people-watchedivan-falco-activity-7433145207405207553-5Nc1)
+9. **195L** · 2026-03-02 · [We sent 1,000,000 cold emails — 6-step system](https://www.linkedin.com/posts/kenny-damian-90aba221a_we-sent-1000000-cold-emails-so-you-don-activity-7434242261648945153-HbW3)
+10. **193L** · 2025-09-08 · [n8n workflow → HTML prospect dossier in <2 min](https://www.linkedin.com/posts/kenny-damian-90aba221a_this-n8n-workflow-saves-our-sales-team-10-activity-7370831906239840256-3DIm)
+11. **183L** · 2026-02-10 · [9-step cold email system](https://www.linkedin.com/posts/kenny-damian-90aba221a_instantlyai-analyzed-1000000-cold-emails-activity-7426988299992616962-uRBa)
+12. **180L** · 2025-09-03 · [500 AI workflows across 70+ clients](https://www.linkedin.com/posts/kenny-damian-90aba221a_weve-built-500-ai-workflows-across-70-activity-7369020650084155393-I27F)
+13. **175L** · 2025-11-06 · [GTM cheatsheet (inbox/signals/timing)](https://www.linkedin.com/posts/kenny-damian-90aba221a_if-i-were-to-launch-a-company-tomorrow-heres-activity-7392216709077610496-QOHM)
+14. **169L** · 2025-05-22 · [n8n workflow: find→enrich→GPT-score leads](https://www.linkedin.com/posts/kenny-damian-90aba221a_giving-away-this-n8n-workflow-that-finds-activity-7331306268768313344-ha2r)
+15. **163L** · 2025-02-18 · [n8n Google Maps email scraper](https://www.linkedin.com/posts/kenny-damian-90aba221a_giving-away-the-n8n-workflow-that-scrapes-activity-7297638417394274305-GzEE)
+
+### sacha-martinot
+1. **388L** · 2026-04-10 · [24/7 AI agent in 30 seconds (Managed Agents)](https://www.linkedin.com/posts/sacha-martinot-392005235_you-can-now-create-a-247-working-ai-agent-activity-7448291181496672256-mRLw)
+2. **387L** · 2026-04-13 · [Built a LinkedIn Content Hub with Claude Code](https://www.linkedin.com/posts/sacha-martinot-392005235_i-built-my-own-linkedin-content-hub-with-activity-7449378462630326272-kSjk)
+3. **274L** · 2026-04-21 · [AI agent scrapes Claude Code skills 24/7](https://www.linkedin.com/posts/sacha-martinot-392005235_i-just-built-an-ai-agent-that-scrapes-the-activity-7452302328692490241-Iriv)
+4. **164L** · 2026-05-27 · [How Anthropic engineers use Claude Code](https://www.linkedin.com/posts/sacha-martinot-392005235_heres-how-anthropic-engineers-actually-use-activity-7465357802803494913-dbB3)
+5. **125L** · 2026-04-09 · [13 free n8n workflows](https://www.linkedin.com/posts/sacha-martinot-392005235_here-are-13-n8n-workflows-we-built-with-claude-activity-7447948929146568704-B2SF)
+6. **109L** · 2026-02-20 · [7 Claude Code skills from $7M ARR agency](https://www.linkedin.com/posts/sacha-martinot-392005235_7-claude-code-skills-activity-7430527986271113216-Xloi)
+7. **103L** · 2026-06-18 · [Dynamic Workflows came for n8n](https://www.linkedin.com/posts/sacha-martinot-392005235_claude-code-just-shipped-dynamic-workflows-activity-7473366691125747712-2Fuk)
+8. **101L** · 2026-06-03 · [Content Hub v2 (rerun)](https://www.linkedin.com/posts/sacha-martinot-392005235_i-built-my-own-content-hub-with-claude-code-activity-7467952267736956929-s1aL)
+9. **93L** · 2026-04-15 · [Claude Code skills to write viral posts](https://www.linkedin.com/posts/sacha-martinot-392005235_7-linkedin-skills-activity-7450168155269697536-NAlh)
+10. **90L** · 2026-06-17 · [Free skill-finder tool](https://www.linkedin.com/posts/sacha-martinot-392005235_i-just-built-a-free-tool-that-finds-you-the-activity-7472935217226289152-bj_8)
+11. **80L** · 2026-05-07 · [AI agent builds landing pages](https://www.linkedin.com/posts/sacha-martinot-392005235_i-just-built-an-ai-agent-that-creates-landing-activity-7458146558102982656-9WLw)
+12. **71L** · 2026-02-06 · [Joined ColdIQ, building with n8n/Cursor/Claude](https://www.linkedin.com/posts/sacha-martinot-392005235_ive-been-so-busy-learning-and-building-that-activity-7425496130831986688-fu3w)
+
+### outboundphd (Eric Nowoslawski — LinkedIn)
+1. **342L** · 2026-04-21 · [29 Claude skills repo (free)](https://www.linkedin.com/posts/outboundphd_i-put-29-claude-skills-into-this-repository-activity-7452341047361429504-lvbP)
+2. **307L** · 2025-01-08 · [Free 119-page cold email doc](https://www.linkedin.com/posts/outboundphd_i-spent-every-day-over-the-christmas-break-activity-7282757992435843073-OlKr)
+3. **297L** · 2025-11-19 · [Claude Skills replace knowledge-work](https://www.linkedin.com/posts/outboundphd_i-dont-see-enough-people-in-marketing-talking-activity-7396913907807862784-Clpz)
+4. **288L** · 2025-10-24 · [Clay silently released Derived Datapoints](https://www.linkedin.com/posts/outboundphd_clay-silently-released-some-of-my-favorite-activity-7387503250859520000-ECNN)
+5. **269L** · 2025-01-22 · [Leaving Clay / unicorn raise](https://www.linkedin.com/posts/outboundphd_my-decision-to-leave-clay-was-calculated-activity-7287845214134628352-sjh1)
+6. **252L** · 2025-11-25 · [I was completely wrong about AI prompting (caching)](https://www.linkedin.com/posts/outboundphd_ive-been-completely-wrong-about-ai-prompting-activity-7399084460085891074-sfG1)
+7. **238L** · 2025-09-18 · [Founders and their dumb domain purchases](https://www.linkedin.com/posts/outboundphd_founders-and-their-dumb-domain-purchases-activity-7374492823825567744-1C44)
+8. **223L** · 2026-04-20 · [Claude Code doubled response rates in a week](https://www.linkedin.com/posts/outboundphd_claude-code-doubled-response-rates-in-one-activity-7451981768162844672-7jDy)
+9. **217L** · 2025-05-12 · [How Arturo joined Clay (story)](https://www.linkedin.com/posts/outboundphd_this-is-the-legend-of-how-arturo-orozco-joined-activity-7327788411640029185-f-8h)
+10. **217L** · 2026-05-04 · [Codex /goal auto-builds Clay tables](https://www.linkedin.com/posts/outboundphd_i-used-codexs-new-goal-command-to-automatically-activity-7457110429291593728-NKeJ)
+11. **208L** · 2025-12-17 · [Every agency should cache data in Supabase](https://www.linkedin.com/posts/outboundphd_controversial-opinion-every-agency-should-activity-7407075858546438144-VpRU)
+12. **198L** · 2025-07-16 · [How I'd start over in cold email](https://www.linkedin.com/posts/outboundphd_if-i-had-to-start-cold-email-all-over-again-activity-7351234198579421184-vAn7)
+
+### michel-lieben
+1. **2794L** · 2025-04-21 · [4,000 emails → 1 lead → $4M ARR](https://www.linkedin.com/posts/michel-lieben_how-it-started-4000-cold-emails-sent-1-activity-7320031280744603648-aMPN)
+2. **1562L** · 2025-05-22 · [$400K MRR — every tool we use](https://www.linkedin.com/posts/michel-lieben_we-just-crossed-400000-mrr-heres-every-activity-7331265990271324160-IiyX)
+3. **1387L** · 2025-07-14 · [lemlist $34M ARR tool stack](https://www.linkedin.com/posts/michel-lieben_lemlist-recently-crossed-34000000-arr-activity-7350472227592593408-GpYl)
+4. **1172L** · 2025-06-05 · [$4.8M/year funnel breakdown](https://www.linkedin.com/posts/michel-lieben_what-our-4800000year-funnel-looks-like-activity-7336339219667120129-jeGH)
+5. **1110L** · 2025-06-09 · [Most "AI agents" are just workflows](https://www.linkedin.com/posts/michel-lieben_ai-agents-started-replacing-employees-now-activity-7337788638576992257-_tXD)
+6. **1039L** · 2026-05-18 · [Claude Design vs Claude Code (giveaway)](https://www.linkedin.com/posts/michel-lieben_anthropic-just-released-claude-design-our-activity-7462092873358909440-vDLk)
+7. **1027L** · 2025-07-22 · [lemlist $34M ARR funnel](https://www.linkedin.com/posts/michel-lieben_what-lemlist-34000000-arr-funnel-looks-activity-7353371401036201984-XoYe)
+8. **876L** · 2025-07-21 · [How I'd find my first 10 B2B clients](https://www.linkedin.com/posts/michel-lieben_how-id-find-my-first-10-b2b-clients-if-i-activity-7353008470603767808-X78a)
+9. **796L** · 2025-11-19 · [Failed 7 businesses → $557K month](https://www.linkedin.com/posts/michel-lieben_failing-7-businesses-before-growing-one-activity-7396861477669928960-uLWk)
+10. **774L** · 2026-02-25 · [Run your GTM with Claude Code (demo)](https://www.linkedin.com/posts/michel-lieben_can-you-run-your-entire-gtm-with-claude-code-activity-7432376863055884290-bJ5x)
+11. **759L** · 2026-04-16 · [Claude Code automates the full cold email pipeline](https://www.linkedin.com/posts/michel-lieben_building-cold-email-campaigns-used-to-take-activity-7450495769498947584-080p)
+12. **658L** · 2025-04-22 · [The SDR role is changing because of AI](https://www.linkedin.com/posts/michel-lieben_the-sdr-role-is-changing-because-of-ai-activity-7320393773543272448-11Rl)
+
+### nick-abraham
+1. **1257L** · 2025-06-28 · ["So you have $6,000 of monthly revenue?" (Clay-spend dialogue)](https://www.linkedin.com/posts/nick-abraham_so-you-have-6000-of-monthly-revenue-activity-7344703659395469312-__hz)
+2. **416L** · 2025-12-18 · [Lifetime agreement after 8 years](https://www.linkedin.com/posts/nick-abraham_im-excited-to-share-that-after-8-years-of-activity-7407504150210670592-N5n8)
+3. **305L** · 2025-10-31 · [Part owner of Cleverly (full circle)](https://www.linkedin.com/posts/nick-abraham_announcement-i-am-so-excited-to-share-im-activity-7390004859292459008-zwoo)
+4. **294L** · 2025-04-11 · [FREE similar-accounts tool — comment EMAIL](https://www.linkedin.com/posts/nick-abraham_finding-a-list-of-perfect-fit-accounts-is-activity-7316437441081417731-M_9j)
+5. **257L** · 2025-04-01 · [Free cold email frameworks master doc](https://www.linkedin.com/posts/nick-abraham_i-never-planned-on-giving-this-away-we-send-activity-7312813537221820416-j21s)
+6. **247L** · 2026-02-17 · [Speed-to-lead website-visitor play](https://www.linkedin.com/posts/nick-abraham_i-recently-visited-a-companys-site-and-got-activity-7429515785288458240-qgQx)
+7. **239L** · 2025-09-01 · [How different CEOs respond to cold emails](https://www.linkedin.com/posts/nick-abraham_how-different-ceos-respond-to-cold-emails-activity-7368258900724285440-8NUU)
+8. **227L** · 2026-05-12 · [$30k debt → 300+ clients origin story](https://www.linkedin.com/posts/nick-abraham_at-19-i-got-myself-into-30000-of-credit-activity-7460030679456620546-HJfj)
+9. **203L** · 2026-04-11 · [Vibecoded a $99/mo SaaS replacement](https://www.linkedin.com/posts/nick-abraham_i-just-vibecoded-a-replacement-to-a-99mo-activity-7448727354719305728-sqnH)
+10. **199L** · 2026-06-10 · [>50% of outbound success is the follow-up](https://www.linkedin.com/posts/nick-abraham_50-of-outbound-success-is-following-up-activity-7470452326894399488-Izp7)
+11. **190L** · 2025-04-28 · ["Cold email doesn't work for my business." BS.](https://www.linkedin.com/posts/nick-abraham_cold-email-doesnt-work-for-my-business-activity-7322598004970897408-tC0P)
+12. **183L** · 2025-11-12 · [A barber's cold email teardown](https://www.linkedin.com/posts/nick-abraham_6-months-ago-a-local-barber-sent-me-this-activity-7394464017169203201-QEak)
+
+### atishay-hyperke
+1. **154L** · 2026-02-12 · [Cold email AI gem V2 (comment V2)](https://www.linkedin.com/posts/atishay-hyperke_500-people-asked-for-my-cold-email-ai-gem-activity-7427721462985449472-bfHi)
+2. **148L** · 2026-01-16 · [20M emails → Gemini 3 writes them better](https://www.linkedin.com/posts/atishay-hyperke_ive-sent-over-20-million-cold-emails-in-activity-7417927963569963009-Mr-l)
+3. **146L** · 2026-06-24 · [Free GTM engineer field manual](https://www.linkedin.com/posts/atishay-hyperke_a-good-gtm-engineer-can-completely-turn-a-activity-7475548404899540992-q9n0)
+4. **129L** · 2026-04-08 · [4:51am Phi Phi / Smartescape retreat](https://www.linkedin.com/posts/atishay-hyperke_writing-this-at-451-am-from-the-phi-phi-activity-7447783228045701120-DmGP)
+5. **122L** · 2026-01-21 · [51 enterprise appointments (Dow Jones/STUSSY)](https://www.linkedin.com/posts/atishay-hyperke_we-booked-51-appointments-with-enterprise-activity-7419733371519619072-L3I2)
+6. **101L** · 2025-06-04 · [Cold-email evaluator GPT (14,900 leads)](https://www.linkedin.com/posts/atishay-hyperke_our-cold-email-campaigns-generated-14900-activity-7336017638835269635-eTYG)
+7. **100L** · 2026-01-05 · [10K/mo ≠ 100K/mo (scaling money-math)](https://www.linkedin.com/posts/atishay-hyperke_sending-10k-cold-emailsmonth-is-not-the-activity-7413950065322450944-xjux)
+8. **99L** · 2026-05-11 · [65,419 emails in a saturated niche → 57 demos](https://www.linkedin.com/posts/atishay-hyperke_we-sent-65419-cold-emails-for-a-saas-company-activity-7459600136034258947-7284)
+9. **95L** · 2026-05-23 · [2.6M cold emails in 14 days](https://www.linkedin.com/posts/atishay-hyperke_we-just-sent-26-million-cold-emails-in-just-activity-7463952332129636352-Wa6m)
+10. **89L** · 2026-06-25 · ["Googled the top 1%" origin story](https://www.linkedin.com/posts/atishay-hyperke_in-my-2nd-year-of-college-i-googled-what-activity-7475910732581326848-_PAU)
+
+### richard-illingworth
+1. **171L** · 2025-11-13 · [Cold emails in 2025 meme](https://www.linkedin.com/posts/richard-illingworth_nobody-cold-emails-in-2025-hey-you-activity-7394720726156718080-B0La)
+2. **166L** · 2025-07-29 · [I studied Hormozi's cold outreach for 72h](https://www.linkedin.com/posts/richard-illingworth_i-studied-alex-hormozis-cold-outreach-for-activity-7355952714234667009-9jpa)
+3. **156L** · 2026-02-26 · [I fed Claude Opus my $10M cold system](https://www.linkedin.com/posts/richard-illingworth_i-fed-claude-opus-46-my-cold-system-behind-activity-7432801709338505216-T6mQ)
+4. **136L** · 2026-05-20 · ["Just pull a list from Apollo" — 7-method stack](https://www.linkedin.com/posts/richard-illingworth_just-pull-a-list-from-apollo-ive-never-activity-7462856212989022209-_8B2)
+5. **133L** · 2025-07-11 · [Free SOP for agency owners](https://www.linkedin.com/posts/richard-illingworth_hey-cold-email-agency-owners-and-freelancers-activity-7349411926176681984-7ssE)
+6. **132L** · 2025-11-28 · ["Cold email is spam" — all sales is spam](https://www.linkedin.com/posts/richard-illingworth_cold-email-is-spamming-mate-all-sales-activity-7400156540638449664-8wav)
+7. **129L** · 2025-06-16 · [Be your own best case study](https://www.linkedin.com/posts/richard-illingworth_someone-dmed-me-to-say-im-doing-linkedin-activity-7340325056050331649-NCGb)
+8. **126L** · 2025-06-27 · [I analyzed 237 cold email campaigns](https://www.linkedin.com/posts/richard-illingworth_i-just-analyzed-237-cold-email-campaigns-activity-7344321131358633986-Jvva)
+9. **125L** · 2025-08-20 · [90% of cold emails fail (one-sentence pitch)](https://www.linkedin.com/posts/richard-illingworth_ive-spent-3-years-studying-why-90-of-cold-activity-7363992832019210242-6yGJ)
+10. **121L** · 2026-03-09 · [250,000 inboxes — free full system](https://www.linkedin.com/posts/richard-illingworth_weve-set-up-250000-inboxes-for-2000-activity-7436787946537525248-N-l0)
+11. **115L** · 2026-02-03 · [It's infra, not your copy](https://www.linkedin.com/posts/richard-illingworth_i-charge-for-a-cold-email-infrastructure-activity-7424440337517023232-3DP2)
+
+### nikita-maildoso
+1. **283L** · 2025-03-27 · [Grow your agency with cold email (Wes Foster live)](https://www.linkedin.com/posts/nikita-maildoso-2b6a6755_how-to-grow-your-agency-with-cold-email-activity-7310989957592969217-fg8w)
+2. **273L** · 2026-04-20 · [300 free SMTP inboxes ("but f*k it")](https://www.linkedin.com/posts/nikita-maildoso-2b6a6755_this-is-going-to-be-expensive-and-time-consuming-activity-7452003775994748928--_xa)
+3. **253L** · 2026-04-07 · [Left Russia for Uruguay (story)](https://www.linkedin.com/posts/nikita-maildoso-2b6a6755_in-2022-i-left-russia-and-moved-to-uruguay-activity-7447239026593636353-wQ65)
+4. **189L** · 2025-06-16 · ["Is Maildoso going bankrupt?" (blacklist crisis)](https://www.linkedin.com/posts/nikita-maildoso-2b6a6755_ive-been-asked-this-question-many-times-activity-7340482642548584449-Ig0M)
+5. **160L** · 2025-07-17 · [Links & images now safe in cold email](https://www.linkedin.com/posts/nikita-maildoso-2b6a6755_no-links-no-images-no-videos-in-a-cold-activity-7351652161455292419-Ugf7)
+6. **124L** · 2026-07-02 · [300 free inboxes "but there's one catch"](https://www.linkedin.com/posts/nikita-maildoso-2b6a6755_maildoso-is-giving-away-300-inboxes-for-free-activity-7478408131396608002-skgO)
+7. **118L** · 2025-12-08 · [I got a cold email from Google](https://www.linkedin.com/posts/nikita-maildoso-2b6a6755_i-have-received-a-cold-email-from-activity-7403933194955329537-C0ME)
+8. **88L** · 2025-12-15 · [Blacklist crisis v2](https://www.linkedin.com/posts/nikita-maildoso-2b6a6755_6-months-ago-thousands-of-maildosos-inboxes-activity-7406286358492844032-xHRx)
+
+### aidan-collins
+1. **180L** · 2026-01-21 · [One concept beats 99% of LinkedIn](https://www.linkedin.com/posts/aidan-collins-8a146530a_how-did-this-post-get-50k-impressions-activity-7419818976614051840-Q7-b)
+2. **149L** · 2026-06-16 · [Claude Code + Reddit viral autopilot](https://www.linkedin.com/posts/aidan-collins-8a146530a_claude-code-reddit-is-making-me-go-completely-activity-7472603895480025088-Q9_y)
+3. **98L** · 2026-06-29 · [27 sales calls in 48 hours (packaging)](https://www.linkedin.com/posts/aidan-collins-8a146530a_we-just-booked-27-sales-calls-in-48-hours-activity-7477408809968103425-gl0V)
+4. **97L** · 2026-05-04 · [45/35/10 DM funnel (specificity)](https://www.linkedin.com/posts/aidan-collins-8a146530a_for-every-800-connection-requests-i-send-activity-7457121955603857409-YN_z)
+5. **85L** · 2026-02-08 · ["Just be consistent" is the worst advice](https://www.linkedin.com/posts/aidan-collins-8a146530a_some-of-the-worst-advice-ive-ever-gotten-activity-7426252220356042752-YLSs)
+6. **79L** · 2026-06-19 · [12 best lead-magnet types](https://www.linkedin.com/posts/aidan-collins-8a146530a_after-2xing-my-agency-size-following-with-activity-7473632358982782977-mQt1)
+7. **77L** · 2026-01-27 · [Client closed $42k with 5-10 likes/post](https://www.linkedin.com/posts/aidan-collins-8a146530a_my-client-closed-42000-in-revenue-in-20-activity-7421933919320686592-Au2M)
+8. **73L** · 2026-06-24 · [Same magnet, new image+hook = 20x comments](https://www.linkedin.com/posts/aidan-collins-8a146530a_i-posted-the-exact-same-lead-magnet-twice-activity-7475540114249560064-BlXY)
+
+### josh-braun
+1. **4442L** · 2026-02-05 · [My mom died yesterday](https://www.linkedin.com/posts/josh-braun_my-mom-died-yesterday-people-reached-out-activity-7425320948981075968-uiWx)
+2. **3608L** · 2025-08-12 · [Why high-performing reps leave](https://www.linkedin.com/posts/josh-braun_heres-why-high-performing-sales-reps-leave-activity-7361076574932115456-cMgo)
+3. **3213L** · 2026-05-04 · [Automation can't create a memory](https://www.linkedin.com/posts/josh-braun_when-i-was-younger-in-sales-id-get-on-a-activity-7457103037719904257-xRIq)
+4. **3096L** · 2025-07-07 · [The Sunday-emails boss](https://www.linkedin.com/posts/josh-braun_i-had-a-boss-who-loved-sending-sunday-emails-activity-7347988229062639616-cM-v)
+5. **2957L** · 2026-05-25 · [Why top reps leave (rewrite)](https://www.linkedin.com/posts/josh-braun_heres-why-top-reps-leave-they-hit-quota-activity-7464719376009814016-P3j7)
+6. **2903L** · 2025-09-19 · [The 6-year-old who ordered for the table](https://www.linkedin.com/posts/josh-braun_i-saw-a-family-of-five-at-a-restaurant-do-activity-7374891584682696704-Wf9z)
+7. **2419L** · 2025-09-11 · [The Starbucks pickup line](https://www.linkedin.com/posts/josh-braun_i-was-at-starbucks-and-overheard-a-guy-approach-activity-7371855345981345792-Oy8P)
+8. **2212L** · 2026-05-17 · [I can't use an em dash anymore](https://www.linkedin.com/posts/josh-braun_i-cant-use-an-em-dash-anymore-this-is-activity-7461812753058594816-yjxD)
+9. **2091L** · 2025-03-11 · [Sales volatility / detach from outcome](https://www.linkedin.com/posts/josh-braun_one-month-youre-on-fire-the-next-you-activity-7305203342039760899-H8v1)
+10. **1680L** · 2025-03-20 · [Just say "Okay" and hang up](https://www.linkedin.com/posts/josh-braun_cold-calling-tip-seller-youre-probably-activity-7308429861860065282-CZzq)
+
+### charles-tenot
+1. **1325L** · 2025-03-12 · [CRO is harder than CEO](https://www.linkedin.com/posts/charlestenot_ive-been-cfo-coo-cro-and-ceo-of-tech-activity-7305567492385505280--c2w)
+2. **1310L** · 2025-07-09 · [1,000 emails, I replied to one (teardown)](https://www.linkedin.com/posts/charlestenot_i-receive-over-1000-prospecting-emails-this-activity-7348676548905824257-itgX)
+3. **1164L** · 2025-01-29 · [Great vs average VP of Sales](https://www.linkedin.com/posts/charlestenot_ive-worked-with-5-different-vps-of-sales-activity-7290291216561176577-4Heu)
+4. **1128L** · 2025-02-05 · [Deel does $800M ARR, CRM still a mess](https://www.linkedin.com/posts/charlestenot_deel-is-doing-800m-in-arr-yet-their-crm-activity-7292788800022335488-7G6z)
+5. **1079L** · 2025-09-16 · [Lazy at home = lazy at the office](https://www.linkedin.com/posts/charlestenot_if-your-employees-are-lazy-at-home-they-activity-7373681511805526017-TgA1)
+6. **858L** · 2025-02-18 · [The CRO who faked CRM notes (7X)](https://www.linkedin.com/posts/charlestenot_a-cro-recently-shared-how-he-faked-data-in-activity-7297594973850390528-92Wn)
+7. **844L** · 2025-07-21 · [Kindness in business (Guillaume)](https://www.linkedin.com/posts/charlestenot_when-i-was-a-kid-i-thought-you-had-to-be-activity-7353000252318044161--tKQ)
+8. **710L** · 2025-10-20 · [We bought Claap → "Smartbound"](https://www.linkedin.com/posts/charlestenot_big-news-we-just-bought-claap-to-change-activity-7385980200355987456-AOO1)
+
+---
+
+# 🧠 WHY THEY WON vs WHY THEY FLOPPED — per creator (with worst-post links)
+
+**The universal pattern (across all 11):**
+- **Why winners win:** an authority/big-number or curiosity/contrarian hook in line 1 · a *real asset* given away behind a comment-KEYWORD-+-connect gate · riding the current AI/Claude-Code wave · before/after money-math · or an emotional story. All on-lane.
+- **Why flops flop:** ❌ pure promo/event announcements with no takeaway · ❌ dry tactical how-to with no hook, number, or proof · ❌ off-lane topics (their non-core domain) · ❌ **no comment-gate/CTA** (for the lead-magnet operators, this is the biggest single killer) · ❌ generic "principle" posts with no specificity · ❌ posts too new to have accumulated distribution.
+
+### kenny-damian
+**Why the top 10 won:** 1) 1267L authority-number ("37 AI agents / $6M ARR") + named-agent list + giveaway · 2) 1033L "600+ hours" save-worthy cheat-sheet · 3) 871L Claude-Code end-to-end + gate · 4) 802L capability-news ("builds 90% of n8n") + comment "CLAUDE" · 5) 405L free 15-skills repo + gate · 6) 380L free n8n workflow + gate · 7) 285L native new-job template (social proof) · 8) 208L live-build event proof + "Webinar" gate · 9) 195L borrowed-scale ("1M emails so you don't have to") · 10) 193L ROI-first hook ($10k saved).
+**Why the bottom 10 flopped:**
+1. **20L** — [exact Email-1 structure](https://www.linkedin.com/posts/kenny-damian-90aba221a_heres-the-exact-email-1-structure-i-use-activity-7313554715508633601-QbHN) — dry copywriting how-to, his weakest lane, no gate/flex.
+2. **20L** — [intent-led outbound take](https://www.linkedin.com/posts/kenny-damian-90aba221a_my-outbound-campaigns-used-to-fail-before-activity-7295445294840758272-CxZe) — opinion, not an asset; audience wants tools.
+3. **23L** — [alt sales triggers](https://www.linkedin.com/posts/kenny-damian-90aba221a_new-sales-triggers-activity-7321510452167950336-dFNr) — dry tactic, no build/gate.
+4. **24L** — [20 cold-email changes](https://www.linkedin.com/posts/kenny-damian-90aba221a_20-things-that-changed-my-approach-to-cold-activity-7328396177282867200-OpoD) — generic listicle, no proof-number hook.
+5. **25L** — [7 copywriting tips](https://www.linkedin.com/posts/kenny-damian-90aba221a_7-copywriting-tips-to-help-you-start-booking-activity-7309938740653654019-MRhS) — commodity tips, weakest pillar.
+6. **29L** — [LinkedIn DM SOP](https://www.linkedin.com/posts/kenny-damian-90aba221a_after-working-with-70-clients-and-analyzing-activity-7377011002787344384-RP51) — off-lane (LinkedIn meta), no tooling flex.
+7. **29L** — [350 followers in 24h](https://www.linkedin.com/posts/kenny-damian-90aba221a_how-i-gained-350-followers-in-24-hours-activity-7297998647311433730-o76F) — LinkedIn-content meta, off his AI lane.
+8. **33L** — [MCP explainer](https://www.linkedin.com/posts/kenny-damian-90aba221a_ai-agents-are-useless-if-they-cant-access-activity-7378420389762355201-4i7o) — educational, no asset/gate.
+9. **33L** — [4-step lead framework](https://www.linkedin.com/posts/kenny-damian-90aba221a_cold-email-campaign-framework-activity-7315350244047630337-PTPb) — dry framework, no gate.
+10. **33L** — [5 deliverability fixes](https://www.linkedin.com/posts/kenny-damian-90aba221a_ways-to-lower-bounce-rate-activity-7310654923912712192--WLp) — dry infra how-to, no flex.
+
+### sacha-martinot
+**Why the top 10 won:** round-number specificity ("13 tools," "7 skills," "24/7 in 30s") + authority anchor ("$7M ARR agency," "Anthropic engineers") + a *built thing* + comment-gate; news-jacking every Claude release first.
+**Why the bottom 10 flopped:**
+1. **15L** — [LinkedIn Ads mistakes / plugin](https://www.linkedin.com/posts/sacha-martinot-392005235_weve-managed-25m-in-linkedin-ads-9-out-activity-7462847178172985346-ps_5) — ColdIQ promo, act=none, no personal build angle.
+2. **16L** — [Clay-credit plugin](https://www.linkedin.com/posts/sacha-martinot-392005235_most-clay-accounts-waste-half-their-credits-activity-7457069906535055360-x17X) — narrow "parts-list" tactic, not a shiny built thing.
+3. **18L** — [agents are your best customer](https://www.linkedin.com/posts/sacha-martinot-392005235_soon-your-best-customer-wont-be-human-activity-7470404744734339072-y8B3) — abstract opinion, no asset.
+4. **21L** — [6 APIs the top 1% run on](https://www.linkedin.com/posts/sacha-martinot-392005235_6-apis-the-top-1-of-sales-teams-run-on-activity-7475080349698678784-Lcdg) — parts-list, no built demo.
+5. **27L** — [build a 24/7 agent (rehash)](https://www.linkedin.com/posts/sacha-martinot-392005235_you-can-now-build-a-247-working-ai-agent-activity-7475839937594982401-LeXV) — a rehash of his hit, novelty spent.
+6. **27L** — [5 skills or 10% of Claude Code](https://www.linkedin.com/posts/sacha-martinot-392005235_if-youre-using-claude-code-without-these-activity-7437180270727901185-Ses2) — scold-listicle, no giveaway.
+7. **28L** — [ColdIQ hit $7M ARR](https://www.linkedin.com/posts/sacha-martinot-392005235_coldiq-just-hit-7m-arr-our-1-growth-activity-7440333466321346560-Dcd4) — pure promo, no build story.
+8. **30L** — [3D render business idea](https://www.linkedin.com/posts/sacha-martinot-392005235_easy-business-idea-you-can-start-this-weekend-activity-7465728733409103873--sHN) — off-lane (real estate), not his ICP.
+9. **30L** — [30-sec GTM report](https://www.linkedin.com/posts/sacha-martinot-392005235_what-if-you-could-get-a-complete-gtm-strategy-activity-7434999222569148416-8v5P) — teardown w/o proof or gate.
+10. **31L** — [fitness/travel/retirement workflows](https://www.linkedin.com/posts/sacha-martinot-392005235_3-day-to-day-workflows-activity-7460641691478241280-MtM4) — off-lane personal automations.
+
+### outboundphd
+**Why the top 10 won:** free high-value asset (repo/119-page doc) + comment-gate · "I was completely wrong" confession hooks · Clay-insider scoops ("Clay silently released…") · result-first ("doubled reply rates in a week").
+**Why the bottom 10 flopped:**
+1. **19L** — [Shawn's event promo](https://www.linkedin.com/posts/outboundphd_free-cold-calling-messaging-workshop-activity-7319103465048215552-D9_j) — pure third-party event promo, no value.
+2. **22L** — [Dextegon Summit promo](https://www.linkedin.com/posts/outboundphd_new-year-means-new-sales-strategies-dextegon-activity-7285366382475505667-p68f) — self-promo announcement, no takeaway.
+3. **23L** — [Sculpt talk promo](https://www.linkedin.com/posts/outboundphd_lessons-on-using-claycom-from-their-largest-activity-7392648289810083840-uKRJ) — event announcement, no substance.
+4. **23L** — [4o-mini LLM take](https://www.linkedin.com/posts/outboundphd_what-llm-are-you-using-since-we-send-so-activity-7299869446876155905-9rw6) — narrow opinion, no asset.
+5. **28L** — [2 AI workflows](https://www.linkedin.com/posts/outboundphd_2-ai-workflows-that-we-used-in-the-last-year-activity-7348727650892365825-bK5J) — example-only, no gate/hook.
+6. **29L** — [weekend multi-threading](https://www.linkedin.com/posts/outboundphd_weekend-multi-threading-strategy-with-claycom-activity-7316444917436723202-1gOz) — dry niche tactic.
+7. **31L** — [praising TryKitt.ai](https://www.linkedin.com/posts/outboundphd_just-got-off-a-call-with-a-competitor-who-activity-7323724907589099521-KyHT) — off-lane shout-out, no value.
+8. **31L** — [CES company list](https://www.linkedin.com/posts/outboundphd_ces-company-list-activity-7283486495997333505-t3le) — off-topic link dump.
+9. **32L** — [Clay + Serper operators](https://www.linkedin.com/posts/outboundphd_we-just-onboarded-2-customers-that-manually-activity-7317532199006711809-1hJo) — deep-weeds tactic, no proof-hook.
+10. **33L** — [Porkbun domain sale](https://www.linkedin.com/posts/outboundphd_porkbun-dynadot-domain-sale-on-co-get-activity-7345949275454947329-U4b0) — pure deal-promo, no substance.
+
+### michel-lieben
+**Why the top 10 won:** before/after money-math ("4,000 emails → $4M ARR") · "here's every tool / our whole funnel" transparency · recyclable "agent = workflow" contrarian · comment-gated guides · pitch quarantined to a P.S.
+**Why the bottom 10 flopped:**
+1. **26L** — [Instantly AI-outreach session](https://www.linkedin.com/posts/michel-lieben_cold-outbound-is-still-one-of-the-most-powerful-activity-7287862274382262275-WqHU) — early event promo, no hook.
+2. **69L** — [find 70% of phone numbers](https://www.linkedin.com/posts/michel-lieben_heres-how-we-find-up-to-70-of-phone-numbers-activity-7290042609173999616-mSTC) — narrow list-building tactic (his weak domain).
+3. **76L** — [find a mobile number free](https://www.linkedin.com/posts/michel-lieben_find-anyones-mobile-number-for-free-activity-7285683111600746496-mZDT) — tiny one-tool tip, low signal.
+4. **108L** — [reverse-engineer case studies](https://www.linkedin.com/posts/michel-lieben_ive-grown-my-company-to-36m-arr-by-reverse-activity-7295483289593610240-52Gs) — abstract principle, no stack reveal.
+5. **111L** — [Unify 188-meetings session](https://www.linkedin.com/posts/michel-lieben_ai-agents-revolutionised-go-to-market-in-activity-7310971723749703680-v9rg) — webinar promo, not a teardown.
+6. **114L** — [hiring a content designer](https://www.linkedin.com/posts/michel-lieben_coldiq-is-hiring-a-content-designer-we-activity-7376544696988512256-zpBW) — recruiting post, no audience value.
+7. **116L** — [pick our new logo](https://www.linkedin.com/posts/michel-lieben_were-designing-a-new-logo-for-coldiq-and-activity-7295784108272566273-onhy) — low-value engagement-bait.
+8. **123L** — [why I won't hire you](https://www.linkedin.com/posts/michel-lieben_heres-why-i-wont-hire-you-at-my-36m-arr-activity-7297917911115915265-nRod) — hiring-opinion, off the "show the machine" formula.
+9. **125L** — [$1 lead-gen course promo](https://www.linkedin.com/posts/michel-lieben_we-missed-out-on-338169-because-of-dan-activity-7282414785571258368-f3I6) — early promo, naked sell.
+10. **129L** — [145 leads in 3 months](https://www.linkedin.com/posts/michel-lieben_2-5-new-leads-per-day-activity-7286038916179083265-mpOy) — case-study without the big-number/before-after hook.
+
+### nick-abraham
+**Why the top 10 won:** a *device* (fake dialogue, quote-ladder, real-email teardown) · comment "EMAIL" (must-be-connected) giveaways · vulnerable origin/milestone stories · brevity.
+**Why the bottom 10 flopped:**
+1. **10L** — [13 cold-email templates carousel](https://www.linkedin.com/posts/nick-abraham_13-cold-email-templates-activity-7317541718214459392-u__E) — a plain giveaway with **no comment-gate** — the mechanic was off.
+2. **12L** — [email-to-lead ratio framework](https://www.linkedin.com/posts/nick-abraham_we-manage-hundreds-of-cold-email-campaigns-activity-7458239731735093249--DKv) — dry agency-ops framework, no device.
+3. **16L** — [list-building validation](https://www.linkedin.com/posts/nick-abraham_i-get-at-least-2-cold-emails-per-week-from-activity-7469840681503739904-s8WM) — dry how-to, no hook.
+4. **16L** — [Sam Altman should learn from gurus](https://www.linkedin.com/posts/nick-abraham_if-sam-altman-wants-to-learn-about-running-activity-7301594576018976768-mo2W) — off-lane hot-take, no payoff.
+5. **17L** — [tattoo cold-email joke](https://www.linkedin.com/posts/nick-abraham_this-is-too-far-man-goes-viral-after-tattooing-activity-7332020073668272128-IkXT) — low-effort meme, no substance.
+6. **18L** — [agency cashflow tips](https://www.linkedin.com/posts/nick-abraham_this-tweet-is-about-dtc-brands-but-it-most-activity-7407416436047974400-qHmT) — off-topic (finance), dry.
+7. **18L** — [build an LMS](https://www.linkedin.com/posts/nick-abraham_were-able-to-serve-283-active-clients-with-activity-7388562297549611009-ky-f) — internal-ops framework, off ICP.
+8. **19L** — [avoid missed personalization](https://www.linkedin.com/posts/nick-abraham_missed-first-name-variable-swearing-to-activity-7465087730683756544-LPsT) — generic copy-principle.
+9. **19L** — [partnership campaigns](https://www.linkedin.com/posts/nick-abraham_partnership-campaigns-will-fill-your-calendar-activity-7437487483405336578-XyHc) — dry framework, niche.
+10. **19L** — [offer + downsell](https://www.linkedin.com/posts/nick-abraham_every-service-based-business-should-have-activity-7323420896033935360-ZDY_) — dry framework, no device/gate.
+
+### atishay-hyperke
+**Why the top 10 won:** credential-shock ("20M emails") + big-number case studies (named enterprise logos) + reusable AI-Gem behind a comment-keyword gate + money-math.
+**Why the bottom 10 flopped:**
+1. **1L** — [empty activity post](https://www.linkedin.com/posts/atishay-hyperke_activity-7289420336289169408-gnWQ) — no text/hook at all.
+2. **4L** — [GPT fear-desire angles](https://www.linkedin.com/posts/atishay-hyperke_ai-in-sales-is-all-the-buzz-these-days-heres-activity-7292942591862419457-B5gi) — early dry tactic, no proof/gate.
+3. **4L** — [PS-line personalization](https://www.linkedin.com/posts/atishay-hyperke_heres-a-quick-personalization-idea-that-activity-7291104202372587520-O5zT) — micro-tip, no hook.
+4. **5L** — [hospitality niche take](https://www.linkedin.com/posts/atishay-hyperke_why-do-people-write-off-the-hospitality-niche-activity-7463591095537651712-P8rs) — narrow opinion, no proof-number.
+5. **6L** — [empty mindset post](https://www.linkedin.com/posts/atishay-hyperke_activity-7298461827498156033-GTn9) — no substance.
+6. **6L** — [emails fail because they guess](https://www.linkedin.com/posts/atishay-hyperke_999999-of-b2b-cold-emails-i-see-dont-address-activity-7289673562011942912-iLse) — generic principle, no asset.
+7. **7L** — [offers by credibility](https://www.linkedin.com/posts/atishay-hyperke_why-do-so-many-cold-email-gurus-focus-on-activity-7464676662106918912-YeAP) — abstract, no proof.
+8. **7L** — [AI for segmentation not copy](https://www.linkedin.com/posts/atishay-hyperke_cold-emailers-using-ai-to-write-their-emails-activity-7458153678252785664-rshh) — principle, no gate/number.
+9. **7L** — [SMB outbound teardown](https://www.linkedin.com/posts/atishay-hyperke_outbound-to-smbs-isnt-like-outbound-to-saas-activity-7413949451683205121-kbgj) — teardown promise, no payoff/gate.
+10. **8L** — [test lead-magnet titles first](https://www.linkedin.com/posts/atishay-hyperke_this-is-the-most-common-mistake-i-see-in-activity-7471562024599240704-dD-j) — meta-tip, no asset.
+
+### richard-illingworth
+**Why the top 10 won:** myth-in-quotes + reversal · borrowed authority (Hormozi, Claude Opus) · number-proof ("237 campaigns," "250k inboxes") · comment-keyword + connect gate; memes for reach.
+**Why the bottom 10 flopped:**
+1. **0L** — ["we send 500k/month"](https://www.linkedin.com/posts/richard-illingworth_we-send-500k-emails-per-month-heres-activity-7315340307674402817-bOJQ) — vague personal, no hook or payoff.
+2. **2L** — [emails feel like a barge-in](https://www.linkedin.com/posts/richard-illingworth_most-cold-emails-feel-like-a-brutal-barge-in-activity-7361652834024443904-4z3w) — dry principle, his low-median filler.
+3. **2L** — [5 follow-up mistakes](https://www.linkedin.com/posts/richard-illingworth_avoid-these-5-follow-up-mistakes-most-activity-7361773627446292480-zjJy) — generic listicle, no asset/gate.
+4. **2L** — [most advice is useless](https://www.linkedin.com/posts/richard-illingworth_most-cold-email-advice-is-useless-but-you-activity-7357357023409098752-6G2d) — vague hot-take, no specificity.
+5. **2L** — [competitor killed your deliverability](https://www.linkedin.com/posts/richard-illingworth_your-competitor-killed-your-campaigns-but-activity-7356722844757622785-hnoQ) — narrow infra principle.
+6. **3L** — [it's data, not infra](https://www.linkedin.com/posts/richard-illingworth_he-booked-a-call-to-cancel-activity-7475869971303075840-Arrk) — thin principle, off his own thesis.
+7. **3L** — [TOOLS Notion giveaway](https://www.linkedin.com/posts/richard-illingworth_when-it-comes-to-cold-email-tools-can-activity-7387457883468300288-kaZm) — a gated giveaway that still didn't land (weak hook).
+8. **3L** — [templates trigger ESP matching](https://www.linkedin.com/posts/richard-illingworth_perfect-tech-setup-but-still-hit-spam-because-activity-7357900608114237440-flY9) — dry deliverability principle.
+9. **4L** — [licensed vs random inboxes](https://www.linkedin.com/posts/richard-illingworth_icensed-workspace-inboxes-and-random-old-activity-7410651909595803648-RQmD) — deep-weeds infra, low interest.
+10. **4L** — [deliverability is positioning](https://www.linkedin.com/posts/richard-illingworth_heres-a-mindset-shift-that-helps-deliverability-activity-7410292057417728000-UcwM) — abstract mindset take.
+
+### nikita-maildoso
+**Why the top 10 won:** shameful-catch parenthetical + free-inbox giveaway + connect · crisis transparency · borrowed authority (Eric) · non-product personal stories.
+**Why the bottom 10 flopped:**
+1. **4L** — [2026 GTME tech stack claim](https://www.linkedin.com/posts/nikita-maildoso-2b6a6755_if-a-new-gtme-joined-my-team-tomorrow-this-activity-7465506188424773633-WzEI) — vague claim, no hook/asset.
+2. **8L** — [lead-gen live session promo](https://www.linkedin.com/posts/nikita-maildoso-2b6a6755_you-dont-want-to-miss-this-were-hosting-activity-7312591871975866368-A_Yj) — event promo, no takeaway.
+3. **10L** — [ABM live session](https://www.linkedin.com/posts/nikita-maildoso-2b6a6755_how-to-make-cold-outreach-feel-less-cold-activity-7327769261714653185-dlJ8) — event promo.
+4. **10L** — [cold-email setup live](https://www.linkedin.com/posts/nikita-maildoso-2b6a6755_this-is-why-most-cold-emails-dont-get-replies-activity-7320915911782113280-cj_Z) — event promo, no substance in-post.
+5. **11L** — [is SF overrated](https://www.linkedin.com/posts/nikita-maildoso-2b6a6755_five-years-ago-i-went-to-sf-for-a-conference-activity-7466138478683238400-z7ZQ) — off-topic personal, no business hook.
+6. **11L** — [turn HTML off](https://www.linkedin.com/posts/nikita-maildoso-2b6a6755_theres-a-toggle-in-your-sequencer-called-activity-7463552458598899712-d565) — dry deliverability tactic, no gate.
+7. **11L** — [Kipplo 2.1 demo](https://www.linkedin.com/posts/nikita-maildoso-2b6a6755_kipplo-21-demo-discover-all-the-new-features-activity-7394135350450921473-4tJ3) — bare product promo.
+8. **11L** — ["see you in a few minutes"](https://www.linkedin.com/posts/nikita-maildoso-2b6a6755_sales-ai-emailmarketing-activity-7353856071641235456-FDb-) — empty reminder post.
+9. **14L** — [avoid cheeky openers](https://www.linkedin.com/posts/nikita-maildoso-2b6a6755_sometimes-it-seems-like-a-good-idea-to-start-activity-7321172332096434176-PbwR) — generic principle.
+10. **15L** — [A/B/C/D/E/F + spintax](https://www.linkedin.com/posts/nikita-maildoso-2b6a6755_ab-testing-isnt-enough-in-my-opinion-activity-7460286502846078976-1KK8) — deep-weeds tactic, no gate.
+
+### aidan-collins
+**Why the top 10 won:** quoted-objection or exact-number hook + "(steal it free)" + comment-KEYWORD + connect. The gate *is* the engine.
+**Why the bottom 10 flopped (note: nearly ALL have NO comment-gate — proving his own thesis):**
+1. **2L** — [7 post types swipe file](https://www.linkedin.com/posts/aidan-collins-8a146530a_after-writing-3000-posts-for-b2b-founders-activity-7347968886312497153-TEvq) — low-key CTA, weak hook.
+2. **2L** — [posting = top 1%](https://www.linkedin.com/posts/aidan-collins-8a146530a_99-of-b2b-experts-and-people-on-planet-activity-7322261996786130945-9GZf) — generic principle, no magnet.
+3. **2L** — [LinkedIn growth isn't instant](https://www.linkedin.com/posts/aidan-collins-8a146530a_it-took-me-12-months-of-ghostwriting-3000-activity-7320816240787156993-mZys) — value-post, no gate.
+4. **2L** — [stop avoiding marketing tactics](https://www.linkedin.com/posts/aidan-collins-8a146530a_7-figure-ceos-complain-about-marketing-bros-activity-7320457608472023042-u-SZ) — opinion, no asset.
+5. **2L** — [S-Tier client framework](https://www.linkedin.com/posts/aidan-collins-8a146530a_i-just-had-an-s-tier-b2b-marketing-influencer-activity-7307449179474132992-j6Yi) — story-principle, no magnet.
+6. **3L** — [7-step call funnel](https://www.linkedin.com/posts/aidan-collins-8a146530a_this-7-step-funnel-has-made-my-clients-way-activity-7396213868391477248-8KC9) — announcement, weak/absent gate.
+7. **3L** — [psychological signaling](https://www.linkedin.com/posts/aidan-collins-8a146530a_after-booking-100s-of-sales-calls-spending-activity-7390502502606983168-PQCt) — principle, no asset.
+8. **3L** — [AI automation sucks on LinkedIn](https://www.linkedin.com/posts/aidan-collins-8a146530a_ai-automation-still-sucks-on-linkedinand-activity-7361452007615807490-6SEo) — opinion, no magnet.
+9. **3L** — [62-day content+DM system](https://www.linkedin.com/posts/aidan-collins-8a146530a_in-62-days-we-booked-14-calls-for-a-b2b-activity-7351226769108074498-4c8w) — case-study, weak hook/gate.
+10. **3L** — [client acquisition 101](https://www.linkedin.com/posts/aidan-collins-8a146530a_linkedin-client-acquisition-101-in-5-activity-7323345409643372544-N1bE) — listicle-principle, no magnet.
+
+### josh-braun
+**Why the top 10 won:** a non-business scene/confession hook → one-line sales principle; emotional parables (family, grievances); recyclable winners.
+**Why the bottom 10 flopped:**
+1. **1L** — [discount-request reframe](https://www.linkedin.com/posts/josh-braun_i-was-asked-to-discount-my-workshop-by-20-activity-7479149607168552960-dHC0) — very recent (low distribution) + dry tactic.
+2. **3L** — [replace "help" with "support"](https://www.linkedin.com/posts/josh-braun_i-dont-like-the-word-help-in-sales-help-activity-7479147557428948992-qSCL) — micro copy-tip, no story.
+3. **5L** — [knowledge-gap questions](https://www.linkedin.com/posts/josh-braun_ever-had-that-wait-is-there-a-better-way-activity-7304176817832116224-gQ4n) — dry framework, no parable.
+4. **6L** — [features vs benefits](https://www.linkedin.com/posts/josh-braun_never-confuse-features-and-benefits-again-activity-7473859281402875904-sf-M) — commodity copy-tip.
+5. **6L** — [pop-quiz on questions](https://www.linkedin.com/posts/josh-braun_pop-quiz-what-do-these-two-questions-have-activity-7364352976099893249-VZlp) — dry tactical listicle.
+6. **6L** — [live with Jason Hill](https://www.linkedin.com/posts/josh-braun_owwllapp-salestraining-joshbraun-activity-7358882487139205120-iMBV) — bare event promo.
+7. **7L** — [courses vs YouTube](https://www.linkedin.com/posts/josh-braun_courses-arent-that-different-from-youtube-activity-7417686430975463424-sIjz) — soft product promo.
+8. **8L** — [pause vs react muscle](https://www.linkedin.com/posts/josh-braun_heres-an-important-muscle-to-work-if-you-activity-7456355774362021889-zimK) — abstract mindset, no scene.
+9. **9L** — [change sales-call intent](https://www.linkedin.com/posts/josh-braun_feeling-anxious-on-sales-calls-change-your-activity-7479129160393805824-9J1P) — recent + dry principle.
+10. **9L** — [attention on the observer](https://www.linkedin.com/posts/josh-braun_right-now-is-your-attention-on-what-you-activity-7453534523331334144-_uin) — abstract mindfulness, off sales lane.
+
+### charles-tenot
+**Why the top 10 won:** a complete debatable claim in line 1 (credential-flex, big-number contrast, named-brand reaction) + mirrored "average vs great" lists + "Agree? Disagree?".
+**Why the bottom 10 flopped:**
+1. **12L** — [looking for next job](https://www.linkedin.com/posts/charlestenot_dear-network-after-6-amazing-years-at-aircall-activity-7323345751739162626-o_gS) — personal life-update, no worldview/value.
+2. **34L** — [track meeting time not MQLs](https://www.linkedin.com/posts/charlestenot_most-sales-teams-track-many-performance-metrics-activity-7287021886310346753-vxgy) — dry metrics take (his weak domain).
+3. **47L** — [Deliverability Hub launch](https://www.linkedin.com/posts/charlestenot_most-outbound-teams-find-out-about-deliverability-activity-7432762539802996736-yxYC) — product announcement, act=none, off his worldview lane.
+4. **47L** — [good vs bad investors](https://www.linkedin.com/posts/charlestenot_some-investors-cost-companies-millionswithout-activity-7300110464250724353-VCYs) — niche take, not audience-relevant.
+5. **47L** — [make the unshiny shiny](https://www.linkedin.com/posts/charlestenot_yesterday-openai-engineers-were-heroes-activity-7291063040974675968-GMKN) — abstract principle.
+6. **48L** — [Ramp/Perplexity GTM event](https://www.linkedin.com/posts/charlestenot_everyone-commenting-claude-to-get-a-magic-activity-7439650542567559168-idkc) — event promo.
+7. **48L** — [copying best practices harms](https://www.linkedin.com/posts/charlestenot_copying-best-practices-from-bigger-companies-activity-7299769309403176960-H4Ap) — generic principle, no hook.
+8. **50L** — [marketing = motivation](https://www.linkedin.com/posts/charlestenot_marketing-is-not-about-acquisition-it-is-activity-7417549617015410688-M5UG) — abstract theory.
+9. **51L** — [measure training impact](https://www.linkedin.com/posts/charlestenot_i-met-a-cro-last-week-with-45-people-in-his-activity-7449782763332734976-BWAu) — dry ops take.
+10. **52L** — [SaaS most at risk from AI](https://www.linkedin.com/posts/charlestenot_the-saas-companies-most-at-risk-from-ai-are-activity-7438201243610533888-DJyt) — analytical take without a debate-hook.
+
+**The lesson for Taha (from the flops):** the fastest way to *fail* is exactly what his account does now — post dry tactical tips or announcements with **no hook, no proof-number, and no comment-gate**, off a consistent lane. The winners are never the smartest post; they're the one with a **big-number/curiosity/contrarian hook + a real gated asset, on-lane**.

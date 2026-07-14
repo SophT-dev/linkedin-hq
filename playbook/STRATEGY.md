@@ -3,7 +3,10 @@
 **Owner:** Taha Anwar / Bleed AI · **Goal:** #1 cold-email + outbound-systems voice on LinkedIn · **Updated:** July 2026
 
 > 🏛️ **This is the CONSTITUTION — the single source of truth for positioning, pillars, contrarian takes, dual-brand, and the rules.** Everything decided (SMPV positioning, the canonical pillar set, the contrarian bank) lives here and nowhere else.
-> **Doc map (each references this, none duplicates it):** execution for the current month → [JULY-2026-STRATEGY.md](JULY-2026-STRATEGY.md) · the textbook (experts, algorithm, why) → [LINKEDIN-GROWTH-MASTERCLASS.md](LINKEDIN-GROWTH-MASTERCLASS.md) · corpus diagnosis + scoring → [WINNER-RATE-PLAYBOOK.md](WINNER-RATE-PLAYBOOK.md) · **per-competitor teardowns (all 12 scraped creators: top-10 posts, pillars, contrarian takes, what works/flops)** → [COMPETITORS-STRATEGY.md](COMPETITORS-STRATEGY.md) · tactical craft/formats → [PLAYBOOK.md](PLAYBOOK.md).
+> **Doc map (each references this, none duplicates it) — only 2 "strategy" docs now:**
+> **① this file = the CONSTITUTION** (why/who/positioning/pillars/contrarian bank/rules).
+> **② [STRATEGY-PROPOSAL.md](STRATEGY-PROPOSAL.md) = the Taha execution plan + CEO proposal** (audit, hooks, the commenting system, 14-day plan, daily routines — the doc that becomes the PDF sent to Taha).
+> Supporting references: the textbook (experts, algorithm, why) → [LINKEDIN-GROWTH-MASTERCLASS.md](LINKEDIN-GROWTH-MASTERCLASS.md) · corpus diagnosis + scoring → [WINNER-RATE-PLAYBOOK.md](WINNER-RATE-PLAYBOOK.md) · **per-competitor teardowns (all 12 scraped creators)** → [COMPETITORS-STRATEGY.md](COMPETITORS-STRATEGY.md) · tactical craft/formats → [PLAYBOOK.md](PLAYBOOK.md). *(JULY-2026-STRATEGY.md was retired 2026-07-14 — it duplicated the proposal.)*
 > Voice rules are owned only by [`.claude/skills/linkedin-batch/SKILL.md`](../.claude/skills/linkedin-batch/SKILL.md) — never duplicated here.
 
 > ⚠️ **Pricing paranoia:** anything customer-facing must match the **live** source — **calculator.bleedai.com** (trials + packages; no pay-per-lead, no free trials). Never quote pricing from repo code or an old banner. Confirm with Taha before any pricing-related post goes live.
@@ -60,6 +63,13 @@ Sub-segments: B2B agency owners (<20 people) who hit a referral ceiling · B2B S
 
 **⭐ Lead with #1–#5** (the stamped five). Rotate the rest. Headline banner-take that sits above the whole bank:
 > *"The cold email game isn't won by who writes the best email. It's won by who built the best **system** around the email."*
+
+### ✅ Validated by the 12-competitor teardown (2026-07-14 — see [COMPETITORS-STRATEGY.md](COMPETITORS-STRATEGY.md))
+Reverse-engineering every scraped creator's top-10 AND worst-10 posts confirmed this strategy hard:
+- **The comment-to-DM lead magnet ("comment KEYWORD + connect → DM the asset") is the #1 universal mechanic** — it drove 500–3,196 comments on the top posts of michel, kenny, sacha, nick, aidan, richard, atishay, nikita. **Put it on nearly every post.**
+- **Own ONE contrarian wedge and repeat it** — every winner does (richard=infra, atishay=relevance, nikita=SMTP, michel=data, nick=fundamentals). Ours = "signal over volume, systems over copy."
+- **The worst posts prove the anti-pattern (= exactly Taha's current habit):** dry tactical tips or promo/announcements with **no hook, no proof-number, and no comment-gate**, off a consistent lane. Avoid all four.
+- **Highest ceilings right now = build-in-public AI/Claude-Code systems** (kenny, sacha, outboundphd, michel). This is Pillar 1 and it's genuinely Taha's.
 
 ### Why this wins
 | Competitors sell | You sell |

@@ -142,6 +142,14 @@ const DOCS = [
     cover: { title: 'The LinkedIn Growth Masterclass', subtitle: 'From zero to expert — a lesson-by-lesson curriculum built from deep research on Lara Acosta, Pierre Herubel, Adam Robinson, Justin Welsh, Jasmin Alić, Ruben Hassid, Matt Gray, the 2025/26 algorithm science (360Brew, van der Blom, AuthoredUp), and a 6,642-post corpus.', kicker: 'Bleed AI · Growth Playbook', meta: 'Living document — regenerated from playbook/LINKEDIN-GROWTH-MASTERCLASS.md; the same Drive link updates in place.' },
     footer: 'LinkedIn Growth Masterclass — Bleed AI',
   },
+  {
+    md: path.join(ROOT, 'playbook', 'COMPETITORS-STRATEGY.md'),
+    out: path.join(ROOT, 'playbook', 'Competitor-Strategy-Teardown.pdf'),
+    driveName: 'Competitor Strategy — 12-Creator Teardown.pdf',
+    state: path.join(__dirname, '.drive-competitors.json'),
+    cover: { title: 'Competitor Strategy — the 12-Creator Teardown', subtitle: 'Full reverse-engineering of every top cold-email / outbound creator we scraped: end-to-end strategy, top-10 AND worst-10 posts (with links + the why of each), content pillars, contrarian takes, what works, what flops, and what to steal for Taha.', kicker: 'Bleed AI · Competitor Intelligence', meta: 'Built from a 6,642-post corpus via 12 research agents. Living document — regenerated from playbook/COMPETITORS-STRATEGY.md; the same Drive link updates in place.' },
+    footer: 'Competitor Strategy Teardown — Bleed AI',
+  },
 ];
 
 async function main() {

@@ -8,6 +8,8 @@ This is not a talent problem or a content problem. It is a **consistency + distr
 
 > **The one-line bet:** Off → 4 posts/week + ~130 comments + ~130 connections over 14 days. Prove the engine repeats, then pour fuel on a fire that's already lit.
 
+**Validated against every competitor.** We reverse-engineered the top-10 *and* worst-10 posts of all 12 top cold-email/outbound creators we track (see the companion *Competitor Strategy Teardown*). Three findings underwrite this plan: (1) the **comment-to-DM lead magnet** ("comment KEYWORD + connect → DM the asset") is the single universal growth mechanic — it drove **500–3,196 comments** on the winners; (2) every winner **owns one contrarian wedge** and repeats it (ours: *signal over volume, systems over copy*); and (3) the losers' worst posts are *exactly Taha's current habit* — dry tips or announcements with **no hook, no proof-number, no comment-gate**, off a consistent lane. This plan does the opposite of the flops and the same as the winners.
+
 ---
 
 ## 1. Where we are now (the honest baseline)
