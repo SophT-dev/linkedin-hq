@@ -84,6 +84,80 @@ export async function getConfig(): Promise<Record<string, string>> {
 }
 
 // ============================================================
+// ProfileStats tab — live LinkedIn profile snapshot pushed by the browser
+// extension (Phase 1 of the live-data sync — see docs/LIVE-LINKEDIN-DATA-
+// RESEARCH.md). Append-only: one row per sync, so we also get a free growth
+// time-series that manual entry never captured.
+// ============================================================
+
+const PROFILE_STATS_TAB = "ProfileStats";
+const PROFILE_STATS_HEADER = ["captured_at", "followers", "connections", "profile_views_90d", "search_appearances", "source"];
+
+// Create a tab (with a header row) if it doesn't exist yet. Idempotent.
+export async function ensureSheet(tab: string, header: string[]) {
+  const auth = getAuth();
+  const sheets = google.sheets({ version: "v4", auth });
+  const meta = await sheets.spreadsheets.get({ spreadsheetId: SHEET_ID });
+  const exists = (meta.data.sheets || []).some((s) => s.properties?.title === tab);
+  if (exists) return;
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId: SHEET_ID,
+    requestBody: { requests: [{ addSheet: { properties: { title: tab } } }] },
+  });
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: SHEET_ID,
+    range: `${tab}!A1`,
+    valueInputOption: "RAW",
+    requestBody: { values: [header] },
+  });
+}
+
+export async function saveProfileStats(row: {
+  followers?: number | string;
+  connections?: number | string;
+  profile_views_90d?: number | string;
+  search_appearances?: number | string;
+  source?: string;
+}) {
+  await ensureSheet(PROFILE_STATS_TAB, PROFILE_STATS_HEADER);
+  await appendRow(PROFILE_STATS_TAB, [
+    karachiIso(new Date()),
+    row.followers ?? "",
+    row.connections ?? "",
+    row.profile_views_90d ?? "",
+    row.search_appearances ?? "",
+    row.source ?? "extension",
+  ]);
+}
+
+export interface ProfileStatsRow {
+  captured_at: string;
+  followers: string;
+  connections: string;
+  profile_views_90d: string;
+  search_appearances: string;
+}
+
+export async function loadLatestProfileStats(): Promise<ProfileStatsRow | null> {
+  let rows: string[][];
+  try {
+    rows = await readSheet(PROFILE_STATS_TAB, "A:F");
+  } catch {
+    return null; // tab doesn't exist yet
+  }
+  const data = rows.slice(1).filter((r) => r[0]);
+  if (!data.length) return null;
+  const r = data[data.length - 1];
+  return {
+    captured_at: r[0] || "",
+    followers: r[1] || "",
+    connections: r[2] || "",
+    profile_views_90d: r[3] || "",
+    search_appearances: r[4] || "",
+  };
+}
+
+// ============================================================
 // DailyReports tab — the Daily TLDR archive. Revamped 2026-07-08 (Sophiya:
 // the old one-blob-per-day shape was "messy and unstructured") from
 // `date | generated_at | report_md` to one row per digest item, matching

@@ -97,17 +97,27 @@ export default function DashboardPage() {
   const [acctPosts, setAcctPosts] = useState<AccountPost[] | null>(null);
   useEffect(() => { fetchAccountPosts().then(setAcctPosts); }, []);
 
+  // Live follower count synced by the browser extension (falls back to the
+  // manual lib/profile.ts snapshot until the first sync lands).
+  const [liveFollowers, setLiveFollowers] = useState<string | null>(null);
+  useEffect(() => {
+    fetch("/api/linkedin/sync")
+      .then((r) => r.json())
+      .then((d) => { if (d?.stats?.followers) setLiveFollowers(Number(d.stats.followers).toLocaleString()); })
+      .catch(() => {});
+  }, []);
+
   const profileStats: StatCard[] | null = useMemo(() => {
     if (!acctPosts) return null;
     const posts = originalPosts(acctPosts, "Taha");
     const t = totals(posts);
     return [
-      { label: "Followers", value: tahaProfile.followers, deltaPct: null, spark: [], icon: Users, tint: "var(--cat-1)", hideTrend: true, subtitle: "Total on LinkedIn" },
+      { label: "Followers", value: liveFollowers ?? tahaProfile.followers, deltaPct: null, spark: [], icon: Users, tint: "var(--cat-1)", hideTrend: true, subtitle: liveFollowers ? "Live · on LinkedIn" : "Total on LinkedIn" },
       { label: "Reactions", value: t.reactions.toLocaleString(), deltaPct: metricTrend(posts, "reactions").deltaPct, spark: sparkline(posts, "reactions"), icon: Heart, tint: "var(--viz-2)" },
       { label: "Comments", value: t.comments.toLocaleString(), deltaPct: metricTrend(posts, "comments").deltaPct, spark: sparkline(posts, "comments"), icon: MessageCircle, tint: "var(--primary)" },
       { label: "Avg engagement", value: t.avgEng.toLocaleString(), deltaPct: engagementTrend(posts), spark: posts.map((p) => p.reactions + p.comments).slice(-16), icon: TrendingUp, tint: "var(--cat-4)" },
     ];
-  }, [acctPosts]);
+  }, [acctPosts, liveFollowers]);
 
   // --- Post Ideas ------------------------------------------------------
   const [unusedIdeas, setUnusedIdeas] = useState<PostIdea[] | null>(null);
