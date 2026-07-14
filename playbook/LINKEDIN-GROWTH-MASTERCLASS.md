@@ -254,6 +254,44 @@ AuthoredUp, 3M+ posts (Mar 2025–Feb 2026), reach multiplier vs. average:
 longer (3+ min) beats ultra-short. **On carousels:** Lara says they're past their prime for small
 accounts, the data says they win *only* at scale — both true. **Match format to your follower count.**
 
+### Lesson 7b — The viral content system (Matt Gray, 846K followers, 59M views/month)
+
+Matt Gray grew to **846K followers in 36 months** (up to **102K/month**) and **59M organic views/month**
+with zero ads. His system is three parts: **profitable profile** (Lesson 10) · **engagement machine**
+(Lesson 8b) · **content system** (here).
+
+**The hook is your first 3 lines** — if you don't stop the scroll there, you've lost them. His pattern:
+1. **Line 1 = curiosity** — *"I just read a study I can't stop thinking about."*
+2. **Line 2 = action + identity + data** — *"Introverts are more effective leaders, according to
+   Harvard."* (calls out a specific group, cites data → instant reaction).
+3. **Line 3 = immediate, contagious value** — a claim people *must* agree or disagree with, and that
+   they'll share.
+
+**His 4 post types** (rotate them):
+- **Behind-the-scenes** — real stories from your journey (trials, wins, obstacles). Uses the words
+  *I, I've, when, if.* Proves there's a human, not AI, behind it.
+- **Value-packed images** — see below.
+- **Deep-work systems** — go deep on the *what* and the *how*; people follow for the details, so give them.
+- **Personal stories** — *"your story is your competitive advantage."* Vulnerability is the superpower,
+  and it gets you out of LinkedIn's "cringe" zone.
+
+**Value-packed images are "algorithm juice."** A dense, valuable image acts like a YouTube thumbnail
+for the post — one where Matt hand-wrote/visualized the whole post into an image pulled **24M views**
+(people literally printed it). Reinforces Lesson 7: **the visual is the reach lever.**
+
+**The 9 viral elements (condensed):** personal stories · proven systems · value-bombing (maximize
+*value-per-second* — would a reader Slack this to their team?) · keep it **tasteful** (design/taste is
+a competitive edge on a cringey platform) · and the **5 power words in hooks: when · what · I · I've ·
+how** (they force depth and a personal angle).
+
+**CTA science (stacked):** ask for the **repost** (top reach signal), ask for the **follow**, and offer
+a **lead magnet tightly coupled to that post's topic** ("want my deep-work checklist?"). Coupling the
+magnet to the subject is what lifts click-through and lead volume.
+
+**Be a student of the game.** Every **30 days**, review your **top 10% of posts** *and* scan other top
+creators' winners; double down on the patterns. Compounding math: **10% better each post = ~18,000×
+better by post 100.** Velocity of learning is the leading indicator of growth.
+
 ---
 
 # MODULE 4 — Distribution (getting seen)
@@ -371,6 +409,34 @@ you're about. A well-optimized profile converts **~40–60%** of visitors to fol
 - **Newsletter:** subscribers get notified every issue — durable distribution outside the decaying feed.
 - **Personalize every connection request** (Lara): reference their specific content + a relevant
   overlap + a subtle ego-boost. Generic requests get ignored.
+
+### Lesson 10b — The profile is a landing page (and it never closes)
+
+Reframe: **LinkedIn is a sales tool, not social media.** Your profile is a storefront open 24/7, and
+a stranger's brain lands on it hunting for reasons to *disqualify* you. A weaponized profile answers
+their **two objections before they're asked: (1) "Can they help ME specifically?" (2) "Are they
+actually good?"** (One simple profile of this kind reportedly drives $400K/month with no ads or cold
+outreach — the profile does the selling.)
+
+- **Headline (4 jobs): target · objection · positioning · offer.** Lead with the *transformation*, not
+  a job title (see the premium-positioning formula in Lesson 1).
+- **About section — write it like a sales page, not a bio:** hook → *their* problem → their dream
+  outcome → your authority/proof → a CTA that sends them **off-platform** (newsletter, lead magnet).
+  Write in second person about *them*, not third person about yourself.
+- **Banner:** one clear outcome / value prop + **client or brand logos** for instant social proof.
+- **One-liner that owns your word (Matt Gray):** e.g. *"systems I use to grow faster"* — memorable,
+  and it brands your keyword.
+- **Featured section = a product shelf (Amazon/Apple model).** Don't just pin your best post. Build a
+  **3-tier ladder** the visitor can self-select into:
+  - **Tier 1 — low friction, $0–100:** newsletter, lead magnet, free template/checklist.
+  - **Tier 2 — mid, $500–2,000:** a consult, workshop, or small-scope done-for-you.
+  - **Tier 3 — high, $5,000–20,000+:** retainer, mastermind, coaching, full done-for-you.
+  All tiers point into one ecosystem, so it's easy to upgrade someone from free → paid. **Clean,
+  benefit-driven, clickable thumbnails — no paragraphs under the links** (extra clicks kill it; let the
+  thumbnail sell, like a YouTube thumbnail).
+- **Why fix the profile first (Lara's team):** *"you don't have a content problem, you have a
+  positioning problem."* Fix positioning and your content focus falls out of it automatically. Pick
+  **one** section and fix it today — don't try to do all of it at once.
 
 ---
 
@@ -520,5 +586,11 @@ so the audience pays for itself.
 - **Justin Welsh** — LinkedIn/Content OS, hub-and-spoke, Trailer/Meat/CTC, master one platform.
 - **Jasmin Alić** — hook+rehook, comment 20–30/day, one-line hooks, specificity.
 - **Ruben Hassid** — 55-char hook rule, 5 hook types, AI co-pilot.
+- **Matt Gray** (Founder OS) — profitable-profile / engagement-machine / content-system, own-a-word,
+  4 post types, hook-in-3-lines, CTA science, 30+ engagers in 45 min, student-of-the-game.
+- **Casey Brown** — the commenting-to-$1.2M system (peer-not-fan, coffee-shop test, 5–15 not 50).
+- **Commenting-system + profile-teardown video transcripts** (2026-07-13/14) — the Power List, the
+  4 comment types, the 15-min daily block, comment→lead (Trigify→enrich→HeyReach), and the
+  profile-as-landing-page / product-shelf featured section (Lara Acosta's team).
 - **Algorithm science** — van der Blom (1.8M posts), AuthoredUp (3M format / 372K length), LinkedIn 360Brew papers.
 - **Our corpus** — 6,642 tagged cold-email posts (`WINNER-RATE-PLAYBOOK.md` §3).
