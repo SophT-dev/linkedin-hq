@@ -175,17 +175,15 @@ export async function saveMyComments(
   await ensureSheet(MY_COMMENTS_TAB, MY_COMMENTS_HEADER);
 
   const existing = await readSheet(MY_COMMENTS_TAB, "A:D");
-  // Rows already stored WITHOUT comment text (col D empty) can be upgraded once
-  // we now have the text — so only treat a url as "seen" if it already has text.
-  const seenWithText = new Set(existing.slice(1).filter((r) => r[1] && r[3]).map((r) => r[1]));
+  const seen = new Set(existing.slice(1).map((r) => r[1]).filter(Boolean));
 
   const now = Date.now();
   const auth = getAuth();
   const sheets = google.sheets({ version: "v4", auth });
   const toAppend: (string | number)[][] = [];
   for (const it of clean) {
-    if (seenWithText.has(it.url)) continue;
-    seenWithText.add(it.url);
+    if (seen.has(it.url)) continue;
+    seen.add(it.url);
     const mins = typeof it.minutesAgo === "number" && it.minutesAgo >= 0 ? it.minutesAgo : 0;
     toAppend.push([karachiIso(new Date(now - mins * 60_000)), it.url, it.author || "", (it.text || "").slice(0, 2000)]);
   }

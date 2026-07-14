@@ -15,6 +15,23 @@
   const seen = new Set();
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+  // Your own profile slug (from the URL) + display name — used to SKIP your own
+  // posts, so comments/replies on your own content aren't counted as outreach.
+  const OWN_SLUG = (location.pathname.match(/\/in\/([^/]+)/) || [])[1] || "";
+  const OWN_NAME = (document.querySelector("h1")?.innerText || "").trim().toLowerCase();
+
+  function isOwnPost(container, author) {
+    // 1) the post author's profile link points at your own profile
+    const link = container.querySelector(
+      '.update-components-actor__meta a[href*="/in/"], .update-components-actor__container a[href*="/in/"], a.update-components-actor__meta-link[href*="/in/"]'
+    );
+    const href = link?.getAttribute("href") || "";
+    if (OWN_SLUG && href.includes("/in/" + OWN_SLUG)) return true;
+    // 2) fallback: post author's display name matches the profile owner
+    if (OWN_NAME && author && author.toLowerCase() === OWN_NAME) return true;
+    return false;
+  }
+
   function relToMinutes(txt) {
     const m = (txt || "").match(/(\d+)\s*(mo|min|m|h|hr|hour|d|day|w|week|yr|y)/i);
     if (!m) return 0;
@@ -46,6 +63,7 @@
 
   function harvest() {
     const items = [];
+    let ownSkipped = 0;
     document.querySelectorAll('[data-urn*="urn:li:activity"]').forEach((el) => {
       const urn = el.getAttribute("data-urn");
       if (!urn || !urn.includes("activity")) return;
@@ -53,11 +71,13 @@
       if (seen.has(url)) return;
       const container = el.closest('[role="listitem"]') || el;
       const author = (container.querySelector(".update-components-actor__title, .update-components-actor__name")?.innerText || "").split("\n")[0].trim().slice(0, 80);
+      if (isOwnPost(container, author)) { seen.add(url); ownSkipped++; return; } // your own post — not outreach
       const sub = container.querySelector(".update-components-actor__sub-description")?.innerText || "";
       const text = myCommentText(container);
       seen.add(url);
       items.push({ url, author, minutesAgo: relToMinutes(sub), text });
     });
+    if (ownSkipped) log(`skipped ${ownSkipped} of your own post(s)`);
     if (!items.length) return;
     log(`found ${items.length} new (total ${seen.size}). sample text:`, items[0].text ? `"${items[0].text.slice(0, 60)}…"` : "(no text found — selectors may need tuning)");
     chrome.runtime.sendMessage({ type: "BLEED_CMTS", items }, (resp) => {
