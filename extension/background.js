@@ -34,6 +34,18 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     return true; // async response
   }
 
+  // Prime the skip-list: activity.js asks for the post URLs already saved so it
+  // doesn't re-scrape/re-send them (server also dedups on write — belt & braces).
+  if (msg && msg.type === "BLEED_CMTS_KNOWN") {
+    fetch(`${CONFIG.API_BASE}/api/linkedin/comments-activity`, { method: "GET" })
+      .then(async (r) => {
+        const data = await r.json().catch(() => null);
+        sendResponse({ ok: r.ok, urls: (data && data.urls) || [] });
+      })
+      .catch((e) => sendResponse({ ok: false, urls: [], error: String((e && e.message) || e) }));
+    return true;
+  }
+
   // Your own comments harvested by activity.js → MyComments tab.
   if (msg && msg.type === "BLEED_CMTS") {
     const headers = { "Content-Type": "application/json" };

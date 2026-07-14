@@ -12,10 +12,12 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const { dates } = await loadMyComments();
-    return NextResponse.json({ ok: true, dates });
+    const { dates, urls } = await loadMyComments();
+    // `urls` lets the extension skip re-sending comments already saved (dedup is
+    // also enforced on POST, so this is an efficiency layer, not the guarantee).
+    return NextResponse.json({ ok: true, dates, urls: Array.from(urls) });
   } catch (e) {
-    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : String(e), dates: [] }, { status: 500 });
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : String(e), dates: [], urls: [] }, { status: 500 });
   }
 }
 

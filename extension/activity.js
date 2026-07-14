@@ -10,10 +10,29 @@
   "use strict";
   if (!/\/recent-activity\/comments/i.test(location.pathname)) return;
 
-  const TARGET = 100;
+  const TARGET = 100;   // stop after this many NEW (not-yet-saved) comments
+  const MAX_SCAN = 400; // hard safety cap on total posts scanned in one run
   const log = (...a) => console.log("[BleedCmts]", ...a);
-  const seen = new Set();
+  const seen = new Set();   // every post url processed this run (own + known + new)
+  const known = new Set();  // post urls already saved to the sheet — skip, don't resend
+  let newCount = 0;         // genuinely new comments sent this run
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  // Ask linkedin-hq which comments are already saved, so we neither re-send them
+  // nor waste time scrolling past them. (POST also dedups — this is just faster.)
+  function primeKnown() {
+    return new Promise((resolve) => {
+      let done = false;
+      const finish = () => { if (!done) { done = true; resolve(); } };
+      setTimeout(finish, 4000); // don't block the run if the app is unreachable
+      chrome.runtime.sendMessage({ type: "BLEED_CMTS_KNOWN" }, (resp) => {
+        if (chrome.runtime.lastError) return finish();
+        (resp && resp.urls || []).forEach((u) => known.add(u));
+        if (known.size) log(`${known.size} comment(s) already saved — will skip those.`);
+        finish();
+      });
+    });
+  }
 
   // Your own profile slug (from the URL) + display name — used to SKIP your own
   // posts, so comments/replies on your own content aren't counted as outreach.
@@ -63,23 +82,26 @@
 
   function harvest() {
     const items = [];
-    let ownSkipped = 0;
+    let ownSkipped = 0, alreadySaved = 0;
     document.querySelectorAll('[data-urn*="urn:li:activity"]').forEach((el) => {
       const urn = el.getAttribute("data-urn");
       if (!urn || !urn.includes("activity")) return;
       const url = `https://www.linkedin.com/feed/update/${urn}`;
-      if (seen.has(url)) return;
+      if (seen.has(url)) return;           // processed this run already
+      seen.add(url);
+      if (known.has(url)) { alreadySaved++; return; } // already in the sheet — skip
       const container = el.closest('[role="listitem"]') || el;
       const author = (container.querySelector(".update-components-actor__title, .update-components-actor__name")?.innerText || "").split("\n")[0].trim().slice(0, 80);
-      if (isOwnPost(container, author)) { seen.add(url); ownSkipped++; return; } // your own post — not outreach
+      if (isOwnPost(container, author)) { ownSkipped++; return; } // your own post — not outreach
       const sub = container.querySelector(".update-components-actor__sub-description")?.innerText || "";
       const text = myCommentText(container);
-      seen.add(url);
       items.push({ url, author, minutesAgo: relToMinutes(sub), text });
     });
     if (ownSkipped) log(`skipped ${ownSkipped} of your own post(s)`);
+    if (alreadySaved) log(`skipped ${alreadySaved} already-saved comment(s)`);
     if (!items.length) return;
-    log(`found ${items.length} new (total ${seen.size}). sample text:`, items[0].text ? `"${items[0].text.slice(0, 60)}…"` : "(no text found — selectors may need tuning)");
+    newCount += items.length;
+    log(`found ${items.length} NEW (${newCount} this run). sample text:`, items[0].text ? `"${items[0].text.slice(0, 60)}…"` : "(no text found — selectors may need tuning)");
     chrome.runtime.sendMessage({ type: "BLEED_CMTS", items }, (resp) => {
       if (chrome.runtime.lastError) log("send failed:", chrome.runtime.lastError.message);
       else log("recorded:", resp && resp.body);
@@ -100,12 +122,15 @@
   // based on "no NEW comments appeared" — not page height, which lags behind the
   // lazy-load and used to make us quit early (that's why you only got ~32).
   async function autoLoad() {
+    await primeKnown();
     await sleep(2500);
     harvest();
     let stagnant = 0;
-    // Up to 120 scrolls, and be patient: only give up after 6 straight passes
-    // with zero new comments (≈15s of nothing), and always try "Show more" first.
-    for (let i = 0; i < 120 && seen.size < TARGET; i++) {
+    // Be patient: give up only after 6 straight passes that surface zero new
+    // POSTS (≈15s of nothing) — page height lags the lazy-load, so we watch the
+    // scanned-set instead. Stop once we've collected TARGET new comments or hit
+    // the scan cap. Always try a "Show more" button first.
+    for (let i = 0; i < 120 && newCount < TARGET && seen.size < MAX_SCAN; i++) {
       const before = seen.size;
       window.scrollTo(0, document.body.scrollHeight);
       const clicked = clickShowMore();
@@ -117,7 +142,7 @@
       window.scrollTo(0, document.body.scrollHeight);
       if (seen.size === before) { if (++stagnant >= 6) break; } else stagnant = 0;
     }
-    log(`auto-load done — ${seen.size} post(s) scanned (own posts skipped, rest sent). Scroll up to read normally.`);
+    log(`auto-load done — ${newCount} new comment(s) sent, ${seen.size} post(s) scanned (own + already-saved skipped). Scroll up to read normally.`);
   }
 
   autoLoad();
