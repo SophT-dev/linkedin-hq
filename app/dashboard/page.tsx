@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import Link from "next/link";
 import {
-  LayoutDashboard,
   Lightbulb,
   RefreshCw,
   Users,
@@ -12,11 +11,16 @@ import {
   BarChart3,
   Heart,
   MessageCircle,
+  Repeat2,
+  TrendingUp,
   Trophy,
   Meh,
   Frown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ProfileHeader from "@/components/ProfileHeader";
+import StatCards, { type StatCard } from "@/components/analytics/StatCards";
+import { fetchAccountPosts, originalPosts, totals, metricTrend, sparkline, type AccountPost } from "@/lib/analytics";
 
 // ---------------------------------------------------------------------------
 // Types (mirrors the exact tab column orders documented in CLAUDE.md)
@@ -101,6 +105,22 @@ export default function DashboardPage() {
     toastTimer.current = setTimeout(() => setToast(null), 3000);
   }, []);
 
+  // --- Profile stats (Taha's own account posts) --------------------------
+  const [acctPosts, setAcctPosts] = useState<AccountPost[] | null>(null);
+  useEffect(() => { fetchAccountPosts().then(setAcctPosts); }, []);
+
+  const profileStats: StatCard[] | null = useMemo(() => {
+    if (!acctPosts) return null;
+    const posts = originalPosts(acctPosts, "Taha");
+    const t = totals(posts);
+    return [
+      { label: "Reactions", value: t.reactions.toLocaleString(), deltaPct: metricTrend(posts, "reactions").deltaPct, spark: sparkline(posts, "reactions"), icon: Heart, tint: "var(--viz-2)" },
+      { label: "Comments", value: t.comments.toLocaleString(), deltaPct: metricTrend(posts, "comments").deltaPct, spark: sparkline(posts, "comments"), icon: MessageCircle, tint: "var(--primary)" },
+      { label: "Reposts", value: t.reposts.toLocaleString(), deltaPct: metricTrend(posts, "reposts").deltaPct, spark: sparkline(posts, "reposts"), icon: Repeat2, tint: "var(--cat-1)" },
+      { label: "Avg engagement", value: t.avgEng.toLocaleString(), deltaPct: metricTrend(posts, "reactions").deltaPct, spark: posts.map((p) => p.reactions + p.comments).slice(-16), icon: TrendingUp, tint: "var(--cat-4)" },
+    ];
+  }, [acctPosts]);
+
   // --- Post Ideas ------------------------------------------------------
   const [unusedIdeas, setUnusedIdeas] = useState<PostIdea[] | null>(null);
   const [shownIdeas, setShownIdeas] = useState<PostIdea[]>([]);
@@ -175,12 +195,29 @@ export default function DashboardPage() {
   const flops = trackedPosts?.filter((p) => p.worked?.toLowerCase() === "flop").length ?? 0;
 
   return (
-    <div className="max-w-lg lg:max-w-5xl mx-auto px-4 py-6 space-y-6">
-      <div>
-        <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Overview</p>
-        <h1 className="text-xl font-bold flex items-center gap-2">
-          <LayoutDashboard size={20} className="text-indigo-400" /> Dashboard
-        </h1>
+    <div className="max-w-lg lg:max-w-5xl mx-auto px-4 lg:px-6 py-6 space-y-6">
+      {/* Live profile snapshot + greeting */}
+      <ProfileHeader />
+
+      {/* Profile stats — near the top */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold flex items-center gap-2">
+            <BarChart3 size={16} className="text-[var(--primary)]" /> Profile stats
+          </h2>
+          <Link href="/analytics" className="text-xs font-medium text-[var(--primary)] hover:underline">
+            Full analytics →
+          </Link>
+        </div>
+        {profileStats === null ? (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="rounded-2xl border bg-card border-border shadow-sm h-[132px] animate-pulse" style={{ background: "var(--surface-pulse)" }} />
+            ))}
+          </div>
+        ) : (
+          <StatCards cards={profileStats} />
+        )}
       </div>
 
       {/* 1. Post ideas for you */}

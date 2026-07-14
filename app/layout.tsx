@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import { Inter, Instrument_Serif, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import Sidebar from "@/components/Sidebar";
 import AppShell from "@/components/AppShell";
 import "./globals.css";
@@ -23,6 +23,14 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains-mono",
   weight: ["400", "500", "600"],
+});
+// Plus Jakarta Sans — the internal LinkedIn-app UI font (2026-07-14, Sophiya's
+// pick). Scoped to .app-shell in globals.css so ONLY the internal tool pages use
+// it; the public lead-magnet landing page stays on Inter (BRAND.md brand font).
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta",
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -49,7 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   // (Sidebar.tsx, lg+ only) for switching between Calendar/Lead Magnets/Post
   // Ideas. Below lg it degrades to just the page content, same as before.
   return (
-    <html lang="en" className={`${inter.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={`${inter.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} ${jakarta.variable}`}>
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />

@@ -109,38 +109,46 @@
    values untouched, while every internal route gets the new palette via
    normal CSS variable cascade. */
 .app-shell {
-  --background: oklch(0.985 0.003 250);
+  /* Neutral near-white app background (2026-07-14) — was oklch(0.985 0.003 250),
+     a cool tint; the warm/red tinge Sophiya saw came from :root's --background
+     (hue 25) showing through because <body> lives OUTSIDE .app-shell and this
+     scope never painted its own bg. Fixed by (a) neutralising --background to a
+     pure light-grey and (b) painting it + full-height below so :root never
+     bleeds through on internal routes. Cards stay pure white (--surface-1 / --card). */
+  --background: oklch(0.985 0 0);
   --foreground: oklch(0.22 0.015 260);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.22 0.015 260);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.22 0.015 260);
-  --primary: oklch(0.58 0.16 258);
+  /* Azure-blue accent (2026-07-14, Sophiya's pick from the Content Board ref —
+     ~#2E9BEE). Hue 245, internal-app only. Violet stays as a secondary pop. */
+  --primary: oklch(0.62 0.17 245);
   --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.95 0.006 250);
+  --secondary: oklch(0.95 0.008 245);
   --secondary-foreground: oklch(0.22 0.015 260);
   --muted: oklch(0.96 0.005 250);
   --muted-foreground: oklch(0.52 0.02 260);
-  --accent: oklch(0.94 0.03 300);
-  --accent-foreground: oklch(0.30 0.05 300);
+  --accent: oklch(0.95 0.035 245);
+  --accent-foreground: oklch(0.42 0.13 245);
   --destructive: oklch(0.62 0.19 25);
   --border: oklch(0.90 0.006 250);
   --input: oklch(0.90 0.006 250);
-  --ring: oklch(0.58 0.16 258 / 50%);
-  --chart-1: oklch(0.58 0.16 258);
-  --chart-2: oklch(0.66 0.14 300);
+  --ring: oklch(0.62 0.17 245 / 50%);
+  --chart-1: oklch(0.62 0.17 245);
+  --chart-2: oklch(0.60 0.20 292);
   --chart-3: oklch(0.72 0.14 340);
-  --chart-4: oklch(0.70 0.12 200);
-  --chart-5: oklch(0.75 0.10 150);
+  --chart-4: oklch(0.70 0.13 200);
+  --chart-5: oklch(0.68 0.16 150);
   --radius: 1.25rem;
   --sidebar: oklch(0.99 0.002 250);
   --sidebar-foreground: oklch(0.22 0.015 260);
-  --sidebar-primary: oklch(0.58 0.16 258);
+  --sidebar-primary: oklch(0.62 0.17 245);
   --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.92 0.035 258);
-  --sidebar-accent-foreground: oklch(0.35 0.10 258);
+  --sidebar-accent: oklch(0.93 0.045 245);
+  --sidebar-accent-foreground: oklch(0.44 0.14 245);
   --sidebar-border: oklch(0.92 0.006 250);
-  --sidebar-ring: oklch(0.58 0.16 258 / 50%);
+  --sidebar-ring: oklch(0.62 0.17 245 / 50%);
   --surface-1: oklch(1 0 0);
   --surface-2: oklch(0.97 0.004 250);
   --surface-3: oklch(0.99 0.002 250);
@@ -148,8 +156,36 @@
   --surface-pulse: oklch(0.93 0.006 250);
   --nav-bg: oklch(0.99 0.002 250 / 97%);
   --border-subtle: oklch(0.85 0.01 250 / 40%);
-  --border-accent: oklch(0.58 0.16 258 / 25%);
-  --color-accent: oklch(0.58 0.16 258);
+  --border-accent: oklch(0.62 0.17 245 / 25%);
+  --color-accent: oklch(0.62 0.17 245);
+
+  /* Analytics data-viz palette (2026-07-14) — azure-blue primary ramp (matches
+     the app accent) with violet as the secondary series, plus a categorical set
+     for the post-type donut. Referenced via var() in components, never hardcoded. */
+  --viz: oklch(0.62 0.17 245);
+  --viz-strong: oklch(0.52 0.19 245);
+  --viz-soft: oklch(0.62 0.17 245 / 0.14);
+  --viz-line: oklch(0.60 0.18 245);
+  --viz-2: oklch(0.60 0.20 292);        /* violet secondary series */
+  --heat-0: oklch(0.925 0.004 260);
+  --heat-1: oklch(0.86 0.07 245);
+  --heat-2: oklch(0.75 0.13 245);
+  --heat-3: oklch(0.64 0.17 245);
+  --heat-4: oklch(0.53 0.19 245);
+  --cat-1: oklch(0.68 0.16 150);   /* green  */
+  --cat-2: oklch(0.62 0.17 245);   /* blue   */
+  --cat-3: oklch(0.60 0.20 292);   /* violet */
+  --cat-4: oklch(0.75 0.15 60);    /* amber  */
+  --trend-up: oklch(0.60 0.15 150);
+  --trend-down: oklch(0.63 0.19 25);
+
+  /* Internal LinkedIn-app UI font (Sophiya's pick). Public lead-magnet page keeps
+     Inter (it has no .app-shell wrapper), so brand pages stay BRAND.md-compliant. */
+  font-family: var(--font-jakarta), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Paint the internal app background so :root's warm bg can't bleed through. */
+  background: var(--background);
+  min-height: 100dvh;
 }
 
 .font-serif-accent {
