@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { BadgeCheck, ExternalLink } from "lucide-react";
+import { BadgeCheck, ExternalLink, Users, UserPlus } from "lucide-react";
 import { tahaProfile as p } from "@/lib/profile";
 
 // Compact live snapshot of Taha's LinkedIn profile — a glance-bar, not a hero.
@@ -34,6 +34,16 @@ export default function ProfileHeader() {
             <BadgeCheck size={14} style={{ color: "var(--primary)" }} className="shrink-0" />
           </div>
           <p className="text-xs text-muted-foreground truncate">{p.tagline}</p>
+          <div className="flex items-center gap-3 mt-1 text-[11px] text-muted-foreground">
+            <span className="inline-flex items-center gap-1">
+              <Users size={11} style={{ color: "var(--primary)" }} />
+              <b className="text-foreground font-semibold tabular-nums">{p.followers}</b> followers
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <UserPlus size={11} style={{ color: "var(--primary)" }} />
+              <b className="text-foreground font-semibold tabular-nums">{p.connections}</b> connections
+            </span>
+          </div>
         </div>
 
         {/* Company + live link */}

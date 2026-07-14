@@ -8,7 +8,10 @@
 //   • "Intel" (A:P) — creator feed rows; the comment_* columns carry our own
 //     outbound-comment activity, which feeds the commenting heatmap.
 
-import { format, subDays, startOfWeek, parseISO, differenceInCalendarDays } from "date-fns";
+import {
+  format, subDays, subMonths, startOfWeek, startOfMonth, startOfDay, endOfDay,
+  addDays, addMonths, parseISO, differenceInCalendarDays,
+} from "date-fns";
 
 export interface AccountPost {
   creator: string;
@@ -169,7 +172,10 @@ export function sparkline(posts: AccountPost[], metric: Metric, take = 16): numb
 
 // ── Time-series bucketing for the big performance chart ───────────────────
 
-export type Range = "Day" | "Week" | "Month";
+// The performance-chart view options are real time WINDOWS (not just bucketing):
+//   Day = today · Week = past 7 days · Month = past 30 days · Year = past 12
+//   months · Custom = a picked start/end range.
+export type Range = "Day" | "Week" | "Month" | "Year" | "Custom";
 
 export interface SeriesPoint {
   label: string;
@@ -178,24 +184,70 @@ export interface SeriesPoint {
   reposts: number;
 }
 
-export function timeSeries(posts: AccountPost[], range: Range): SeriesPoint[] {
-  const buckets = new Map<string, SeriesPoint & { sort: string }>();
-  const keyFmt = range === "Day" ? "MMM d" : range === "Week" ? "MMM d" : "MMM yyyy";
+export interface DateWindow {
+  start: Date;
+  end: Date;
+  bucket: "day" | "month";
+}
+
+export function rangeWindow(range: Range, now: Date, custom?: { start: Date; end: Date }): DateWindow {
+  const end = endOfDay(now);
+  switch (range) {
+    case "Day": return { start: startOfDay(now), end, bucket: "day" };
+    case "Week": return { start: startOfDay(subDays(now, 6)), end, bucket: "day" };
+    case "Month": return { start: startOfDay(subDays(now, 29)), end, bucket: "day" };
+    case "Year": return { start: startOfMonth(subMonths(now, 11)), end, bucket: "month" };
+    case "Custom": {
+      const s = custom?.start && !isNaN(custom.start.getTime()) ? custom.start : subDays(now, 29);
+      const e = custom?.end && !isNaN(custom.end.getTime()) ? custom.end : now;
+      const bucket: "day" | "month" = differenceInCalendarDays(e, s) > 92 ? "month" : "day";
+      return { start: startOfDay(s), end: endOfDay(e), bucket };
+    }
+  }
+}
+
+// Bucket a window into a CONTINUOUS series (empty buckets filled with 0) so the
+// chart draws a full line across the whole window even where there were no posts.
+export function bucketSeries(posts: AccountPost[], win: DateWindow): SeriesPoint[] {
+  const map = new Map<string, SeriesPoint>();
+  const dayFmt = "yyyy-MM-dd";
+  if (win.bucket === "day") {
+    for (let d = win.start; d <= win.end; d = addDays(d, 1)) {
+      map.set(format(d, dayFmt), { label: format(d, "MMM d"), reactions: 0, comments: 0, reposts: 0 });
+    }
+  } else {
+    for (let d = startOfMonth(win.start); d <= win.end; d = addMonths(d, 1)) {
+      map.set(format(d, "yyyy-MM"), { label: format(d, "MMM yy"), reactions: 0, comments: 0, reposts: 0 });
+    }
+  }
+  for (const p of posts) {
+    const d = safeDate(p.posted_at);
+    if (!d || d < win.start || d > win.end) continue;
+    const key = win.bucket === "day" ? format(d, dayFmt) : format(d, "yyyy-MM");
+    const b = map.get(key);
+    if (!b) continue;
+    b.reactions += p.reactions;
+    b.comments += p.comments;
+    b.reposts += p.reposts;
+  }
+  return [...map.values()];
+}
+
+// Metric total within a window + % change vs the equal-length window before it.
+export function windowTrend(posts: AccountPost[], metric: Metric, win: DateWindow): { value: number; deltaPct: number | null } {
+  const lenDays = differenceInCalendarDays(win.end, win.start) + 1;
+  const prevEnd = endOfDay(subDays(win.start, 1));
+  const prevStart = startOfDay(subDays(win.start, lenDays));
+  let cur = 0;
+  let prev = 0;
   for (const p of posts) {
     const d = safeDate(p.posted_at);
     if (!d) continue;
-    const anchor = range === "Week" ? startOfWeek(d, { weekStartsOn: 1 }) : d;
-    const sort = format(anchor, range === "Month" ? "yyyy-MM" : "yyyy-MM-dd");
-    const label = format(anchor, keyFmt);
-    const cur = buckets.get(sort) || { label, sort, reactions: 0, comments: 0, reposts: 0 };
-    cur.reactions += p.reactions;
-    cur.comments += p.comments;
-    cur.reposts += p.reposts;
-    buckets.set(sort, cur);
+    if (d >= win.start && d <= win.end) cur += p[metric];
+    else if (d >= prevStart && d <= prevEnd) prev += p[metric];
   }
-  return [...buckets.values()]
-    .sort((a, b) => a.sort.localeCompare(b.sort))
-    .map(({ label, reactions, comments, reposts }) => ({ label, reactions, comments, reposts }));
+  const deltaPct = prev === 0 ? null : Math.round(((cur - prev) / prev) * 100);
+  return { value: cur, deltaPct };
 }
 
 // ── Content streak (GitHub-style weekly grid) ─────────────────────────────

@@ -18,6 +18,8 @@ export interface LinkedInProfile {
   profileUrl: string;
   avatar: string;   // public path
   banner: string;   // public path
+  followers: string;    // manual snapshot — LinkedIn profile counts aren't in the post scraper
+  connections: string;  // LinkedIn caps the public display at "500+"
   verifiedOn: string;
 }
 
@@ -29,5 +31,7 @@ export const tahaProfile: LinkedInProfile = {
   profileUrl: "https://www.linkedin.com/in/taha-anwar-bleedai/",
   avatar: "/profile/taha-avatar.jpg",
   banner: "/profile/taha-banner.png",
+  followers: "6,795",
+  connections: "500+",
   verifiedOn: "2026-07-14",
 };
