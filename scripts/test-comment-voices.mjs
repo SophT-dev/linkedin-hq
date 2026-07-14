@@ -59,8 +59,8 @@ const SUGGEST_TOKEN =
 // ---- the candidate voice prompt (this is what we're tuning) ---------------
 // Reads Sophiya's real voice doc live (same as lib/comments.ts's Sophiya
 // generator) so tuning that doc changes behavior without touching this script.
-const SOPHIYA_VOICE_DOC = readFileSync(
-  path.join(REPO, "playbook", "SOPHIYA-VOICE.md"),
+const COMMENT_VOICE_DOC = readFileSync(
+  path.join(REPO, "playbook", "voice.md"),
   "utf8"
 );
 
@@ -71,7 +71,7 @@ Your voice blends two things:
 2) Sophiya's real voice, profiled below. Follow it exactly, including which filler to strip and which to keep.
 
 ===== SOPHIYA VOICE PROFILE =====
-${SOPHIYA_VOICE_DOC}
+${COMMENT_VOICE_DOC}
 ===== END VOICE PROFILE =====
 
 ## SOUND ALIVE, NOT LIKE A SUMMARY (the most important rule)

@@ -446,43 +446,43 @@ export function qualityGateComment(text: string): VoiceCheck {
 // Different purpose than Taha's peer-reaction engine: Sophiya's ask
 // (2026-07-09) is for expert, authority-driven commentary with a real
 // opinion, not a short casual reaction. Voice patterns are read live from
-// playbook/SOPHIYA-VOICE.md (the one source of truth — this file only
+// playbook/voice.md (the one source of truth — this file only
 // wires it in, never duplicates the prose) so editing that doc changes
 // behavior without touching this code.
 // ============================================================
 
-function loadSophiyaVoiceDoc(): string {
-  const p = path.join(process.cwd(), "playbook", "SOPHIYA-VOICE.md");
+function loadCommentVoiceDoc(): string {
+  const p = path.join(process.cwd(), "playbook", "voice.md");
   try {
     return readFileSync(p, "utf8");
   } catch {
-    throw new Error(`Could not read ${p} — Sophiya's voice doc is required for this generator`);
+    throw new Error(`Could not read ${p} — the shared comment voice doc is required for this generator`);
   }
 }
 
 function buildSophiyaSystemPrompt(): string {
-  const voiceDoc = loadSophiyaVoiceDoc();
-  return `You write LinkedIn comments as Sophiya. Below is her real, distilled voice profile — extracted from her actual dictated messages, not invented. Follow it exactly, including which filler words to strip and which to keep.
+  const voiceDoc = loadCommentVoiceDoc();
+  return `You write LinkedIn comments in the shared comment voice used across both our accounts. Below is the distilled voice profile — extracted from real, unscripted messages, not invented. Follow it exactly, including which filler words to strip and which to keep.
 
 ${voiceDoc}
 
-## THIS COMMENT'S JOB (Sophiya's explicit requirement, 2026-07-09)
+## THIS COMMENT'S JOB
 Unlike a casual peer reaction, this comment must read as EXPERT and AUTHORITY-DRIVEN. Someone reading it should think: "this person is knowledgeable, has a unique take, and is adding real value to this conversation" — not just agreeing or reacting.
 
 Concretely:
 - State a real opinion or insight, not just agreement. It's fine to add a genuinely different angle the post didn't cover, as long as it's respectful (never hostile, never dismissive of the author).
 - The insight must be genuine domain knowledge (cold email, outbound, AI agents, or a clearly adjacent business topic) — something a real practitioner would nod at, never invented or vague.
 - Ground it in a specific, concrete detail if one fits naturally (a real number, a real mechanism, a real firsthand observation) — per pattern #1 and #5 above. Never fabricate a stat.
-- No hedging her own opinion away ("I think", "maybe", "sort of") unless she's genuinely asking a question rather than stating a view.
+- No hedging the opinion away ("I think", "maybe", "sort of") unless genuinely asking a question rather than stating a view.
 
 ## LENGTH
-Longer than a quick reaction is fine here — she's making a real point, not just reacting. Target 10-35 words: enough room for the opinion plus the one concrete reason behind it, never padded beyond that.
+Longer than a quick reaction is fine here — this is a real point, not just a reaction. Target 10-35 words: enough room for the opinion plus the one concrete reason behind it, never padded beyond that.
 
 ## HARD RULES (same hygiene as every comment on this platform, non-negotiable)
 - No em dashes (—) or en dashes (–).
 - No @mentions.
 - No corporate buzzwords: leverage, utilize, unlock, robust, comprehensive, streamlined, seamless, synergy, holistic, empower, elevate, revolutionize, delve, landscape, journey, ecosystem, actionable insights, value-add, moving the needle, game changer, needle mover, cutting-edge.
-- No decorative emoji — her real voice patterns above don't use them; keep it plain text.
+- No decorative emoji — the real voice patterns above don't use them; keep it plain text.
 - No generic praise ("great post", "love this", "so insightful") — every word must earn its place per the anti-checklist above.
 
 ## OUTPUT
@@ -584,7 +584,7 @@ export function qualityGateSophiyaComment(text: string): VoiceCheck {
 // Insight-voice comment generator (2026-07-11) — THE production comment voice.
 //
 // Blends Michel Lieben's expert/educational comment style with Sophiya's real
-// voice (playbook/SOPHIYA-VOICE.md, read live) written at a 4th-grade reading
+// voice (playbook/voice.md, read live) written at a 4th-grade reading
 // level: plain words, short sentences, but a genuinely expert point that
 // teaches the reader one concrete thing. Positive, never negative. This is the
 // voice both the auto-bot (/api/comments/plan) and the manual Suggest button
@@ -600,8 +600,8 @@ export function qualityGateSophiyaComment(text: string): VoiceCheck {
 //    lead magnet, that keyword is guaranteed into the comment IN ALL CAPS so the
 //    author's automation fires and Sophiya/Taha receives the resource.
 //
-// Voice prose is NOT duplicated here — it's read from SOPHIYA-VOICE.md at call
-// time (loadSophiyaVoiceDoc, shared with the Sophiya generator above).
+// Voice prose is NOT duplicated here — it's read from voice.md at call
+// time (loadCommentVoiceDoc, the one shared voice for both accounts).
 // ============================================================
 
 // Detect the lead-magnet trigger word in a "comment X for the guide" style
@@ -639,7 +639,7 @@ function buildInsightSystemPrompt(
   ctaWord: string | null,
   mode: InsightMode | null
 ): string {
-  const voiceDoc = loadSophiyaVoiceDoc();
+  const voiceDoc = loadCommentVoiceDoc();
   const modeBlock = mode ? MODE_DIRECTIVES[mode] : "";
   const ctaBlock = ctaWord
     ? `\n\n## THIS POST ASKS FOR A KEYWORD (lead magnet)\nThe author will DM a resource to anyone who comments a specific word. That word is "${ctaWord}". Your comment MUST include ${ctaWord} in ALL CAPS, spelled exactly like that, so the author's automation sends the resource. Work it in naturally, usually at the very end. Keep the rest of the comment in the normal voice. Do NOT output SKIP for this post.`
@@ -649,9 +649,9 @@ function buildInsightSystemPrompt(
 
 Your voice blends two things:
 1) Michel Lieben's comment style: expert, has a real opinion, educational, always positive, never negative or dismissive. You build on the post with a real angle or a simple reason it didn't spell out.
-2) Sophiya's real voice, profiled below. Follow it exactly, including which filler to strip and which to keep.
+2) The shared comment voice profiled below. Follow it exactly, including which filler to strip and which to keep.
 
-===== SOPHIYA VOICE PROFILE =====
+===== COMMENT VOICE PROFILE =====
 ${voiceDoc}
 ===== END VOICE PROFILE =====
 

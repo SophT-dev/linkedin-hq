@@ -11,7 +11,7 @@ export const maxDuration = 30;
 // POST /api/comments/sophiya-review
 //
 // Manual, ad-hoc entry point (2026-07-09) — generates ONE comment in
-// Sophiya's own voice (see playbook/SOPHIYA-VOICE.md + generateSophiyaComment
+// Sophiya's own voice (see playbook/voice.md + generateSophiyaComment
 // in lib/comments.ts) for a single post you give it, and sends it to Slack
 // for her ✅/❌/edit review via the same sendReviewMessage() the automated
 // /api/comments/plan flow uses. Decoupled from the Intel tab / n8n / daily-cap

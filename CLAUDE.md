@@ -282,9 +282,11 @@ Legacy v1 pages (`/ai-studio`, `/analytics`, `/calendar`, `/creators`, `/ideas`,
 The comment voice was completely reworked 2026-07-11 after Sophiya reviewed real generated comments
 and rejected the old Taha short peer-reaction voice ("spot on!", "Cool", 1-20 word quips) as too
 thin. The new voice — `generateInsightComment` / `qualityGateInsightComment` in `lib/comments.ts` —
-blends **Michel Lieben's expert/educational comment style** with **Sophiya's real voice**
-(`playbook/SOPHIYA-VOICE.md`, read live at call time — the one source of truth, don't duplicate the
-prose). Key rules baked into the prompt (all from her direct feedback that day):
+blends **Michel Lieben's expert/educational comment style** with **the shared comment voice**
+(`playbook/voice.md`, read live at call time — the one source of truth, don't duplicate the
+prose). **This is ONE general voice used for BOTH accounts (Taha + Sophiya)** — renamed + generalized
+from the old `SOPHIYA-VOICE.md` on 2026-07-14 (Sophiya: "it's a general voice.md file, don't make it
+very specific to an account"). Key rules baked into the prompt:
 - **Sound ALIVE, not like a summary.** The literal "4th-grade, 6-12 words per sentence" first draft
   came back "dead, lifeless, very AI, emotionless" — simple words got turned into choppy fact-lists.
   The fix: plain words BUT a real reaction, conviction, natural rhythm. The prompt carries explicit
@@ -300,7 +302,7 @@ prose). Key rules baked into the prompt (all from her direct feedback that day):
   and the caller drops it instead of fabricating — the safety rule that stops off-topic hallucinated
   comments (it correctly skipped a bare-link post in testing).
 - Leading `Honestly,`/`Probably,` is code-stripped (the model overused it as an opener).
-- **Deploy gotcha (learned the hard way):** the generator reads `SOPHIYA-VOICE.md` at runtime, and
+- **Deploy gotcha (learned the hard way):** the generator reads `voice.md` at runtime, and
   Next's serverless bundler drops non-traced files → every generation threw ENOENT and the endpoint
   silently returned `[]` on Vercel. Fixed via `outputFileTracingIncludes` in `next.config.ts` for the
   three comment routes. If you add another route that reads a repo file at runtime, add it there too.

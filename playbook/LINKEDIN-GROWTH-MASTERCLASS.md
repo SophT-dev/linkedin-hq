@@ -65,9 +65,28 @@ The #1 mistake is posting *before* deciding what you're the person for. Two expe
 *lived experience* of that knowledge is not. Don't write "5 cold-email tips" — write "the 5 things I
 changed after 4,000 emails got 1 reply."
 
+**Premium positioning — the Swiss-Army-knife problem (Lara Acosta's team).** The #1 profile mistake is
+trying to be *everything to everyone* ("marketing expert · consultant · speaker · coach · marathon
+runner") — a Swiss Army knife that has every tool and does nothing. The top 0.1% do the opposite:
+**everything to ONE ideal person.** This is the difference between a **$9 airport sandwich and a $45
+one** — you stop competing on price and compete on *outcome*. The move: swap a **job title for a
+reason to buy.**
+- Weak: *"I'm a sales coach."*  → Premium: *"I help 7-figure founders close high-ticket clients
+  without a single cold call."*
+- Weak: *"I help businesses grow."* → Premium: *"I help B2B SaaS founders who've plateaued at $1M ARR
+  break through to $10M using a proven GTM framework."*
+- **The formula:** `specific audience + specific outcome + undeniable proof`. Swap "businesses" →
+  "B2B SaaS founders", "grow" → "$1M to $10M ARR", "help" → "proven GTM framework."
+- This isn't just conversion — LinkedIn's algorithm now **rewards this specificity at the distribution
+  level** (it's the same profile↔post match from Lesson 3). Clarity is a reach setting.
+
+**Own one word (Matt Gray).** Pick the single word you want to own in your customer's mind and put it
+in your one-liner: *stoicism → Ryan Holiday, productivity → Ali Abdaal, habits → James Clear, systems →
+Matt Gray.* When they think the word, they think of you.
+
 **Taha application:** his lane is **"the operator who runs a real cold-email agency and is automating
 it with Claude Code."** Nobody can copy his actual client campaigns, his real numbers, or his live
-build. That's the moat.
+build. That's the moat. His word to own: **"cold email"** (or "outbound systems").
 
 ## Lesson 2 — The content map: 3 pillars × 5 subtopics
 
@@ -263,6 +282,68 @@ The biggest strategic split among experts — and the highest-leverage lesson:
 **The choreography for every post:** engage 30 min before → post → drop link/CTA in first comment →
 reply to every comment within minutes for the first hour → keep replying through the 6–8h window.
 
+### Lesson 8b — The commenting SYSTEM (the deepest-leverage tactic, and the one nobody can throttle)
+
+The algorithm can tank your reach 50% overnight; it cannot touch a relationship. As one operator who
+drove **$1.2M** off LinkedIn puts it: *"the algorithm doesn't write you checks — people do. Every
+generic comment trains people to ignore you."* Casey Brown built a **40K** audience where **90% of
+clients come inbound**, and one comment thread turned into Sahil Bloom flying to Atlanta for a private
+event. This is a *system*, not random engagement.
+
+**The mindset: peer, not fan.** Comment on **5–15 posts/day, not 50.** Only on posts from your **ideal
+clients, collaborators, or target-industry creators.** Before you comment, run the **coffee-shop
+test**: *"if I were sitting across from this person, what would I actually say?"* Add insight or ask a
+strategic question — never praise. Praise makes you a fan; insight makes you a peer, and clients hire
+peers. *"Comments are public auditions for your expertise."*
+
+**The Power List (the operating system).** A simple Google Sheet, **4 columns: Category · Name ·
+Profile link · Last engaged.** 20–30 targets. You rotate through it so you never ghost people or spam
+the same 3. Find targets via LinkedIn keyword + job-title search, by seeing who comments on industry
+leaders, and by mining who engages with competitors. Pair it with a **saved LinkedIn search feed**
+(build a filtered "posts from these people" search on desktop and **bookmark it**) so you catch their
+posts while fresh.
+
+**The 4 comment types that actually grow you:**
+1. **Value-add** — share a personal experience, tactical tip, or data that *expands* the post. (Example
+   pulled 6,418 impressions off one comment.) You make the post *more* valuable for everyone reading.
+2. **Challenge** — respectfully push back or ask a thought-provoking question. Thoughtful debate drives
+   engagement; done right it makes the author reconsider without being confrontational.
+3. **Supportive** — "I see what you're saying, here's my angle." Validate, then layer a deeper insight
+   from your own experience. Builds relationship capital while staying visible.
+4. **Witty / relatable** — when it fits. People remember how you made them feel.
+
+**Timing:** comment in the **first 30–60 minutes**; being one of the **first 3–5 comments** ≈
+guaranteed visibility (early engagement is weighted heaviest). The Power List is what lets you catch
+posts fresh.
+
+**Technical rules:** comment from your **personal profile**; **optimize your profile first** (a
+half-filled profile wastes every click-through); **never "great post"**; make each comment substantial
+enough that *someone could reply to it and start a conversation*; and **never sell in comments** —
+that's for authority, the DMs come naturally.
+
+**AI as sparring partner, never author.** AI that auto-posts comments = garbage that destroys your
+reputation. But a **Claude project trained on your tone, ICP, winning comments, and business insights**
+is smart: *you* formulate the insight ("we had this churn problem, here's what we learned"), then drop
+your draft in with *"refine this so it sounds like me — natural, sharp, short."* The thinking stays
+yours; AI just polishes.
+
+**The 15-minute daily block (beats a 2-hour weekly binge):**
+- **10 min** — comment on 5–7 high-value posts from the Power List.
+- **5 min** — reply to comments on your own recent posts (this is where relationships actually build).
+- **+5 min end of day** — move promising comment threads into DMs.
+- **Monday, 10 min** — update the Power List: add new targets, drop the inactive, re-star priorities.
+- **Commit for 90 days**, 30–60 min/day. Consistency over volume.
+
+**Turn comments into a lead engine.** Commenters are signaling intent. The pipeline:
+**capture commenters (Trigify) → enrich (Clay / other) → filter to ICP (e.g. CMO/VP at 50–500-person
+cos) → warm outreach (HeyReach).** Because they already engaged with your content, acceptance and reply
+rates crush cold outbound. *(This is the same content→engager→Clay loop from Module 6 / Michel Lieben.)*
+
+**The engagement machine (Matt Gray).** Beyond your own commenting, line up an **off-platform support
+circle** so **30+ people engage within the first 45 minutes** of a post (Matt gets ~25 within 30 min).
+LinkedIn is a *multiplayer* game — reposts especially are a top signal that pushes your post to new
+feeds, so a CTA that asks for a repost compounds reach.
+
 ## Lesson 9 — Cadence & timing
 
 - **3–5 posts/week is the sweet spot** (van der Blom + AuthoredUp agree; 4–5/wk ≈ +28% impressions/post
@@ -362,7 +443,7 @@ Universal consensus (Hassid, Matthews, Welsh, Lara): **AI for ideation and scaff
 judgment, voice, and comments.** *"AI is making high standards more essential, not less"* (Hassid).
 Matthews: *"ChatGPT writes my posts, but I make them better… AI sucks at comments"* — his comments stay
 100% human. Remember 360Brew *reads the text* and penalizes AI-obvious writing (−30% reach). **Your
-human voice is the only defensible moat left** (Lara). Our voice rules (`SOPHIYA-VOICE.md`, the
+human voice is the only defensible moat left** (Lara). Our voice rules (`voice.md`, the
 banned-AI-words list) exist for exactly this.
 
 ---
