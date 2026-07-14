@@ -64,18 +64,14 @@ export async function fetchAccountPosts(): Promise<AccountPost[]> {
     }));
 }
 
-// Our own outbound comments (one per posted Intel row) → dates for the heatmap.
+// Your own LinkedIn comments (tracked by the extension into the MyComments tab)
+// → dates for the commenting-activity heatmap. This counts the comments YOU
+// actually made, not just the ones the (dormant) auto-bot posted.
 export async function fetchCommentDates(): Promise<string[]> {
-  const res = await fetch("/api/sheets?tab=Intel&range=A:P");
+  const res = await fetch("/api/linkedin/comments-activity");
   if (!res.ok) return [];
-  const { rows } = await res.json();
-  // Header order (CLAUDE.md): pulled_at | posted_at | type | source | title |
-  // url | summary | score | starred | comment_text | comment_status |
-  // comment_posted_at | comment_style | image_url | ...  → J=9, K=10, L=11.
-  return (rows as string[][])
-    .slice(1)
-    .filter((r) => (r[10] || "").toLowerCase() === "posted" && r[11])
-    .map((r) => r[11]);
+  const { dates } = await res.json();
+  return Array.isArray(dates) ? dates : [];
 }
 
 // ── Pure transforms ──────────────────────────────────────────────────────

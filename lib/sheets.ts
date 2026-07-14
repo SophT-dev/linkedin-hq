@@ -158,6 +158,61 @@ export async function loadLatestProfileStats(): Promise<ProfileStatsRow | null> 
 }
 
 // ============================================================
+// MyComments tab — the user's OWN LinkedIn comments, read by the extension
+// from their activity (read-only, low-volume). This is the real source of
+// truth for "which posts have I engaged with" + "how many comments have I made"
+// — the auto-bot's comment_status only ever covered bot-posted comments.
+// ============================================================
+
+const MY_COMMENTS_TAB = "MyComments";
+const MY_COMMENTS_HEADER = ["commented_at", "post_url", "post_author"];
+
+export async function saveMyComments(
+  items: { url: string; author?: string; minutesAgo?: number }[]
+): Promise<{ added: number; skipped: number }> {
+  const clean = items.filter((i) => i.url);
+  if (!clean.length) return { added: 0, skipped: 0 };
+  await ensureSheet(MY_COMMENTS_TAB, MY_COMMENTS_HEADER);
+
+  const existing = await readSheet(MY_COMMENTS_TAB, "A:C");
+  const seen = new Set(existing.slice(1).map((r) => r[1]).filter(Boolean));
+
+  const now = Date.now();
+  const auth = getAuth();
+  const sheets = google.sheets({ version: "v4", auth });
+  const toAppend: (string | number)[][] = [];
+  for (const it of clean) {
+    if (seen.has(it.url)) continue;
+    seen.add(it.url);
+    const mins = typeof it.minutesAgo === "number" && it.minutesAgo >= 0 ? it.minutesAgo : 0;
+    toAppend.push([karachiIso(new Date(now - mins * 60_000)), it.url, it.author || ""]);
+  }
+  if (!toAppend.length) return { added: 0, skipped: clean.length };
+
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: SHEET_ID,
+    range: `${MY_COMMENTS_TAB}!A1`,
+    valueInputOption: "USER_ENTERED",
+    requestBody: { values: toAppend },
+  });
+  return { added: toAppend.length, skipped: clean.length - toAppend.length };
+}
+
+export async function loadMyComments(): Promise<{ urls: Set<string>; dates: string[] }> {
+  let rows: string[][];
+  try {
+    rows = await readSheet(MY_COMMENTS_TAB, "A:C");
+  } catch {
+    return { urls: new Set(), dates: [] };
+  }
+  const data = rows.slice(1).filter((r) => r[1]);
+  return {
+    urls: new Set(data.map((r) => r[1])),
+    dates: data.map((r) => r[0]).filter(Boolean),
+  };
+}
+
+// ============================================================
 // DailyReports tab — the Daily TLDR archive. Revamped 2026-07-08 (Sophiya:
 // the old one-blob-per-day shape was "messy and unstructured") from
 // `date | generated_at | report_md` to one row per digest item, matching

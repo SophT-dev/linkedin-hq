@@ -33,6 +33,20 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
       .catch((e) => sendResponse({ ok: false, error: String((e && e.message) || e) }));
     return true; // async response
   }
+
+  // Your own comments harvested by activity.js → MyComments tab.
+  if (msg && msg.type === "BLEED_CMTS") {
+    const headers = { "Content-Type": "application/json" };
+    if (CONFIG.SYNC_TOKEN) headers["x-sync-token"] = CONFIG.SYNC_TOKEN;
+    fetch(`${CONFIG.API_BASE}/api/linkedin/comments-activity`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ items: msg.items || [] }),
+    })
+      .then(async (r) => sendResponse({ ok: r.ok, status: r.status, body: await r.json().catch(() => null) }))
+      .catch((e) => sendResponse({ ok: false, error: String((e && e.message) || e) }));
+    return true;
+  }
 });
 
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {

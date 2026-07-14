@@ -4,6 +4,7 @@ import {
   loadIntel,
   readSheet,
   countAuthorCommentsLastNDays,
+  loadMyComments,
 } from "@/lib/sheets";
 
 export const dynamic = "force-dynamic";
@@ -28,10 +29,11 @@ export async function GET() {
   try {
     const recencyCutoff = new Date(Date.now() - WINDOW_HOURS * 60 * 60 * 1000);
 
-    const [config, allIntel, rawRows] = await Promise.all([
+    const [config, allIntel, rawRows, myComments] = await Promise.all([
       getConfig(),
       loadIntel(),
       readSheet("Intel", "A:P"),
+      loadMyComments(),
     ]);
 
     const dailyCap = parseInt(config["comments_daily_cap"] || "5", 10);
@@ -63,6 +65,7 @@ export async function GET() {
         return !isNaN(d.getTime()) && d >= recencyCutoff;
       })
       .filter((r) => r.comment_status !== "posted")
+      .filter((r) => !myComments.urls.has(r.url)) // drop posts you've already commented on
       .sort((a, b) => (b.posted_at || "").localeCompare(a.posted_at || "")); // newest first
 
     const candidates = rows.slice(0, MAX_ITEMS).map((r) => ({

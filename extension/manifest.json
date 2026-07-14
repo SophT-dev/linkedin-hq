@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Bleed AI — LinkedIn Assistant",
-  "version": "0.2.0",
-  "description": "Inline comment suggestions in Taha's voice + read-only live sync of your own follower/connection counts to LinkedIn HQ. Suggest-only; nothing is ever posted automatically.",
+  "version": "0.3.0",
+  "description": "Inline comment suggestions in Taha's voice + read-only live sync of your own follower/connection counts and your comment activity to LinkedIn HQ. Suggest-only; nothing is ever posted automatically.",
   "permissions": ["storage"],
   "host_permissions": [
     "https://www.linkedin.com/*",
@@ -15,7 +15,7 @@
   "content_scripts": [
     {
       "matches": ["https://www.linkedin.com/*"],
-      "js": ["content.js", "sync.js"],
+      "js": ["content.js", "sync.js", "activity.js"],
       "css": ["content.css"],
       "run_at": "document_idle"
     }
