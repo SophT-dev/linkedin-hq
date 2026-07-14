@@ -150,7 +150,7 @@ export default function LeadMagnets() {
       <div className="flex items-center justify-between">
         <div>
           <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Funnel</p>
-          <h1 className="text-xl font-bold flex items-center gap-2"><Layers size={20} className="text-indigo-400" /> Lead Magnets</h1>
+          <h1 className="text-xl font-bold flex items-center gap-2"><Layers size={20} style={{ color: "var(--primary)" }} /> Lead Magnets</h1>
         </div>
         {tab === "own" && (
           <Button size="sm" onClick={() => setAdding(true)}><Plus size={16} className="mr-1" /> Add</Button>
@@ -172,7 +172,7 @@ export default function LeadMagnets() {
                 { label: "Total Clicks", value: totalClicks },
                 { label: "Conversions", value: totalConversions },
               ].map(({ label, value }) => (
-                <div key={label} className="rounded-xl p-3 border text-center" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
+                <div key={label} className="rounded-xl p-3 border bg-card border-border shadow-sm text-center">
                   <p className="text-lg font-bold">{value}</p>
                   <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
                 </div>
@@ -181,7 +181,7 @@ export default function LeadMagnets() {
           )}
 
           {adding && (
-            <div className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
+            <div className="rounded-2xl p-4 border bg-card border-border shadow-sm space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-semibold">Add Lead Magnet</span>
                 <button onClick={() => setAdding(false)} className="text-muted-foreground"><X size={18} /></button>
@@ -196,7 +196,7 @@ export default function LeadMagnets() {
                   value={form[key as keyof typeof form]}
                   onChange={(e) => setForm({ ...form, [key]: e.target.value })}
                   placeholder={placeholder}
-                  className="w-full px-3 py-2.5 rounded-xl text-sm bg-black/20 border border-white/10 text-foreground placeholder:text-muted-foreground outline-none"
+                  className="w-full px-3 py-2.5 rounded-xl text-sm bg-muted border border-border text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-[var(--ring)]"
                 />
               ))}
               <p className="text-xs text-muted-foreground">Update clicks/conversions directly in Google Sheets as they come in.</p>
@@ -208,7 +208,7 @@ export default function LeadMagnets() {
             {own.map((m) => {
               const cvr = m.clicks > 0 ? ((m.conversions / m.clicks) * 100).toFixed(1) : "0";
               return (
-                <div key={m.row} className="rounded-xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
+                <div key={m.row} className="rounded-xl p-4 border bg-card border-border shadow-sm space-y-3">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold">{m.title}</p>
@@ -219,7 +219,7 @@ export default function LeadMagnets() {
                       )}
                     </div>
                     {m.landing_url && (
-                      <a href={m.landing_url} target="_blank" rel="noopener noreferrer" className="text-indigo-400 p-1 flex-shrink-0"><ExternalLink size={16} /></a>
+                      <a href={m.landing_url} target="_blank" rel="noopener noreferrer" className="p-1 flex-shrink-0" style={{ color: "var(--primary)" }}><ExternalLink size={16} /></a>
                     )}
                   </div>
                   <div className="flex gap-4">
@@ -253,16 +253,16 @@ export default function LeadMagnets() {
             const takeaways = parseTakeaway(m.key_takeaway);
             const isDead = /dead link/i.test(m.key_takeaway || "");
             return (
-              <div key={m.row} className="rounded-xl p-4 border space-y-2" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
+              <div key={m.row} className="rounded-xl p-4 border bg-card border-border shadow-sm space-y-2">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <p className="text-sm font-semibold">{m.title}</p>
                     {m.source_person && (
-                      <span className="text-xs text-indigo-300 flex items-center gap-1"><User size={11} /> {m.source_person}</span>
+                      <span className="text-xs flex items-center gap-1" style={{ color: "var(--primary)" }}><User size={11} /> {m.source_person}</span>
                     )}
                   </div>
                   <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                    <span className="text-[10px] px-2 py-0.5 rounded-full border border-white/10 text-muted-foreground">received</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full border border-border text-muted-foreground">received</span>
                     {isDead && <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 font-semibold">dead link</span>}
                     <button
                       onClick={() => toggleReviewed(m)}
@@ -279,10 +279,10 @@ export default function LeadMagnets() {
                 )}
                 <div className="flex gap-3 flex-wrap pt-0.5">
                   {m.landing_url && (
-                    <a href={m.landing_url} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-300 flex items-center gap-1"><ExternalLink size={12} /> Resource link</a>
+                    <a href={m.landing_url} target="_blank" rel="noopener noreferrer" className="text-xs flex items-center gap-1" style={{ color: "var(--primary)" }}><ExternalLink size={12} /> Resource link</a>
                   )}
                   {m.source_post_url && (
-                    <a href={m.source_post_url} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-300 flex items-center gap-1"><ExternalLink size={12} /> Source post</a>
+                    <a href={m.source_post_url} target="_blank" rel="noopener noreferrer" className="text-xs flex items-center gap-1" style={{ color: "var(--primary)" }}><ExternalLink size={12} /> Source post</a>
                   )}
                 </div>
               </div>

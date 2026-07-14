@@ -59,23 +59,20 @@ export default function EngagementPage() {
           Content
         </p>
         <h1 className="text-xl font-bold flex items-center gap-2">
-          <MessageSquare size={20} className="text-indigo-400" /> Engagement
+          <MessageSquare size={20} style={{ color: "var(--primary)" }} /> Engagement
         </h1>
       </div>
 
       {loading && (
-        <div
-          className="rounded-2xl p-4 border text-sm text-muted-foreground"
-          style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}
-        >
+        <div className="rounded-2xl p-4 border bg-card border-border shadow-sm text-sm text-muted-foreground">
           Loading engagement data…
         </div>
       )}
 
       {error && !loading && (
         <div
-          className="rounded-2xl p-4 border text-sm text-red-400"
-          style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}
+          className="rounded-2xl p-4 border bg-card border-border shadow-sm text-sm"
+          style={{ color: "var(--destructive)" }}
         >
           Couldn&apos;t load the engagement feed: {error}
         </div>
@@ -84,20 +81,17 @@ export default function EngagementPage() {
       {!loading && !error && data && (
         <>
           {/* Weekly progress */}
-          <div
-            className="rounded-2xl p-4 border space-y-2"
-            style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}
-          >
+          <div className="rounded-2xl p-4 border bg-card border-border shadow-sm space-y-2">
             <div className="flex items-center justify-between text-xs">
               <span className="font-medium">Weekly progress</span>
               <span className="text-muted-foreground">
                 {sent}/{cap} comments sent this week
               </span>
             </div>
-            <div className="h-2 rounded-full overflow-hidden bg-white/5">
+            <div className="h-2 rounded-full overflow-hidden bg-muted">
               <div
-                style={{ width: `${pct}%` }}
-                className="h-full bg-indigo-400 transition-all"
+                style={{ width: `${pct}%`, background: "var(--primary)" }}
+                className="h-full transition-all"
               />
             </div>
           </div>
@@ -114,10 +108,7 @@ export default function EngagementPage() {
             </div>
 
             {data.candidates.length === 0 ? (
-              <div
-                className="rounded-2xl border border-dashed p-8 text-center text-sm text-muted-foreground"
-                style={{ borderColor: "var(--border-subtle)" }}
-              >
+              <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
                 Nothing worth engaging with right now — check back after the next Intel pull.
               </div>
             ) : (
@@ -125,12 +116,11 @@ export default function EngagementPage() {
                 {data.candidates.map((c) => (
                   <div
                     key={c.url}
-                    className="rounded-2xl border p-4 space-y-2"
-                    style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}
+                    className="rounded-2xl border bg-card border-border shadow-sm p-4 space-y-2"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <p className="font-semibold text-sm leading-snug">{c.title || "Untitled post"}</p>
-                      <span className="flex-shrink-0 text-[10px] px-2 py-0.5 rounded-full border border-white/10 text-muted-foreground">
+                      <span className="flex-shrink-0 text-[10px] px-2 py-0.5 rounded-full border border-border text-muted-foreground">
                         score {c.score}
                       </span>
                     </div>
@@ -158,10 +148,7 @@ export default function EngagementPage() {
           </div>
 
           {/* Replies needed — no DM tracking exists yet, show it honestly */}
-          <div
-            className="rounded-2xl p-4 border space-y-1"
-            style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}
-          >
+          <div className="rounded-2xl p-4 border bg-card border-border shadow-sm space-y-1">
             <p className="text-sm font-semibold">Replies needed</p>
             <p className="text-xs text-muted-foreground">
               0 (LinkedIn DM tracking not built yet)
