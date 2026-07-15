@@ -142,7 +142,23 @@
 
   // -- harvest + throttle + post ----------------------------------------------
 
-  async function harvest(reason) {
+  const LABELS = { followers: "followers", connections: "connections", profile_views_90d: "profile viewers", post_impressions_7d: "post impressions" };
+  const prettyFields = (o) => Object.keys(o).map((k) => LABELS[k] || k).join(", ");
+
+  function sendSync(payload) {
+    return new Promise((resolve) => {
+      chrome.runtime.sendMessage({ type: "BLEED_SYNC", payload }, (resp) => {
+        if (chrome.runtime.lastError) return resolve({ ok: false, error: chrome.runtime.lastError.message });
+        resolve(resp || { ok: false });
+      });
+    });
+  }
+
+  // reason: where the harvest came from ("load"/"nav"/"interval"/"click").
+  // force: true (from the toolbar-icon click) posts even if unchanged, so a
+  // manual "sync now" always refreshes the timestamp. Returns a summary the
+  // background worker turns into an icon badge.
+  async function harvest(reason, force) {
     let found = {};
     try {
       Object.assign(found, readFeedCard());
@@ -151,18 +167,19 @@
 
     const clean = {};
     for (const k in found) if (found[k] != null && found[k] !== "") clean[k] = found[k];
-    if (!Object.keys(clean).length) return; // nothing readable on this page
+    const fieldCount = Object.keys(clean).length;
+    if (!fieldCount) { log(`nothing readable on this page (${reason}).`); return { found: 0, posted: false }; }
 
     const store = await chrome.storage.local.get(CACHE);
     const cache = store[CACHE] || { values: {}, sentAt: {} };
     const now = Date.now();
-    let should = false;
+    let should = force === true;
     for (const k in clean) {
       const changed = String(cache.values[k]) !== String(clean[k]);
       const stale = !cache.sentAt[k] || now - cache.sentAt[k] > STALE_MS;
       if (changed || stale) should = true;
     }
-    if (!should) { log(`nothing new (${reason}) —`, clean); return; }
+    if (!should) { log(`nothing new (${reason}) —`, clean); return { found: fieldCount, posted: false, fields: prettyFields(clean) }; }
 
     // Upgrade a capped "500+" to the exact number if we can (profile page only).
     if (typeof clean.connections === "string" && clean.connections.includes("+")) {
@@ -171,14 +188,26 @@
     }
 
     log(`posting (${reason}):`, clean);
-    chrome.runtime.sendMessage({ type: "BLEED_SYNC", payload: clean }, (resp) => {
-      if (chrome.runtime.lastError) return warn("send failed:", chrome.runtime.lastError.message);
-      if (resp && resp.ok === false) return warn("server rejected:", resp);
+    const resp = await sendSync(clean);
+    if (resp && resp.ok !== false) {
       for (const k in clean) { cache.values[k] = clean[k]; cache.sentAt[k] = now; }
-      chrome.storage.local.set({ [CACHE]: cache });
+      await chrome.storage.local.set({ [CACHE]: cache });
       log("synced to linkedin-hq:", resp);
-    });
+      return { found: fieldCount, posted: true, fields: prettyFields(clean) };
+    }
+    warn("sync failed:", resp);
+    return { found: fieldCount, posted: false, error: (resp && resp.error) || "post failed", fields: prettyFields(clean) };
   }
+
+  // On-demand sync — the toolbar icon click (routed here by background.js).
+  chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+    if (msg && msg.type === "BLEED_FORCE_SYNC") {
+      harvest("click", true)
+        .then((r) => sendResponse(r))
+        .catch((e) => sendResponse({ found: 0, posted: false, error: String((e && e.message) || e) }));
+      return true; // async response
+    }
+  });
 
   // Keep it fresh with no effort from you: harvest shortly after load, on every
   // in-app navigation (LinkedIn is a SPA — we watch location), and every ~3 min

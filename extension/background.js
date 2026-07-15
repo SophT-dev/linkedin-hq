@@ -61,6 +61,40 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   }
 });
 
+// -- Toolbar icon click = "sync THIS page now" ------------------------------
+// Clicking the extension icon force-reads whatever stats are on the current
+// LinkedIn tab (bypassing the 6h throttle) and flashes a badge as feedback.
+function flashBadge(text, color, title) {
+  chrome.action.setBadgeText({ text });
+  if (color) chrome.action.setBadgeBackgroundColor({ color });
+  if (title) chrome.action.setTitle({ title });
+  if (text) setTimeout(() => chrome.action.setBadgeText({ text: "" }), 3500);
+}
+
+chrome.action.onClicked.addListener((tab) => {
+  if (!tab || !tab.id || !/^https:\/\/www\.linkedin\.com\//.test(tab.url || "")) {
+    flashBadge("!", "#d97706", "Bleed AI — open a LinkedIn tab, then click to sync.");
+    return;
+  }
+  flashBadge("•", "#2f6fed", "Bleed AI — syncing this page…");
+  chrome.tabs.sendMessage(tab.id, { type: "BLEED_FORCE_SYNC" }, (resp) => {
+    if (chrome.runtime.lastError) {
+      // Content script not injected yet (tab predates the extension load).
+      flashBadge("↻", "#d97706", "Bleed AI — reload this LinkedIn tab, then click again.");
+      return;
+    }
+    if (resp && resp.posted) {
+      flashBadge("✓", "#16a34a", `Bleed AI — synced ${resp.fields || "stats"} just now.`);
+    } else if (resp && resp.found === 0) {
+      flashBadge("–", "#d97706", "Bleed AI — nothing to sync here. Open your feed or profile.");
+    } else if (resp && resp.error) {
+      flashBadge("!", "#dc2626", `Bleed AI — sync failed: ${resp.error}`);
+    } else {
+      flashBadge("✓", "#16a34a", "Bleed AI — synced.");
+    }
+  });
+});
+
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   if (msg && msg.type === "BLEED_SUGGEST") {
     const headers = { "Content-Type": "application/json" };
