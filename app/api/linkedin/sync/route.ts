@@ -43,19 +43,22 @@ export async function POST(req: NextRequest) {
     // Keep connections as a raw string so LinkedIn's capped "500+" survives
     // (numOrEmpty would strip the + to 500). Exact numbers pass through fine.
     const connections = body.connections == null ? "" : String(body.connections).trim();
-    if (followers === "" && connections === "") {
-      return NextResponse.json({ ok: false, error: "no followers/connections in payload" }, { status: 400 });
+    // Feed-card metrics (accept the friendly `profile_viewers` alias too).
+    const profile_views_90d = numOrEmpty(body.profile_views_90d ?? body.profile_viewers);
+    const search_appearances = numOrEmpty(body.search_appearances);
+    const post_impressions_7d = numOrEmpty(body.post_impressions_7d ?? body.post_impressions);
+
+    // Accept PARTIAL payloads — a feed-only sync sends views/impressions with no
+    // followers. Only reject if nothing usable came through. saveProfileStats
+    // carries forward whatever this payload didn't include.
+    const provided = { followers, connections, profile_views_90d, search_appearances, post_impressions_7d };
+    if (Object.values(provided).every((v) => v === "")) {
+      return NextResponse.json({ ok: false, error: "no recognized metrics in payload" }, { status: 400 });
     }
 
-    await saveProfileStats({
-      followers,
-      connections,
-      profile_views_90d: numOrEmpty(body.profile_views_90d),
-      search_appearances: numOrEmpty(body.search_appearances),
-      source: "extension",
-    });
+    await saveProfileStats({ ...provided, source: "extension" });
 
-    return NextResponse.json({ ok: true, saved: { followers, connections } });
+    return NextResponse.json({ ok: true, saved: provided });
   } catch (e) {
     return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : String(e) }, { status: 500 });
   }

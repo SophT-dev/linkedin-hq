@@ -1,19 +1,24 @@
-// Live profile sync (Phase 1) — runs on linkedin.com. Reads ONLY your own
-// follower + connection counts and hands them to the background worker, which
-// POSTs them to linkedin-hq. Read-only; nothing is written to LinkedIn.
+// Live stats sync — runs on EVERY linkedin.com page and opportunistically reads
+// whatever of your own numbers are visible on the page you're already looking at,
+// then hands them to the background worker, which POSTs them to linkedin-hq.
 //
-// LinkedIn deprecated the clean Voyager `/networkinfo` REST endpoint (returns
-// 410 as of 2025). So the reliable method now is AuthoredUp-style: read the
-// numbers off your own profile page's DOM. We still try a modern API call first
-// as a bonus (it gives the EXACT connection count, which the DOM caps at 500+).
+//   • Home feed left card  → Profile viewers + Post impressions   (you see these daily)
+//   • Your own profile page → Followers + Connections
 //
-// Debug: open DevTools (F12) on linkedin.com and filter the console for
-// "[BleedSync]". See docs/LIVE-LINKEDIN-DATA-RESEARCH.md for how/why + risks.
+// This is the "auto-update" layer: you don't visit a special page — as you use
+// LinkedIn normally, the webapp stays fresh. Read-only DOM scraping only: it adds
+// ZERO new LinkedIn network calls (it just reads pages you loaded anyway), and it
+// only POSTs to linkedin-hq when a number actually CHANGED or is >6h stale.
+//
+// Debug: DevTools (F12) on linkedin.com → filter the console for "[BleedSync]".
+// See docs/LIVE-LINKEDIN-DATA-RESEARCH.md for the how/why + risk notes.
 (function () {
   "use strict";
 
-  const THROTTLE_MS = 6 * 60 * 60 * 1000; // at most once every 6h (low-volume, LinkedIn-safe)
+  const STALE_MS = 6 * 60 * 60 * 1000; // resend an unchanged metric at most once / 6h
   const V = "https://www.linkedin.com/voyager/api";
+  const CACHE = "bleed_stats_cache";   // { values:{metric:val}, sentAt:{metric:ts} }
+  const SLUG_KEY = "bleed_own_slug";   // cached once so we don't re-hit Voyager /me
   const log = (...a) => console.log("[BleedSync]", ...a);
   const warn = (...a) => console.warn("[BleedSync]", ...a);
 
@@ -21,18 +26,6 @@
     const m = document.cookie.match(/JSESSIONID="?([^;"]+)"?/);
     if (!m) return null;
     return { "csrf-token": m[1], "x-restli-protocol-version": "2.0.0", "accept": "application/vnd.linkedin.normalized+json+2.1" };
-  }
-
-  async function meProfileId(headers) {
-    try {
-      const res = await fetch(V + "/me", { credentials: "include", headers });
-      if (!res.ok) throw new Error(`/me -> ${res.status}`);
-      const me = await res.json();
-      if (me?.data?.miniProfile?.publicIdentifier) return me.data.miniProfile.publicIdentifier;
-      if (me?.data?.publicIdentifier) return me.data.publicIdentifier;
-      for (const x of me?.included || []) if (x && x.publicIdentifier) return x.publicIdentifier;
-    } catch (e) { warn("/me failed:", e.message); }
-    return null;
   }
 
   function parseHuman(s) {
@@ -46,7 +39,31 @@
     return Math.round(v);
   }
 
-  // Bonus: exact connection count via the still-live relationships dash endpoint.
+  // -- one-time: your own profile slug, so we never read someone else's profile --
+  async function meProfileId(headers) {
+    try {
+      const res = await fetch(V + "/me", { credentials: "include", headers });
+      if (!res.ok) throw new Error(`/me -> ${res.status}`);
+      const me = await res.json();
+      if (me?.data?.miniProfile?.publicIdentifier) return me.data.miniProfile.publicIdentifier;
+      if (me?.data?.publicIdentifier) return me.data.publicIdentifier;
+      for (const x of me?.included || []) if (x && x.publicIdentifier) return x.publicIdentifier;
+    } catch (e) { warn("/me failed:", e.message); }
+    return null;
+  }
+
+  async function ownSlug() {
+    const s = await chrome.storage.local.get(SLUG_KEY);
+    if (s[SLUG_KEY]) return s[SLUG_KEY];
+    const headers = csrfHeaders();
+    if (!headers) return null;
+    const slug = await meProfileId(headers); // at most ONE Voyager call, ever
+    if (slug) await chrome.storage.local.set({ [SLUG_KEY]: slug });
+    return slug;
+  }
+
+  // Bonus: exact connection count via the still-live relationships dash endpoint
+  // (only called to upgrade a capped "500+" — rare, profile-page only).
   async function exactConnections(headers) {
     try {
       const res = await fetch(V + "/relationships/dash/connections?q=search&start=0&count=0", { credentials: "include", headers });
@@ -57,9 +74,9 @@
     } catch { return null; }
   }
 
-  // Collect the text of leaf elements whose whole text is "<n> followers" /
-  // "<n> connections" — far more precise than scanning all of main's innerText
-  // (which would also match "People also viewed" cards further down the page).
+  // -- DOM readers (no network) -----------------------------------------------
+
+  // Leaf elements whose whole text is "<n> followers" / "<n> connections".
   function leafMatches(re) {
     const main = document.querySelector("main") || document.body;
     const out = [];
@@ -72,68 +89,115 @@
     return out;
   }
 
-  // Read follower + connection counts from your OWN profile page's DOM.
-  function domCounts(profileId) {
-    const slug = (location.pathname.split("/in/")[1] || "").replace(/\/.*/, "");
-    if (!slug) { log("not on a profile page — open linkedin.com/in/" + (profileId || "you") + " to sync via the page."); return null; }
-    if (profileId && slug !== profileId) { log("on someone else's profile (" + slug + "), skipping."); return null; }
+  // A number sitting next to a label ("Profile viewers 324"), scoped to the
+  // left sidebar so we don't grab an unrelated count elsewhere on the page.
+  function labeledNumber(labelRe) {
+    const scope = document.querySelector(".scaffold-layout__sidebar")
+      || document.querySelector("aside")
+      || document.body;
+    const els = scope.querySelectorAll("a,li,div,span");
+    for (const el of els) {
+      if (el.children.length > 4) continue;
+      const t = (el.innerText || "").replace(/\s+/g, " ").trim();
+      if (t.length > 40 || !labelRe.test(t)) continue;
+      const nums = t.match(/\d[\d,]*/g);
+      if (nums && nums.length) {
+        const n = parseInt(nums[nums.length - 1].replace(/,/g, ""), 10);
+        if (Number.isFinite(n)) return n;
+      }
+    }
+    return null;
+  }
+
+  // Home-feed left card: profile viewers (90d) + post impressions (7d).
+  function readFeedCard() {
+    const out = {};
+    const pv = labeledNumber(/profile viewers?/i);
+    const pi = labeledNumber(/post impressions?/i);
+    if (pv != null) out.profile_views_90d = pv;
+    if (pi != null) out.post_impressions_7d = pi;
+    return out;
+  }
+
+  // Your own profile page: followers + connections.
+  async function readProfile() {
+    if (!/\/in\//.test(location.pathname)) return {};
+    const cur = (location.pathname.split("/in/")[1] || "").replace(/\/.*/, "");
+    if (!cur) return {};
+    const mine = await ownSlug();
+    if (mine && cur !== mine) { log(`on someone else's profile (${cur}) — skipping.`); return {}; }
 
     const fRaw = leafMatches(/^([\d.,]+[KMB]?)\s*followers?$/i).map(parseHuman).filter((n) => n != null);
     const cRaw = leafMatches(/^([\d,]+\+?)\s*connections?$/i);
-    log("follower candidates:", fRaw, "| connection candidates:", cRaw);
-
-    // Prefer the EXACT follower count (never a round hundred) over LinkedIn's
-    // rounded header number (e.g. 6795 over 6800).
+    // Prefer the EXACT follower count (never a round hundred) over the rounded header.
     const followers = fRaw.find((n) => n % 100 !== 0) ?? fRaw[0] ?? null;
-    // Prefer an exact connection number over the capped "500+".
     const cExact = cRaw.find((s) => !s.includes("+"));
     const connections = ((cExact || cRaw[0] || "").replace(/,/g, "")) || null; // may stay "500+"
 
-    if (followers == null && connections == null) return null;
-    return { followers, connections };
+    const out = {};
+    if (followers != null) out.followers = followers;
+    if (connections != null) out.connections = connections;
+    return out;
   }
 
-  async function run() {
-    const headers = csrfHeaders();
-    if (!headers) { warn("no JSESSIONID cookie — log in to LinkedIn in this browser."); return false; }
+  // -- harvest + throttle + post ----------------------------------------------
 
-    const profileId = await meProfileId(headers);
-    log("profileId:", profileId);
-
-    const dom = domCounts(profileId);
-    if (!dom) { log("no counts read this page. (Sync happens on your own profile page.)"); return false; }
-
-    // Upgrade the capped "500+" DOM connections to the exact number if we can.
-    let connections = dom.connections;
-    if (typeof connections === "string" && connections.includes("+")) {
-      const exact = await exactConnections(headers);
-      if (exact != null) connections = exact;
-    }
-
-    log("sending followers:", dom.followers, "connections:", connections);
-    chrome.runtime.sendMessage(
-      { type: "BLEED_SYNC", payload: { followers: dom.followers, connections, profileId } },
-      (resp) => {
-        if (chrome.runtime.lastError) warn("send failed:", chrome.runtime.lastError.message);
-        else log("posted to linkedin-hq:", resp);
-      }
-    );
-    return true;
-  }
-
-  (async function main() {
+  async function harvest(reason) {
+    let found = {};
     try {
-      const KEY = "bleed_last_profile_sync";
-      const store = await chrome.storage.local.get(KEY);
-      const since = Date.now() - (store[KEY] || 0);
-      if (since < THROTTLE_MS) { log(`throttled — last sync ${Math.round(since / 60000)}m ago. Skipping.`); return; }
-      const sent = await run();
-      if (sent) await chrome.storage.local.set({ [KEY]: Date.now() });
-    } catch (e) {
-      warn("sync errored:", e && e.message ? e.message : e);
+      Object.assign(found, readFeedCard());
+      Object.assign(found, await readProfile());
+    } catch (e) { warn("read errored:", e && e.message ? e.message : e); }
+
+    const clean = {};
+    for (const k in found) if (found[k] != null && found[k] !== "") clean[k] = found[k];
+    if (!Object.keys(clean).length) return; // nothing readable on this page
+
+    const store = await chrome.storage.local.get(CACHE);
+    const cache = store[CACHE] || { values: {}, sentAt: {} };
+    const now = Date.now();
+    let should = false;
+    for (const k in clean) {
+      const changed = String(cache.values[k]) !== String(clean[k]);
+      const stale = !cache.sentAt[k] || now - cache.sentAt[k] > STALE_MS;
+      if (changed || stale) should = true;
     }
-    // Re-scan once after the SPA finishes rendering the profile (LinkedIn loads
-    // the follower count a beat after navigation).
-    setTimeout(() => { domCounts.__done || run().then((s) => { if (s) chrome.storage.local.set({ bleed_last_profile_sync: Date.now() }); }); }, 4000);
-  })();
+    if (!should) { log(`nothing new (${reason}) —`, clean); return; }
+
+    // Upgrade a capped "500+" to the exact number if we can (profile page only).
+    if (typeof clean.connections === "string" && clean.connections.includes("+")) {
+      const headers = csrfHeaders();
+      if (headers) { const ex = await exactConnections(headers); if (ex != null) clean.connections = ex; }
+    }
+
+    log(`posting (${reason}):`, clean);
+    chrome.runtime.sendMessage({ type: "BLEED_SYNC", payload: clean }, (resp) => {
+      if (chrome.runtime.lastError) return warn("send failed:", chrome.runtime.lastError.message);
+      if (resp && resp.ok === false) return warn("server rejected:", resp);
+      for (const k in clean) { cache.values[k] = clean[k]; cache.sentAt[k] = now; }
+      chrome.storage.local.set({ [CACHE]: cache });
+      log("synced to linkedin-hq:", resp);
+    });
+  }
+
+  // Keep it fresh with no effort from you: harvest shortly after load, on every
+  // in-app navigation (LinkedIn is a SPA — we watch location), and every ~3 min
+  // while the tab is visible. All DOM-only; a POST fires only when data changes.
+  function schedule() {
+    setTimeout(() => harvest("load"), 3500);
+    let lastHref = location.href;
+    let tick = 0;
+    setInterval(() => {
+      if (document.visibilityState !== "visible") return;
+      tick++;
+      if (location.href !== lastHref) {
+        lastHref = location.href;
+        setTimeout(() => harvest("nav"), 3000); // let the new view render
+      } else if (tick % 90 === 0) {
+        harvest("interval"); // ~every 3 min (90 × 2s)
+      }
+    }, 2000);
+  }
+
+  schedule();
 })();

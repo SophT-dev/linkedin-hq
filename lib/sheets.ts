@@ -91,7 +91,9 @@ export async function getConfig(): Promise<Record<string, string>> {
 // ============================================================
 
 const PROFILE_STATS_TAB = "ProfileStats";
-const PROFILE_STATS_HEADER = ["captured_at", "followers", "connections", "profile_views_90d", "search_appearances", "source"];
+// post_impressions_7d (col G) was appended AFTER source (col F) on 2026-07-15 so
+// pre-existing rows (6 cols) stay valid — old rows just have an empty col G.
+const PROFILE_STATS_HEADER = ["captured_at", "followers", "connections", "profile_views_90d", "search_appearances", "source", "post_impressions_7d"];
 
 // Create a tab (with a header row) if it doesn't exist yet. Idempotent.
 export async function ensureSheet(tab: string, header: string[]) {
@@ -117,16 +119,37 @@ export async function saveProfileStats(row: {
   connections?: number | string;
   profile_views_90d?: number | string;
   search_appearances?: number | string;
+  post_impressions_7d?: number | string;
   source?: string;
 }) {
   await ensureSheet(PROFILE_STATS_TAB, PROFILE_STATS_HEADER);
+  // Self-heal the header — the tab predates the post_impressions_7d column, so
+  // (re)write the full header row every save. Cheap, idempotent, keeps col G named.
+  try {
+    const auth = getAuth();
+    const sheets = google.sheets({ version: "v4", auth });
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: SHEET_ID,
+      range: `${PROFILE_STATS_TAB}!A1`,
+      valueInputOption: "RAW",
+      requestBody: { values: [PROFILE_STATS_HEADER] },
+    });
+  } catch { /* header cosmetic only — never block a save on it */ }
+
+  // Merge with the latest row so a PARTIAL update (e.g. a feed-only sync that
+  // only sees profile views + post impressions) never blanks out followers /
+  // connections captured on a different page. Empty/undefined = carry forward.
+  const prev = await loadLatestProfileStats();
+  const keep = (v: number | string | undefined, fallback: string) =>
+    v === undefined || v === "" ? fallback : v;
   await appendRow(PROFILE_STATS_TAB, [
     karachiIso(new Date()),
-    row.followers ?? "",
-    row.connections ?? "",
-    row.profile_views_90d ?? "",
-    row.search_appearances ?? "",
+    keep(row.followers, prev?.followers ?? ""),
+    keep(row.connections, prev?.connections ?? ""),
+    keep(row.profile_views_90d, prev?.profile_views_90d ?? ""),
+    keep(row.search_appearances, prev?.search_appearances ?? ""),
     row.source ?? "extension",
+    keep(row.post_impressions_7d, prev?.post_impressions_7d ?? ""),
   ]);
 }
 
@@ -136,12 +159,13 @@ export interface ProfileStatsRow {
   connections: string;
   profile_views_90d: string;
   search_appearances: string;
+  post_impressions_7d: string;
 }
 
 export async function loadLatestProfileStats(): Promise<ProfileStatsRow | null> {
   let rows: string[][];
   try {
-    rows = await readSheet(PROFILE_STATS_TAB, "A:F");
+    rows = await readSheet(PROFILE_STATS_TAB, "A:G");
   } catch {
     return null; // tab doesn't exist yet
   }
@@ -154,6 +178,7 @@ export async function loadLatestProfileStats(): Promise<ProfileStatsRow | null> 
     connections: r[2] || "",
     profile_views_90d: r[3] || "",
     search_appearances: r[4] || "",
+    post_impressions_7d: r[6] || "",
   };
 }
 

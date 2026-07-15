@@ -70,6 +70,19 @@ function EmptyState({ children }: { children: React.ReactNode }) {
   );
 }
 
+// ProfileStats captured_at is Karachi wall-clock ("YYYY-MM-DD HH:MM:SS", no tz).
+// Tag it +05:00 so "ago" is right regardless of the viewer's timezone.
+function syncedAgo(capturedAt: string): string {
+  const d = new Date(capturedAt.replace(" ", "T") + "+05:00");
+  if (isNaN(d.getTime())) return "";
+  const mins = Math.max(0, Math.round((Date.now() - d.getTime()) / 60000));
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.round(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.round(hrs / 24)}d ago`;
+}
+
 function shuffle3<T>(arr: T[]): T[] {
   const copy = [...arr];
   for (let i = copy.length - 1; i > 0; i--) {
@@ -97,13 +110,23 @@ export default function DashboardPage() {
   const [acctPosts, setAcctPosts] = useState<AccountPost[] | null>(null);
   useEffect(() => { fetchAccountPosts().then(setAcctPosts); }, []);
 
-  // Live follower count synced by the browser extension (falls back to the
-  // manual lib/profile.ts snapshot until the first sync lands).
+  // Live stats synced by the browser extension (falls back to the manual
+  // lib/profile.ts snapshot until the first sync lands).
   const [liveFollowers, setLiveFollowers] = useState<string | null>(null);
+  const [sync, setSync] = useState<{ capturedAt: string; profileViews: string; postImpressions: string } | null>(null);
   useEffect(() => {
     fetch("/api/linkedin/sync")
       .then((r) => r.json())
-      .then((d) => { if (d?.stats?.followers) setLiveFollowers(Number(d.stats.followers).toLocaleString()); })
+      .then((d) => {
+        if (d?.stats?.followers) setLiveFollowers(Number(d.stats.followers).toLocaleString());
+        if (d?.stats?.captured_at) {
+          setSync({
+            capturedAt: d.stats.captured_at,
+            profileViews: d.stats.profile_views_90d || "",
+            postImpressions: d.stats.post_impressions_7d || "",
+          });
+        }
+      })
       .catch(() => {});
   }, []);
 
@@ -180,11 +203,32 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold flex items-center gap-2">
             <BarChart3 size={16} className="text-[var(--primary)]" /> Profile stats
+            {sync?.capturedAt && (
+              <span
+                className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full"
+                style={{ background: "var(--surface-3)", color: "var(--muted-foreground)" }}
+                title={`Last synced by the browser extension at ${sync.capturedAt}`}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                Live · synced {syncedAgo(sync.capturedAt)}
+              </span>
+            )}
           </h2>
           <Link href="/analytics" className="text-xs font-medium text-[var(--primary)] hover:underline">
             Full analytics →
           </Link>
         </div>
+
+        {(sync?.profileViews || sync?.postImpressions) && (
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+            {sync?.profileViews && (
+              <span><span className="font-semibold text-foreground">{Number(sync.profileViews).toLocaleString()}</span> profile viewers (90d)</span>
+            )}
+            {sync?.postImpressions && (
+              <span><span className="font-semibold text-foreground">{Number(sync.postImpressions).toLocaleString()}</span> post impressions (7d)</span>
+            )}
+          </div>
+        )}
         {profileStats === null ? (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
             {Array.from({ length: 4 }).map((_, i) => (

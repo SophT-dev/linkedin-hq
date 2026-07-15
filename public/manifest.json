@@ -2,10 +2,10 @@
   "name": "LinkedIn HQ — Taha Anwar",
   "short_name": "LinkedIn HQ",
   "description": "Your personal LinkedIn domination system",
-  "start_url": "/",
+  "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#641212",
-  "theme_color": "#641212",
+  "background_color": "#ffffff",
+  "theme_color": "#2f6fed",
   "orientation": "portrait",
   "icons": [
     {

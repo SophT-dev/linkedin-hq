@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bleed AI — The OutboundPhD System</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#07070d;font-family:'Inter',sans-serif}
+
+  .stage{width:1080px;height:1350px;background:#07070d;position:relative;overflow:hidden}
+  .stage::before{content:"";position:absolute;inset:0;z-index:0;
+    background:
+      radial-gradient(820px 560px at 84% -6%,rgba(255,61,56,.18),transparent 55%),
+      radial-gradient(680px 520px at 6% 104%,rgba(177,19,15,.14),transparent 55%);}
+  .stage::after{content:"";position:absolute;inset:0;z-index:0;opacity:.5;
+    background-image:radial-gradient(rgba(120,130,170,.06) 1px,transparent 1px);
+    background-size:34px 34px;-webkit-mask-image:radial-gradient(circle at 50% 35%,#000,transparent 80%);mask-image:radial-gradient(circle at 50% 35%,#000,transparent 80%);}
+  .layer{position:absolute;inset:0;z-index:2;padding:64px 66px 54px;display:flex;flex-direction:column}
+
+  /* header */
+  .top{display:flex;align-items:center;justify-content:space-between}
+  .top img.logo{height:42px;width:auto;filter:drop-shadow(0 2px 10px rgba(255,61,56,.35))}
+  .kick{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:#9099b8}
+
+  /* title */
+  .ttl{margin-top:38px}
+  .ttl h1{font-weight:900;font-size:76px;line-height:.98;letter-spacing:-2.6px;color:#f5f5f7}
+  .ttl h1 em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-1px;
+    background:linear-gradient(100deg,#ff5a3c,#ff3d38 50%,#b1130f);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .ttl p{margin-top:16px;font-size:22px;line-height:1.4;color:#9099b8;font-weight:500;max-width:900px}
+  .ttl p b{color:#eaeef8;font-weight:700}
+
+  /* formula row: covers -> arrow -> result */
+  .formula{display:flex;align-items:center;gap:20px;margin-top:40px}
+  .covers{display:flex;flex-direction:column;gap:12px;flex:none}
+  .cover{width:210px;height:78px;border-radius:14px;background:linear-gradient(145deg,#16161f,#0f0f18);
+    border:1px solid #2a2a3e;position:relative;overflow:hidden;display:flex;align-items:center;padding:0 20px 0 26px}
+  .cover::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:linear-gradient(180deg,#ff5a3c,#b1130f)}
+  .cover .cnum{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:#ff6b67;font-weight:600;position:absolute;top:12px;left:26px}
+  .cover .cnm{font-weight:900;font-size:26px;letter-spacing:-.5px;color:#f5f5f7;margin-top:12px}
+  .arrow{flex:none;color:#ff3d38;filter:drop-shadow(0 0 14px rgba(255,61,56,.5))}
+  .arrow svg{display:block}
+  .result{flex:1;background:linear-gradient(180deg,#141420,#0e0e17);border:1px solid #2a2a3e;
+    border-radius:20px;padding:28px 30px;position:relative;overflow:hidden}
+  .result::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:linear-gradient(180deg,#ff5a3c,#b1130f)}
+  .result .rlab{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:#9099b8;font-weight:600}
+  .result .rttl{font-weight:900;font-size:38px;line-height:1.02;letter-spacing:-1.2px;color:#f5f5f7;margin-top:8px}
+  .result .rttl em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:#ff6b67}
+  .result .rsub{font-size:16px;color:#9099b8;font-weight:500;margin-top:12px;line-height:1.35}
+  .result .rsub b{color:#eaeef8;font-weight:700}
+
+  /* TOC */
+  .seclab{display:flex;align-items:center;gap:14px;margin:44px 0 22px;color:#ff6b67}
+  .seclab .t{font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:3px;text-transform:uppercase;font-weight:600;white-space:nowrap}
+  .seclab .line{height:1px;flex:1;background:linear-gradient(90deg,currentColor,transparent);opacity:.35}
+  .toc{display:grid;grid-template-columns:1fr 1fr;gap:14px 26px}
+  .titem{display:flex;align-items:center;gap:16px;background:#0e0e13;border:1px solid #1f1f30;border-radius:14px;padding:18px 20px}
+  .titem .em{font-size:26px;flex:none;width:30px;text-align:center}
+  .titem .tx{font-size:19px;font-weight:700;color:#eaeef8;letter-spacing:-.3px;line-height:1.2}
+  .titem .tx span{display:block;font-size:14px;font-weight:500;color:#8991ac;margin-top:2px}
+
+  /* footer */
+  .foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;padding-top:22px;border-top:1px solid #1f1f30}
+  .foot .by{display:flex;align-items:center;gap:13px}
+  .foot .ava{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,61,56,.55);box-shadow:0 0 16px rgba(255,61,56,.3)}
+  .foot .byt b{display:block;font-size:18px;color:#f5f5f7;font-weight:800;letter-spacing:-.3px}
+  .foot .byt span{font-family:'JetBrains Mono',monospace;font-size:12px;color:#9099b8}
+  .foot .cta{font-size:17px;color:#eaeef8;font-weight:700}
+  .foot .cta b{color:#ff6b67}
+  .foot .drop{height:42px;width:auto;opacity:.9;filter:drop-shadow(0 0 14px rgba(255,61,56,.5))}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="layer">
+
+    <div class="top">
+      <img class="logo" src="../assets/bleedai-logo-white.png" alt="Bleed AI">
+      <div class="kick">351 posts · reverse-engineered</div>
+    </div>
+
+    <div class="ttl">
+      <h1>The 8-Million-Email<br><em>System.</em></h1>
+      <p>Eric Nowoslawski's agency sends <b>8M+ cold emails a month</b>. We read all 351 of his posts and rebuilt his system in one place.</p>
+    </div>
+
+    <!-- FORMULA: 3 covers -> arrow -> result -->
+    <div class="formula">
+      <div class="covers">
+        <div class="cover"><div class="cnum">PILLAR 01</div><div class="cnm">Signals</div></div>
+        <div class="cover"><div class="cnum">PILLAR 02</div><div class="cnm">Claygent</div></div>
+        <div class="cover"><div class="cnum">PILLAR 03</div><div class="cnm">Engineering</div></div>
+      </div>
+      <div class="arrow">
+        <svg width="66" height="44" viewBox="0 0 66 44" fill="none">
+          <path d="M2 22h54M40 6l18 16-18 16" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="result">
+        <div class="rlab">The system, decoded</div>
+        <div class="rttl">1 positive reply per <em>140 leads</em></div>
+        <div class="rsub">The exact plays behind <b>Growth Engine X</b> — signals, AI research, and the engineering stack.</div>
+      </div>
+    </div>
+
+    <!-- TOC -->
+    <div class="seclab"><span class="t">What's inside</span><span class="line"></span></div>
+    <div class="toc">
+      <div class="titem"><div class="em">⚡</div><div class="tx">The Philosophy<span>Research beats volume</span></div></div>
+      <div class="titem"><div class="em">🎯</div><div class="tx">The Signals<span>Who to email — 6 plays</span></div></div>
+      <div class="titem"><div class="em">🤖</div><div class="tx">The Claygent Layer<span>Find the angle with AI</span></div></div>
+      <div class="titem"><div class="em">✍️</div><div class="tx">The Copy Formula<span>Turn research into one line</span></div></div>
+      <div class="titem"><div class="em">🏗️</div><div class="tx">The Engineering Stack<span>The unfair advantage</span></div></div>
+      <div class="titem"><div class="em">📬</div><div class="tx">Deliverability<span>Sending · List · Strategy</span></div></div>
+      <div class="titem"><div class="em">📊</div><div class="tx">The Numbers<span>Every real metric he shared</span></div></div>
+      <div class="titem"><div class="em">🎯</div><div class="tx">What Kills Meetings<span>6 booking-rate killers</span></div></div>
+    </div>
+
+    <div class="foot">
+      <div class="by">
+        <img class="ava" src="../assets/taha.jpg" alt="Taha Anwar">
+        <div class="byt"><b>Taha Anwar</b><span>Distilled by Bleed AI</span></div>
+      </div>
+      <div class="cta">Comment <b>OUTBOUND</b> for the full breakdown</div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
