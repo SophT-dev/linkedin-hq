@@ -89,8 +89,7 @@ async function scrapeProfile(profile) {
   );
   if (!res.ok) throw new Error(`Apify ${ACTOR} -> ${res.status} ${await res.text()}`);
   const items = await res.json();
-  const seen = new Set();
-  return items
+  const mapped = items
     .map((it) => ({
       urn: it.full_urn || it.urn?.activity_urn || it.url,
       url: (it.url || "").split("?")[0],
@@ -101,8 +100,20 @@ async function scrapeProfile(profile) {
       comments: it.stats?.comments ?? 0,
       reposts: it.stats?.reposts ?? 0,
     }))
-    .filter((p) => p.urn && p.url)
-    .filter((p) => { if (seen.has(p.urn)) return false; seen.add(p.urn); return true; });
+    .filter((p) => p.urn && p.url);
+
+  // Dedup by urn, but PREFER the original ("regular") over a self-repost that
+  // shares the same activity urn. LinkedIn gives Taha's repost-of-his-own-post
+  // the ORIGINAL's urn, and the actor returns both (repost newest-first). A naive
+  // first-wins dedup kept the repost and dropped the original — which then never
+  // showed in Analytics (originals-only) and hid the post entirely. Regular wins.
+  const byUrn = new Map();
+  for (const p of mapped) {
+    const prev = byUrn.get(p.urn);
+    if (!prev) { byUrn.set(p.urn, p); continue; }
+    if (prev.post_type === "repost" && p.post_type !== "repost") byUrn.set(p.urn, p);
+  }
+  return [...byUrn.values()];
 }
 
 function getSheets() {
@@ -159,8 +170,11 @@ async function main() {
       // profile) and isn't a real sheet row yet -- skip, don't try to update it.
       if (found && found.rowIndex < 2) continue;
       if (found) {
-        // Refresh stats (G:J) + last_scraped (M); leaves first_seen (L) intact.
-        refreshData.push({ range: `${TAB}!G${found.rowIndex}:J${found.rowIndex}`, values: [[p.reactions, p.comments, p.reposts, worked]] });
+        // Refresh C:J (posted_at, display, post_type, text, stats, worked) + last_scraped (M);
+        // leaves first_seen (L) intact. Rewriting C:E self-heals rows previously
+        // mis-stored as a "repost" (see the regular-wins dedup above) back to the
+        // original — otherwise the old post_type/date would stick forever.
+        refreshData.push({ range: `${TAB}!C${found.rowIndex}:J${found.rowIndex}`, values: [[p.posted_at, displayDate(p.posted_at), p.post_type, p.text, p.reactions, p.comments, p.reposts, worked]] });
         refreshData.push({ range: `${TAB}!M${found.rowIndex}`, values: [[now]] });
         pRef++;
       } else {
