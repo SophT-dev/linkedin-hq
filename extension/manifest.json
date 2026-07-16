@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "Bleed AI — LinkedIn Assistant",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "Inline comment suggestions in Taha's voice + always-on read-only sync of your own LinkedIn stats (followers, connections, profile viewers, post impressions) and comment activity to LinkedIn HQ. Suggest-only; nothing is ever posted automatically.",
-  "permissions": ["storage"],
+  "permissions": ["storage", "alarms", "tabs"],
   "host_permissions": [
     "https://www.linkedin.com/*",
     "https://linkedin-hq.vercel.app/*",
@@ -17,6 +17,11 @@
       "matches": ["https://www.linkedin.com/*"],
       "js": ["content.js", "sync.js", "activity.js"],
       "css": ["content.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://linkedin-hq.vercel.app/*", "http://localhost:3009/*"],
+      "js": ["bridge.js"],
       "run_at": "document_idle"
     }
   ],

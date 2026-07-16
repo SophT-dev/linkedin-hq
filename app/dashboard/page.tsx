@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Link from "next/link";
-import { Users, BarChart3, Heart, MessageCircle, TrendingUp, RefreshCw } from "lucide-react";
+import { Users, BarChart3, Heart, MessageCircle, TrendingUp, RefreshCw, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProfileHeader from "@/components/ProfileHeader";
 import StatCards, { type StatCard } from "@/components/analytics/StatCards";
@@ -183,6 +183,91 @@ export default function DashboardPage() {
     return d ? Date.now() - d.getTime() > STALE_PROFILE_MS : false;
   }, [sync]);
 
+  // --- "Sync live" — pull fresh numbers from LinkedIn on demand -----------
+  // Unlike Refresh (which only re-reads the sheet), this asks the extension to
+  // open LinkedIn in a background tab, scrape, and POST — then we poll the sheet
+  // until a NEWER capturedAt lands and re-render. See extension/bridge.js.
+  type SyncLive = "idle" | "requesting" | "syncing" | "done" | "not-detected" | "failed";
+  const [syncLive, setSyncLive] = useState<SyncLive>("idle");
+  const syncLiveMsg: Record<SyncLive, string> = {
+    idle: "",
+    requesting: "contacting the extension…",
+    syncing: "syncing from LinkedIn…",
+    done: "synced just now",
+    "not-detected": "extension not detected — reload it at chrome://extensions, then retry",
+    failed: "sync didn’t land — is Chrome logged into LinkedIn?",
+  };
+
+  const handleSyncLive = useCallback(() => {
+    if (syncLive === "requesting" || syncLive === "syncing") return;
+    const preTime = sync?.capturedAt ? (syncedDate(sync.capturedAt)?.getTime() ?? 0) : 0;
+    setSyncLive("requesting");
+
+    let acked = false;
+    let pollTimer: ReturnType<typeof setTimeout> | null = null;
+    let ackTimer: ReturnType<typeof setTimeout> | null = null;
+    let idleTimer: ReturnType<typeof setTimeout> | null = null;
+    const deadline = Date.now() + 60000; // give the whole sync up to 60s to land
+
+    const cleanup = () => {
+      window.removeEventListener("message", onMsg);
+      if (pollTimer) clearTimeout(pollTimer);
+      if (ackTimer) clearTimeout(ackTimer);
+    };
+
+    const poll = async () => {
+      if (Date.now() > deadline) {
+        cleanup();
+        setSyncLive("failed");
+        return;
+      }
+      try {
+        const r = await fetch("/api/linkedin/sync", { cache: "no-store" });
+        const d = await r.json();
+        const capturedAt: string = d?.stats?.captured_at || "";
+        const t = capturedAt ? (syncedDate(capturedAt)?.getTime() ?? 0) : 0;
+        if (capturedAt && t > preTime) {
+          cleanup();
+          setSyncLive("done");
+          setRefreshKey((k) => k + 1); // re-read numbers + provenance line
+          idleTimer = setTimeout(() => setSyncLive("idle"), 4000);
+          return;
+        }
+      } catch { /* transient — keep polling */ }
+      pollTimer = setTimeout(poll, 3000);
+    };
+
+    const onMsg = (event: MessageEvent) => {
+      if (event.source !== window || !event.data) return;
+      if (event.data.type === "BLEED_SYNC_ACK") {
+        if (acked) return;
+        acked = true;
+        if (ackTimer) clearTimeout(ackTimer);
+        setSyncLive("syncing");
+        pollTimer = setTimeout(poll, 3000);
+      } else if (event.data.type === "BLEED_SYNC_DONE" && acked) {
+        // Background says it finished — poll now instead of waiting out the 3s.
+        if (pollTimer) clearTimeout(pollTimer);
+        poll();
+      }
+    };
+
+    window.addEventListener("message", onMsg);
+    window.postMessage({ type: "BLEED_SYNC_NOW" }, "*");
+
+    // No ACK within 2s ⇒ the bridge (extension) isn't there.
+    ackTimer = setTimeout(() => {
+      if (!acked) {
+        cleanup();
+        setSyncLive("not-detected");
+        idleTimer = setTimeout(() => setSyncLive("idle"), 6000);
+      }
+    }, 2000);
+    void idleTimer;
+  }, [sync, syncLive]);
+
+  const syncLiveBusy = syncLive === "requesting" || syncLive === "syncing";
+
   return (
     <div className="max-w-lg lg:max-w-5xl mx-auto px-4 lg:px-6 py-6 space-y-5">
       {/* Refresh control — re-reads the latest synced data (numbers are pipeline-fed) */}
@@ -191,6 +276,17 @@ export default function DashboardPage() {
           {lastUpdated && (
             <span className="text-xs text-muted-foreground" aria-live="polite">{agoLabel(lastUpdated)}</span>
           )}
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleSyncLive}
+            disabled={syncLiveBusy}
+            aria-label="Pull fresh stats live from LinkedIn via the extension"
+            title="Asks the browser extension to open LinkedIn in the background, scrape your latest followers/connections, and push them here — no manual sync needed."
+          >
+            <Zap size={14} className={`mr-1 ${syncLiveBusy ? "animate-pulse" : ""}`} />
+            {syncLiveBusy ? "Syncing…" : "Sync live"}
+          </Button>
           <Button
             size="sm"
             variant="outline"
@@ -203,6 +299,16 @@ export default function DashboardPage() {
             {refreshing ? "Refreshing…" : "Refresh"}
           </Button>
         </div>
+
+        {syncLive !== "idle" && (
+          <p
+            className="text-[11px] text-right leading-snug max-w-xs"
+            aria-live="polite"
+            style={{ color: syncLive === "not-detected" || syncLive === "failed" ? "var(--primary)" : "var(--muted-foreground)" }}
+          >
+            {syncLiveMsg[syncLive]}
+          </p>
+        )}
 
         {/* Provenance — why the numbers may not move on refresh */}
         {(sync?.capturedAt || lastScraped) && (
