@@ -16,7 +16,8 @@
 //     [--contents "<bullet 1 • bullet 2 • ...>"] [--content-style "personal|expert|contrarian|story|listicle"] \
 //     [--format-tag "F1-F13"] [--visual-type "ai-image|video|gif|screenshot|infographic|personal-photo|carousel|none"] \
 //     [--lm-form "notion|youtube|pdf|git-repo|other"] [--lm-kind "educational-doc|claude-skills|commands|prompts|free-tool|n8n-flows|claude-system-folders|other"] \
-//     [--vault-path "content/lead-magnets/received/<slug>"] [--starred TRUE|FALSE] [--source-url "<author's profile url>"]
+//     [--vault-path "content/lead-magnets/received/<slug>"] [--starred TRUE|FALSE] [--source-url "<author's profile url>"] \
+//     [--domain "<corpus domain, e.g. deliverability-infra>"]
 //   NOTE: --lm-type here is the ORIGINAL flag and stays mapped to the hero_text
 //   column for back-compat (2026-07-09 behavior, untouched). The NEW lm_type
 //   column (educational-doc/claude-skills/etc.) is written by --lm-kind instead
@@ -112,6 +113,7 @@ async function main() {
     const vaultPath = get("--vault-path");
     const starred = get("--starred", "");
     const sourceUrl = get("--source-url");
+    const domain = get("--domain");
 
     // Build the row by HEADER NAME, not fixed position, so the LeadMagnets
     // columns can be reordered in the Sheet without breaking this script
@@ -157,6 +159,7 @@ async function main() {
       set("vault_path", vaultPath);
       set("starred", starred);
       set("source_person_url", sourceUrl);
+      set("domain", domain);
       await sheets.spreadsheets.values.update({
         spreadsheetId: SHEET_ID,
         range: `LeadMagnets!A${rowNum}:${lastCol}${rowNum}`,
@@ -168,7 +171,7 @@ async function main() {
     }
 
     if (!source || !link) {
-      console.error("Usage: --type lead_magnet --title <real title> --source <person> --link <lead magnet link> [--post-url ...] [--lm-type ...] [--takeaway ...] [--likes ...] [--comments ...] [--cta-keyword ...] [--contents ...] [--content-style ...] [--format-tag ...] [--visual-type ...] [--lm-form ...] [--lm-kind ...] [--vault-path ...] [--starred TRUE|FALSE] [--source-url ...]");
+      console.error("Usage: --type lead_magnet --title <real title> --source <person> --link <lead magnet link> [--post-url ...] [--lm-type ...] [--takeaway ...] [--likes ...] [--comments ...] [--cta-keyword ...] [--contents ...] [--content-style ...] [--format-tag ...] [--visual-type ...] [--lm-form ...] [--lm-kind ...] [--vault-path ...] [--starred TRUE|FALSE] [--source-url ...] [--domain ...]");
       process.exit(1);
     }
     const finalTitle = title || lmType;
@@ -197,6 +200,7 @@ async function main() {
     if (vaultPath) set("vault_path", vaultPath);
     set("starred", starred || "FALSE");
     if (sourceUrl) set("source_person_url", sourceUrl);
+    if (domain) set("domain", domain);
     await sheets.spreadsheets.values.append({
       spreadsheetId: SHEET_ID,
       range: "LeadMagnets!A1",

@@ -112,7 +112,7 @@ node scripts/capture-item.mjs --type lead_magnet \
   --post-url "<post url>" --link "<resource link>" --takeaway "<key takeaway>" \
   --likes N --comments N --cta-keyword "<keyword>" \
   --contents "a • b • c" --content-style <style> --format-tag F# \
-  --visual-type <type> --lm-form <form> --lm-kind <type> \
+  --visual-type <type> --lm-form <form> --lm-kind <type> --domain <slug> \
   --vault-path content/lead-magnets/received/<slug>/
 ```
 For a drained **queued** row, add `--update-row <n>` so it's updated in place — never a duplicate
