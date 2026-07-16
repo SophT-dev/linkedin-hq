@@ -25,7 +25,7 @@ ai-automation-tooling`.
     (content/lead-magnets/received/signal-gtm-engine/notes.md, captured 2026-07-16)
   - Claude Code Hooks for GTM (go-to-market-orchestrator) — Jan Rasmussen
     (content/lead-magnets/received/go-to-market-orchestrator/notes.md, captured 2026-07-16)
-  - The 1,000+ Hour Claude Code Setup Checklist — Aidan (surname unknown)
+  - The 1,000+ Hour Claude Code Setup Checklist — Aidan Collins
     (content/lead-magnets/received/1000-hour-claude-code-setup-checklist/notes.md, captured
     2026-07-16)
   - How to book 2-5 meetings a day on LinkedIn with Claude Sonnet 5 — Ilan Asseo (Kakiyo)
@@ -75,7 +75,7 @@ ai-automation-tooling`.
   scoring
 - Instantly + Smartlead + Clay handlers already exist — direct overlap with Bleed AI's live stack
 
-### The 1,000+ Hour Claude Code Setup Checklist — Aidan (surname unknown)
+### The 1,000+ Hour Claude Code Setup Checklist — Aidan Collins
 - Plan in plan mode (read the plan!), execute in auto mode — the highest-leverage habit
 - Karpathy rule 3 'surgical changes' stops Claude editing files you didn't ask about
 - Community skills without YOUR context get deleted — skills only stick carrying your frameworks

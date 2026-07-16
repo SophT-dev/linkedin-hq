@@ -1,8 +1,8 @@
 ---
 title: "The 1,000+ Hour Claude Code Setup Checklist"
 slug: "1000-hour-claude-code-setup-checklist"
-source_person: "Aidan (surname unknown)"
-source_person_url: ""
+source_person: "Aidan Collins"
+source_person_url: "https://calendly.com/aidancollins-lbzk/wlg-strategy-call"
 source_post_url: ""
 post_likes: 0
 post_comments: 0
