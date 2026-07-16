@@ -14,43 +14,53 @@ import {
   startOfWeek, endOfWeek, addWeeks, subWeeks, addDays, subDays
 } from "date-fns";
 
-const STATUSES = ["Idea", "Draft", "Designed", "Scheduled", "Posted"];
-const FORMATS = ["Text", "Carousel", "Image", "Story", "Video"];
-const FUNNEL = ["TOFU", "MOFU", "BOFU"];
+// Real "Content Calendar" tab schema (scripts/setup-content-calendar-tab.mjs,
+// scripts/format-all-tabs.mjs, components/dashboard/NextScheduled.tsx):
+//   date | day | profile | post_type | visual_type | angle_theme | source | status
+// (columns A-H). This page used to read/write a DIFFERENT, invented schema
+// (title/format/funnel_stage/lead_magnet/status/post_url/notes) against a
+// tab named "ContentCalendar" (no space) -- that name doesn't exist (the old
+// tab with THAT schema was deleted by setup-v2.gs's legacy cleanup), so every
+// read came back empty and every write silently failed. Fixed to read/write
+// the real tab under its real name with its real columns.
+const TAB = "Content Calendar";
+
+const STATUSES = ["planned", "swapped", "posted"];
+const statusLabel = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : "Planned";
 
 // Light-theme status chips (kept as small semantic tints, not app theme colors).
 const statusColors: Record<string, string> = {
-  Idea: "bg-muted text-muted-foreground",
-  Draft: "bg-blue-100 text-blue-700",
-  Designed: "bg-violet-100 text-violet-700",
-  Scheduled: "bg-amber-100 text-amber-700",
-  Posted: "bg-green-100 text-green-700",
+  planned: "bg-muted text-muted-foreground",
+  swapped: "bg-amber-100 text-amber-700",
+  posted: "bg-green-100 text-green-700",
 };
 
-const funnelDot: Record<string, string> = {
-  TOFU: "bg-blue-500",
-  MOFU: "bg-amber-500",
-  BOFU: "bg-green-500",
+const PROFILES = ["Taha", "Sophiya"];
+const profileDot: Record<string, string> = {
+  Taha: "bg-blue-500",
+  Sophiya: "bg-pink-500",
 };
 
 interface Post {
   date: string;
-  title: string;
-  format: string;
-  funnel_stage: string;
-  lead_magnet: string;
+  day: string;
+  profile: string;
+  post_type: string;
+  visual_type: string;
+  angle_theme: string;
+  source: string;
   status: string;
-  post_url: string;
-  notes: string;
+  // Column I -- NOT part of the official 8-column schema above (nothing else
+  // reads/writes it). Purely additive: an optional visual link the board can
+  // attach per-slot without touching any of the 8 real named columns.
   visual_url?: string;
   row: number;
 }
 
-// Content-board style card: author + status meta, a hint of the post text, and
+// Content-board style card: author + status meta, a hint of the post angle, and
 // the visual (or an add-visual placeholder). Matches the reference board.
 function PostCard({ post, size, onAddVisual, onOpen }: { post: Post; size: "sm" | "lg"; onAddVisual: (p: Post) => void; onOpen?: (p: Post) => void }) {
-  const isUrl = post.lead_magnet?.startsWith("http");
-  const status = post.status || "Idea";
+  const status = post.status || "planned";
   return (
     <div
       className="rounded-2xl border bg-card border-border shadow-sm p-3 space-y-2.5 transition-shadow hover:shadow-md cursor-pointer"
@@ -61,16 +71,17 @@ function PostCard({ post, size, onAddVisual, onOpen }: { post: Post; size: "sm" 
         <div className="flex items-center gap-2 min-w-0">
           <span className="relative w-6 h-6 rounded-full overflow-hidden shrink-0 ring-1 ring-border">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <Image src={tahaProfile.avatar} alt={tahaProfile.name} fill className="object-cover" sizes="24px" />
+            <Image src={tahaProfile.avatar} alt={post.profile || tahaProfile.name} fill className="object-cover" sizes="24px" />
           </span>
-          <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${statusColors[status] || statusColors.Idea}`}>{status}</span>
+          <span className="text-xs font-medium text-muted-foreground truncate">{post.profile}</span>
+          <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${statusColors[status] || statusColors.planned}`}>{statusLabel(status)}</span>
         </div>
         <MoreHorizontal size={15} className="text-muted-foreground shrink-0" />
       </div>
 
-      {/* text hint */}
+      {/* angle/theme hint */}
       <p className={`${size === "lg" ? "text-[15px]" : "text-sm"} font-medium leading-snug ${size === "lg" ? "line-clamp-4" : "line-clamp-3"}`}>
-        {post.title}
+        {post.angle_theme}
       </p>
 
       {/* visual */}
@@ -89,21 +100,17 @@ function PostCard({ post, size, onAddVisual, onOpen }: { post: Post; size: "sm" 
         )}
       </div>
 
-      {/* footer: format + funnel + lead magnet */}
+      {/* footer: post type + visual type + source */}
       <div className="flex flex-wrap items-center gap-1.5">
-        {post.format && (
-          <span className="text-[10px] px-2 py-0.5 rounded-full border border-border text-muted-foreground">{post.format}</span>
+        {post.post_type && (
+          <span className="text-[10px] px-2 py-0.5 rounded-full border border-border text-muted-foreground">{post.post_type}</span>
         )}
-        {post.funnel_stage && (
-          <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold badge-${post.funnel_stage.toLowerCase()}`}>{post.funnel_stage}</span>
+        {post.visual_type && (
+          <span className="text-[10px] px-2 py-0.5 rounded-full border border-border text-muted-foreground">{post.visual_type}</span>
         )}
       </div>
-      {post.lead_magnet && (
-        isUrl ? (
-          <a href={post.lead_magnet} onClick={(e) => e.stopPropagation()} target="_blank" rel="noreferrer" className="text-xs underline truncate block" style={{ color: "var(--primary)" }}>{post.lead_magnet}</a>
-        ) : (
-          <p className="text-xs text-muted-foreground truncate">🎁 {post.lead_magnet}</p>
-        )
+      {post.source && (
+        <p className="text-xs text-muted-foreground truncate">📎 {post.source}</p>
       )}
     </div>
   );
@@ -119,19 +126,20 @@ export default function CalendarPage() {
   const [adding, setAdding] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-  const [form, setForm] = useState({ date: "", title: "", format: "Text", funnel_stage: "TOFU", lead_magnet: "", status: "Idea", post_url: "", notes: "" });
+  const [form, setForm] = useState({ date: "", profile: "Taha", post_type: "", visual_type: "", angle_theme: "", source: "", status: "planned" });
   const [saving, setSaving] = useState(false);
 
   const load = async () => {
-    const res = await fetch("/api/sheets?tab=ContentCalendar&range=A:I");
+    const res = await fetch(`/api/sheets?tab=${encodeURIComponent(TAB)}&range=A:I`);
     if (res.ok) {
       const { rows } = await res.json();
       setPosts(
         (rows as string[][]).slice(1).map((r, i) => ({
-          date: r[0], title: r[1], format: r[2], funnel_stage: r[3],
-          lead_magnet: r[4], status: r[5], post_url: r[6], notes: r[7],
-          visual_url: r[8], row: i + 2,
-        })).filter((p) => p.title)
+          date: r[0] || "", day: r[1] || "", profile: r[2] || "", post_type: r[3] || "",
+          visual_type: r[4] || "", angle_theme: r[5] || "", source: r[6] || "",
+          status: (r[7] || "planned").trim().toLowerCase(),
+          visual_url: r[8] || undefined, row: i + 2,
+        })).filter((p) => p.angle_theme)
       );
     }
   };
@@ -144,19 +152,20 @@ export default function CalendarPage() {
   const postsOnDay = (date: Date) => posts.filter((p) => p.date === format(date, "yyyy-MM-dd"));
 
   const save = async () => {
-    if (!form.title.trim() || !form.date) return;
+    if (!form.angle_theme.trim() || !form.date) return;
     setSaving(true);
+    const day = format(new Date(`${form.date}T00:00:00`), "EEE");
     await fetch("/api/sheets", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        tab: "ContentCalendar",
-        values: [form.date, form.title, form.format, form.funnel_stage, form.lead_magnet, form.status, form.post_url, form.notes, ""],
+        tab: TAB,
+        values: [form.date, day, form.profile, form.post_type, form.visual_type, form.angle_theme, form.source, form.status, ""],
       }),
     });
     setSaving(false);
     setAdding(false);
-    setForm({ date: "", title: "", format: "Text", funnel_stage: "TOFU", lead_magnet: "", status: "Idea", post_url: "", notes: "" });
+    setForm({ date: "", profile: "Taha", post_type: "", visual_type: "", angle_theme: "", source: "", status: "planned" });
     await load();
   };
 
@@ -165,8 +174,8 @@ export default function CalendarPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        tab: "ContentCalendar", action: "update", rowIndex: post.row,
-        values: [post.date, post.title, post.format, post.funnel_stage, post.lead_magnet, status, post.post_url, post.notes, post.visual_url || ""],
+        tab: TAB, action: "update", rowIndex: post.row,
+        values: [post.date, post.day, post.profile, post.post_type, post.visual_type, post.angle_theme, post.source, status, post.visual_url || ""],
       }),
     });
     await load();
@@ -180,18 +189,20 @@ export default function CalendarPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        tab: "ContentCalendar", action: "update", rowIndex: post.row,
-        values: [post.date, post.title, post.format, post.funnel_stage, post.lead_magnet, post.status, post.post_url, post.notes, url],
+        tab: TAB, action: "update", rowIndex: post.row,
+        values: [post.date, post.day, post.profile, post.post_type, post.visual_type, post.angle_theme, post.source, post.status, url],
       }),
     });
     await load();
   };
 
-  // Funnel balance
+  // This month, by profile (there's no funnel_stage column on this tab --
+  // that belonged to the old, deleted "ContentCalendar" schema).
   const monthPosts = posts.filter((p) => p.date?.startsWith(format(currentMonth, "yyyy-MM")));
-  const tofuPct = monthPosts.length ? Math.round(monthPosts.filter((p) => p.funnel_stage === "TOFU").length / monthPosts.length * 100) : 0;
-  const mofuPct = monthPosts.length ? Math.round(monthPosts.filter((p) => p.funnel_stage === "MOFU").length / monthPosts.length * 100) : 0;
-  const bofuPct = 100 - tofuPct - mofuPct;
+  const tahaCount = monthPosts.filter((p) => p.profile === "Taha").length;
+  const sophiyaCount = monthPosts.filter((p) => p.profile === "Sophiya").length;
+  const tahaPct = monthPosts.length ? Math.round((tahaCount / monthPosts.length) * 100) : 0;
+  const sophiyaPct = 100 - tahaPct;
 
   const navBtn = "p-2 rounded-xl hover:bg-muted transition-colors";
   const chip = "text-xs px-2.5 py-1 rounded-full border border-border text-muted-foreground hover:bg-muted transition-colors";
@@ -228,22 +239,19 @@ export default function CalendarPage() {
 
         <TabsContent value="calendar" className="pt-4 space-y-5">
 
-          {/* Funnel balance */}
+          {/* This month, by profile */}
           {monthPosts.length > 0 && (
             <div className="rounded-2xl p-4 border bg-card border-border shadow-sm space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold">Funnel balance · {monthPosts.length} posts</span>
-                {bofuPct < 10 && <span className="font-medium" style={{ color: "var(--trend-down)" }}>Add more BOFU posts</span>}
+                <span className="font-semibold">This month · {monthPosts.length} posts</span>
               </div>
               <div className="flex gap-0.5 h-2 rounded-full overflow-hidden">
-                <div style={{ width: `${tofuPct}%` }} className="bg-blue-500" />
-                <div style={{ width: `${mofuPct}%` }} className="bg-amber-500" />
-                <div style={{ width: `${bofuPct}%` }} className="bg-green-500" />
+                <div style={{ width: `${tahaPct}%` }} className="bg-blue-500" />
+                <div style={{ width: `${sophiyaPct}%` }} className="bg-pink-500" />
               </div>
               <div className="flex gap-4 text-xs text-muted-foreground">
-                <span><span className="text-blue-500">●</span> TOFU {tofuPct}%</span>
-                <span><span className="text-amber-500">●</span> MOFU {mofuPct}%</span>
-                <span><span className="text-green-500">●</span> BOFU {bofuPct}%</span>
+                <span><span className="text-blue-500">●</span> Taha {tahaCount}</span>
+                <span><span className="text-pink-500">●</span> Sophiya {sophiyaCount}</span>
               </div>
             </div>
           )}
@@ -303,8 +311,8 @@ export default function CalendarPage() {
                               onClick={(e) => { e.stopPropagation(); setSelectedPost(p); }}
                               className="flex items-center gap-1 rounded-md px-1 py-0.5 hover:bg-accent"
                             >
-                              <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${funnelDot[p.funnel_stage] || "bg-gray-400"}`} />
-                              <span className="text-[10px] truncate">{p.title}</span>
+                              <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${profileDot[p.profile] || "bg-gray-400"}`} />
+                              <span className="text-[10px] truncate">{p.angle_theme}</span>
                             </div>
                           ))}
                           {dayPosts.length > 2 && <span className="text-[10px] text-muted-foreground pl-1">+{dayPosts.length - 2} more</span>}
@@ -392,23 +400,21 @@ export default function CalendarPage() {
                 <button onClick={() => { setAdding(false); setSelectedDate(null); }} className="text-muted-foreground hover:text-foreground"><X size={18} /></button>
               </div>
               <input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className="w-full px-3 py-2.5 rounded-xl text-sm bg-muted border border-border text-foreground outline-none focus:ring-2 focus:ring-[var(--ring)]" />
-              <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Post title / topic *" className="w-full px-3 py-2.5 rounded-xl text-sm bg-muted border border-border text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+              <input value={form.angle_theme} onChange={(e) => setForm({ ...form, angle_theme: e.target.value })} placeholder="Post angle / theme *" className="w-full px-3 py-2.5 rounded-xl text-sm bg-muted border border-border text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-[var(--ring)]" />
               <div className="flex gap-2">
-                {FUNNEL.map((f) => <button key={f} onClick={() => setForm({ ...form, funnel_stage: f })} className={`flex-1 py-2 rounded-xl text-xs font-semibold border ${form.funnel_stage === f ? "badge-" + f.toLowerCase() : "border-border text-muted-foreground"}`}>{f}</button>)}
-              </div>
-              <div className="flex gap-2 flex-wrap">
-                {FORMATS.map((f) => (
+                {PROFILES.map((p) => (
                   <button
-                    key={f}
-                    onClick={() => setForm({ ...form, format: f })}
-                    className="text-xs px-3 py-1.5 rounded-full border transition-colors"
-                    style={form.format === f ? { background: "var(--accent)", color: "var(--primary)", borderColor: "var(--border-accent)" } : { borderColor: "var(--border)", color: "var(--muted-foreground)" }}
-                  >{f}</button>
+                    key={p}
+                    onClick={() => setForm({ ...form, profile: p })}
+                    className="flex-1 py-2 rounded-xl text-xs font-semibold border transition-colors"
+                    style={form.profile === p ? { background: "var(--accent)", color: "var(--primary)", borderColor: "var(--border-accent)" } : { borderColor: "var(--border)", color: "var(--muted-foreground)" }}
+                  >{p}</button>
                 ))}
               </div>
-              <input value={form.lead_magnet} onChange={(e) => setForm({ ...form, lead_magnet: e.target.value })} placeholder="Lead magnet to attach (optional)" className="w-full px-3 py-2.5 rounded-xl text-sm bg-muted border border-border text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-[var(--ring)]" />
-              <input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Notes (optional)" className="w-full px-3 py-2.5 rounded-xl text-sm bg-muted border border-border text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-[var(--ring)]" />
-              <Button onClick={save} disabled={!form.title.trim() || !form.date || saving} className="w-full">{saving ? "Saving..." : "Save post"}</Button>
+              <input value={form.post_type} onChange={(e) => setForm({ ...form, post_type: e.target.value })} placeholder="Post type / format (e.g. F4 Numbered Playbook)" className="w-full px-3 py-2.5 rounded-xl text-sm bg-muted border border-border text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+              <input value={form.visual_type} onChange={(e) => setForm({ ...form, visual_type: e.target.value })} placeholder="Visual type (e.g. carousel, screen recording)" className="w-full px-3 py-2.5 rounded-xl text-sm bg-muted border border-border text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+              <input value={form.source} onChange={(e) => setForm({ ...form, source: e.target.value })} placeholder="Source (optional — where this angle traces to)" className="w-full px-3 py-2.5 rounded-xl text-sm bg-muted border border-border text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+              <Button onClick={save} disabled={!form.angle_theme.trim() || !form.date || saving} className="w-full">{saving ? "Saving..." : "Save post"}</Button>
             </div>
           )}
 
@@ -418,17 +424,17 @@ export default function CalendarPage() {
               <div className="w-full max-w-lg rounded-t-2xl sm:rounded-2xl p-5 space-y-4 bg-card border border-border shadow-xl" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="font-semibold">{selectedPost.title}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{selectedPost.date} · {selectedPost.format} · {selectedPost.funnel_stage}</p>
+                    <p className="font-semibold">{selectedPost.angle_theme}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{selectedPost.date} · {selectedPost.profile} · {selectedPost.post_type}</p>
                   </div>
                   <button onClick={() => setSelectedPost(null)} className="text-muted-foreground hover:text-foreground"><X size={18} /></button>
                 </div>
-                {selectedPost.lead_magnet && <p className="text-sm" style={{ color: "var(--primary)" }}>🎁 Lead magnet: {selectedPost.lead_magnet}</p>}
+                {selectedPost.source && <p className="text-sm" style={{ color: "var(--primary)" }}>📎 Source: {selectedPost.source}</p>}
                 <div>
                   <p className="text-xs text-muted-foreground mb-2">Update status</p>
                   <div className="flex flex-wrap gap-2">
                     {STATUSES.map((s) => (
-                      <button key={s} onClick={() => updateStatus(selectedPost, s)} className={`text-xs px-3 py-1.5 rounded-full font-medium ${selectedPost.status === s ? statusColors[s] : "border border-border text-muted-foreground"}`}>{s}</button>
+                      <button key={s} onClick={() => updateStatus(selectedPost, s)} className={`text-xs px-3 py-1.5 rounded-full font-medium ${selectedPost.status === s ? statusColors[s] : "border border-border text-muted-foreground"}`}>{statusLabel(s)}</button>
                     ))}
                   </div>
                 </div>
