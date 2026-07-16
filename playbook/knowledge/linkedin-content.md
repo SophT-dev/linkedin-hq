@@ -30,3 +30,17 @@ the swipe-file inflow is LinkedIn-growth content. 404 tagged posts in the corpus
   - `the-counterintuitive-dm-approach.md`
   - "Viral LinkedIn Swipe File" (slug `viral-linkedin-swipe-file`) — LeadMagnets sheet row only,
     no local swipe file captured
+  - LinkedIn Ghostwriter Claude Skill — Aleksandar Miljkovic (with Jovan Petrovcan, Sawify)
+    (content/lead-magnets/received/linkedin-ghostwriter-claude-skill/notes.md, captured 2026-07-16)
+
+## Inbox (unprocessed takeaways)
+(folded in by /lm-intake; synthesize into the main body during the next deliberate synthesis pass)
+
+### LinkedIn Ghostwriter Claude Skill — Aleksandar Miljkovic (with Jovan Petrovcan, Sawify)
+- Voice-matching requires 5-10 verbatim real posts as primary training input — never invent a
+  voice
+- Sharp-opinion technique: rewrite hedged takes as blunt claims ('resumes matter less' ->
+  'resumes are dead') — the engine of engagement
+- Write the Meat first, Trailer second, Summary last — substance before packaging
+- Explicit banned-word/opener lists for posts AND comments as anti-AI-tell guardrails
+- Comments: exactly 1 sentence, lowercase-default, 5 options across 6 defined comment moves

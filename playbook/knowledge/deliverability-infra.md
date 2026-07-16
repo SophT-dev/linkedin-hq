@@ -251,4 +251,30 @@ on? Campaign start times rotating daily, not fixed?
     captured
   - "Infrastructure Blueprint" (slug `infrastructure-blueprint`) — LeadMagnets sheet row only, no
     local swipe file captured
+  - Cold Email at Scale: System Overview — Tim Scheuer (Oxygen)
+    (content/lead-magnets/received/floxform-cold-email-at-scale/notes.md, captured 2026-07-16)
+  - Cold Email at Scale for SMBs: 1200-1500 leads every month — unconfirmed (likely Smartlead)
+    (content/lead-magnets/received/sl-webinar-cold-email-at-scale-smbs/notes.md, captured
+    2026-07-16)
 - **INSIDER-RESEARCH.md items 1-11 folded into §1/§2 above** (retired doc, see `CLAUDE.md`).
+
+## Inbox (unprocessed takeaways)
+(folded in by /lm-intake; synthesize into the main body during the next deliberate synthesis pass)
+
+### Cold Email at Scale: System Overview — Tim Scheuer (Oxygen)
+- Capacity formula: domains x inboxes-per-domain x 25 = emails/day (75 x 3 x 25 = ~5,600/day =
+  ~100k/mo)
+- Limits: 20-25/inbox/day, 50/50 Google/Microsoft split, 2-3 inboxes/domain, warm 2-4 weeks, never
+  send from main domain
+- Waterfall verification: MillionVerifier generalist pass + BounceBan (~$0.0034/email) on
+  catch-alls only, 80-90% coverage target
+- Unit costs: ~$300/100k leads (Apollo via Boomerang), ~$72 verification, ~$32 AI personalization
+  (~$0.0008/msg via OpenRouter BYOK)
+- Monthly at 220 inboxes: ~$660 ZapMail + $99-250 Oxygen platform
+
+### Cold Email at Scale for SMBs: 1200-1500 leads every month — unconfirmed (likely Smartlead)
+- PCPL (Prospects Contacted Per Lead) target: 500 or less
+- Minimum reply rate benchmark: 2%; show-up rate goal: 70%
+- 20 emails/day/inbox cap for deliverability
+- Two-touch max, then 60-90 day cooldown with a new angle
+- 'Stop tracking open rates. They don't work anymore, period.'

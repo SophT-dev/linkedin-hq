@@ -1,0 +1,83 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 00 — TAM filter config (PLACEHOLDER / example)
+#
+# Copy to `filters.yaml` and edit to YOUR ICP. All three search scripts
+# (prospeo_search.py, blitz_search.py, aiark_search.py) read this same file and
+# map these neutral fields onto each provider's native filter shape.
+#
+# RULE OF THUMB for this stage: filter ONLY on headcount + geo (+ optional
+# keywords). Do NOT add an industry filter here — qualification (stage 01) does
+# industry/fit. See README.md.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Overlapping FINE headcount bands ────────────────────────────────────────
+# One API pull per band. Bands OVERLAP by a few % so companies near a boundary
+# land in two pulls (dedupe collapses them — overlap is free insurance).
+# Keep each band narrow enough that its total result count fits UNDER the
+# provider's per-query row cap (Prospeo: 25k/filter-set). Add more bands to
+# cover your full size range; tighten them if any single band gets truncated.
+headcount_bands:
+  - { min: 50,   max: 150 }
+  - { min: 140,  max: 300 }    # overlaps prev band at 140–150
+  - { min: 290,  max: 500 }    # overlaps at 290–300
+  - { min: 480,  max: 800 }
+  - { min: 780,  max: 1200 }
+  - { min: 1150, max: 2000 }
+  - { min: 1900, max: 3500 }
+  - { min: 3300, max: 6000 }
+  - { min: 5500, max: 10000 }
+  # TODO: extend/trim to match the size range of <YOUR_PRODUCT>'s ICP.
+
+# ── Departments ──────────────────────────────────────────────────────────────
+# Used by the people-first paths (Prospeo /search-person, Blitz Find People,
+# AI Ark /v1/people) and by company "headcount-by-department" style filters.
+# Values below are placeholders — use each provider's own department enum.
+#   Prospeo enum: "Engineering & Technical", "Sales", "Marketing", "C-Suite", ...
+#   AI Ark enum:  e.g. "product_management", "operations", "sales"
+# Leave empty ([]) to skip department filtering and pull on firmographics only.
+departments:
+  - "Engineering & Technical"   # TODO: set to the team that owns <your-icp> pain
+  # - "Information Technology"
+  # - "Product"
+
+# ── Geographies ──────────────────────────────────────────────────────────────
+# Company HQ locations. Strings must match each provider's accepted location
+# values (Prospeo: use its Search Suggestions API to get exact strings; AI Ark /
+# Blitz accept country/region names or ISO codes). Loop geo INSIDE each headcount
+# band if a single band still exceeds the per-query cap.
+geos:
+  - "United States"             # TODO: set to your serviceable market(s)
+  # - "United Kingdom"
+  # - "Canada"
+  # - "Germany"
+
+# ISO-3166 alpha-2 codes for providers that want codes (Blitz country_code, etc.)
+geo_country_codes:
+  - "US"
+  # - "GB"
+  # - "CA"
+
+# ── Keywords (optional, gentle long-tail bias) ───────────────────────────────
+# Theme words that describe what <your-icp> companies DO. Used as a soft company
+# keyword filter where the provider supports it (Prospeo company_keywords,
+# AI Ark keyword.sources). Keep loose — this biases toward fit, it does not hard
+# qualify. Leave empty ([]) to pull purely on headcount + geo.
+keywords:
+  - "<your-icp-theme-1>"        # TODO e.g. "logistics", "payments", "developer tools"
+  - "<your-icp-theme-2>"
+keywords_match_all: false        # false = ANY keyword matches (wider). true = AND.
+
+# ── Industry (DEFAULT OFF — see README rule #1) ──────────────────────────────
+# Leave empty. Only populate if your ICP is one tight, reliably-labeled vertical
+# AND you accept the risk of dropping mislabeled good-fit companies. Stage 01
+# does real industry/fit qualification.
+industries: []
+# industries:
+#   - "Software Development"     # provider's exact industry enum value
+
+# ── Run controls ─────────────────────────────────────────────────────────────
+run:
+  max_pages_per_band: 1000       # provider hard cap is 1000 (Prospeo). Lower to sample.
+  page_size: 25                  # Prospeo fixed 25; Blitz ≤50; AI Ark ≤100 (script clamps).
+  request_sleep_seconds: 1.1     # be polite — search RPS is low. Raise if you see 429s.
+  max_retries: 5                 # exponential backoff on 429 / 5xx.

@@ -15,3 +15,21 @@ posts in the corpus under `domain_primary: offers-lead-magnets`.
   - `price-based-on-value-not-cost.md`
   - `sell-based-on-value-not-volume.md`
   - `identify-the-real-problems.md`
+  - Aidan's Lead Magnet Masterclass — Aidan (surname unknown)
+    (content/lead-magnets/received/aidans-lead-magnet-masterclass/notes.md, captured 2026-07-16)
+
+## Inbox (unprocessed takeaways)
+(folded in by /lm-intake; synthesize into the main body during the next deliberate synthesis pass)
+
+### Aidan's Lead Magnet Masterclass — Aidan (surname unknown)
+- Naming: Desired Outcome + Topic + Container Word (Blueprint/Playbook/Kit/Vault/System), 3-5
+  words — 'sounds like something you'd pay $50 for'
+- 10-point post rubric (curiosity-gap hook, number in opener, 4-6 checkmark deliverables, single
+  ALL-CAPS keyword CTA, no emojis, 800-1200 chars) — run against every Bleed AI LM post before
+  shipping
+- 3-step CTA: Like -> Comment ONE-WORD-KEYWORD -> Connect; single keyword = herd-effect social
+  proof
+- Deliverable stack: 4-6 checkmark lines, numbers in 2+, parenthetical benefit in 2+
+- DM within 2 hours with a 'quick poll' question, NOT a qualifying question — doesn't feel like a
+  pitch
+- Cadence claim: 2-3 lead magnets per week minimum

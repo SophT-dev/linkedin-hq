@@ -1,0 +1,48 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_GTM_DIR/orchestrator/run.sh\" slack notify"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_GTM_DIR/orchestrator/run.sh\" typefully draft"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_GTM_DIR/orchestrator/run.sh\" zapier fire"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_GTM_DIR/orchestrator/run.sh\" notion log-session"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_GTM_DIR/orchestrator/run.sh\" slack daily-digest"
+          }
+        ]
+      }
+    ]
+  }
+}

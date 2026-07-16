@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_GTM_DIR/orchestrator/run.sh\" apollo enrich"
+          }
+        ]
+      }
+    ]
+  }
+}

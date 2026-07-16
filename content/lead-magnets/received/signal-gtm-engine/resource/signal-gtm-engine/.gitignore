@@ -1,0 +1,30 @@
+# ── Secrets — NEVER commit ──
+.env
+.env.local
+.env.*
+!.env.example
+*.key
+*.pem
+secrets/
+credentials.json
+
+# ── Run / client data stays local (this repo is a template, not a data dump) ──
+/data/
+**/data/
+*.jsonl
+*.csv
+!**/*.example.csv
+*.sqlite
+checkpoints/
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# ── OS / editor ──
+.DS_Store
+.vscode/
+.idea/

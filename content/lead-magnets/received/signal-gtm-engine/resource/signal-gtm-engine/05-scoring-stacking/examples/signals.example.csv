@@ -1,0 +1,12 @@
+account_id,signal_type,strength,occurred_at,source
+acct_0001,funding_round,1.0,2026-06-20T00:00:00Z,serper
+acct_0001,hiring_for_role,0.8,2026-06-18T00:00:00Z,serper
+acct_0001,web_research_activity,0.9,2026-06-22T00:00:00Z,trigify
+acct_0002,social_engagement,0.5,2026-01-02T00:00:00Z,trigify
+acct_0003,competitor,1.0,2026-06-21T00:00:00Z,trigify
+acct_0003,social_engagement,0.6,2026-06-21T00:00:00Z,trigify
+acct_0004,product_trigger,0.9,2026-06-22T00:00:00Z,internal
+acct_0004,content_interaction,0.7,2026-06-20T00:00:00Z,trigify
+acct_0005,funding_round,1.0,2026-06-22T00:00:00Z,serper
+acct_0005,leadership_hire,0.9,2026-06-21T00:00:00Z,serper
+acct_0006,social_engagement,0.4,2025-12-01T00:00:00Z,trigify

@@ -1,0 +1,158 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# signals.example.yaml — signal-spec template (Stage 03 · Signal Mapping)
+#
+# A signal = EVIDENCE that a company feels your pain RIGHT NOW.
+# Define each signal as a SMALL, SINGLE-PURPOSE, VERSIONED spec. One signal =
+# one observable fact. Stack small signals at scoring time (Stage 05), never
+# merge them into a mega-signal here.
+#
+# `write_signals.py` reads this file and writes one `signal_<name>` column per
+# entry over your stored account rows. Copy a block, rename it, change params.
+#
+# Fields per signal:
+#   name     snake_case → becomes column `signal_<name>` (required)
+#   version  bump when you change params; the definition is the asset (required)
+#   source   where evidence comes from: homepage | job_posts | firmographics
+#            | dns | trigify | serper                                  (required)
+#   method   keyword | threshold | geo | cname | social | two_source   (required)
+#   weight   relative importance, consumed by Stage 05 (0.0–1.0)        (required)
+#   params   method-specific knobs (see each block)                     (required)
+#   verify   OPTIONAL second-source rule (Method 5). Omit for proxy-only signals.
+#   notes    free text for the next human / session
+#
+# TODO: customize every value below for <YOUR_PRODUCT> and <your-icp>.
+# ─────────────────────────────────────────────────────────────────────────────
+
+signals:
+
+  # ── Method 1: keyword scan over stored job-post text ──────────────────────
+  - name: hiring_ai_eng
+    version: v1
+    source: job_posts            # field on the account row holding job-post text
+    method: keyword
+    weight: 0.8
+    params:
+      text_field: job_posts_text # which stored column to scan
+      keywords:                  # OR — any match fires the proxy
+        - "machine learning engineer"
+        - "ML platform"
+        - "LLM"
+        - "applied scientist"
+      keywords_not:              # NOT — kill obvious false positives
+        - "no machine learning"
+        - "machine learning is not"
+      word_boundary: true        # avoid substring false hits
+    verify:                      # Method 5 — confirm via an independent source
+      source: serper             # live Google/ATS job search
+      method: two_source
+      query_template: '"{company_name}" ("machine learning engineer" OR "ML platform") site:boards.greenhouse.io OR site:jobs.lever.co'
+      min_hits: 1                # >=1 confirming result → confidence: confirmed
+    notes: >
+      Proxy = stored job text mentions ML roles. Confirm = a live, dated job
+      listing actually exists. Both agree → confirmed. Stored-only → proxy.
+
+  # ── Method 1: keyword scan over stored homepage copy ──────────────────────
+  - name: homepage_mentions_pain
+    version: v1
+    source: homepage
+    method: keyword
+    weight: 0.5
+    params:
+      text_field: homepage_text
+      keywords:
+        - "<your-pain-phrase>"   # TODO: the words your ICP uses for their pain
+        - "<your-category>"
+      keywords_not: []
+      word_boundary: true
+    notes: >
+      Proxy-only (no verify). Homepage copy is self-reported, so weight it
+      modestly and let it STACK with a behavioural signal rather than stand alone.
+
+  # ── Method 4: numeric threshold over a stored count ───────────────────────
+  - name: scaling_team
+    version: v1
+    source: firmographics
+    method: threshold
+    weight: 0.6
+    params:
+      number_field: open_roles   # stored integer column
+      op: ">="                   # one of: >= > <= < ==
+      value: 5
+      keep_raw: true             # store the raw number as evidence for scaling
+    notes: >
+      Encodes the assumption "5+ open roles = actively scaling". The number
+      lives HERE in the spec, versioned — not buried in code.
+
+  # ── Method 4: threshold band (sweet-spot headcount) ───────────────────────
+  - name: headcount_sweetspot
+    version: v1
+    source: firmographics
+    method: threshold
+    weight: 0.4
+    params:
+      number_field: employee_count
+      op: "between"
+      min: 50                    # TODO: your ICP band
+      max: 500
+      keep_raw: true
+    notes: Qualifier more than buying intent. Gates noise; low weight.
+
+  # ── Method 3: geo gate (qualifier that gates other signals) ───────────────
+  - name: geo_us
+    version: v1
+    source: firmographics
+    method: geo
+    weight: 0.2
+    params:
+      country_field: hq_country
+      allow:                     # pass if HQ country is in this set
+        - "US"
+        - "United States"
+    notes: >
+      Not "buying intent" — a QUALIFIER. In Stage 05, only count behavioural
+      signals when this is true if your motion is US-only.
+
+  # ── Method 2: DNS CNAME vendor probe (handled by cname_probe.py) ──────────
+  # This spec documents intent; cname_probe.py owns the actual resolution +
+  # vendor map and writes signal_uses_<category>_tool. Listed here so the spec
+  # set is the single source of truth for "what signals exist".
+  - name: uses_category_tool
+    version: v1
+    source: dns
+    method: cname
+    weight: 0.7
+    params:
+      subdomain: "careers"       # probes careers.<domain> → ATS vendor map
+      # vendor map lives in cname_probe.py (VENDOR_CNAME_MAP) — keep it versioned there
+    notes: >
+      DNS doesn't lie about who hosts a subdomain → near-zero false positives.
+      A MISS means UNKNOWN, never "they don't use it". Run via cname_probe.py.
+
+  # ── Trigify (the SIGNAL LAYER): live social / buying signal ───────────────
+  # Captured by a Trigify search + workflow, then routed onto the matching
+  # account row (see verify_pattern.py for the confirm-before-write pattern).
+  # This spec records the contract so Stage 05 knows the column exists + weight.
+  - name: posted_about_pain
+    version: v1
+    source: trigify             # THE signal layer — do not substitute
+    method: social
+    weight: 0.9                 # behavioural + recent → highest weight
+    params:
+      monitoring_type: linkedin-posts   # linkedin | twitter | reddit | youtube ...
+      keywords:                          # Boolean: <=6 total across OR/AND/NOT
+        - "<your-pain-phrase>"
+        - "<your-category>"
+      time_frame: past-week
+      # the Trigify workflow enriches the poster + matches them to an account
+      # before this column is written; match key = company domain or name.
+    verify:
+      source: trigify
+      method: two_source
+      rule: >
+        Confirm the poster actually works at the matched account (person
+        enrichment company == account company) before flipping to confirmed.
+    notes: >
+      Time-sensitive. A person AT a target account saying your problem out loud
+      is the strongest "why now" you can get. Stack on top of static signals.
+
+  # ── Add 8–15 total. Keep each one small, single-purpose, versioned. ───────

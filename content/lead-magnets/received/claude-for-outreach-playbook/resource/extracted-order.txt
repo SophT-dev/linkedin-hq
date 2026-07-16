@@ -1,0 +1,141 @@
+### [image] image.png
+
+### [text] Hey, I'm Eva. I run Growth Corp, where we build client acquisition systems for B2B service businesses, the kind that sign 1-3 new clients a day and eventually become sellable assets. My background is in capital structuring, fundraising, and taking companies from concept through scale and exit, with managed portfolios north of $1B.
+
+### [text] I built this playbook because most founders treat AI like a faster way to spam. That's not what this is. Used well, Claude compresses the grunt work of outreach so your judgement goes where it actually matters: the offer, the targeting, and the conversation.
+
+### [text] Here's what you'll get: three copy-paste workflows that take you from a blank list to booked calls, plus the one rule that keeps this from blowing up in your face.
+
+### [quote] Prefer to skip the DIY? If you'd rather have a team build the acquisition system for you, that's what we do. Book a 30-min growth call and we'll map it to your business. Book a call → https://calendly.com/eb-growthcorp/30min
+
+### [divider] 
+
+### [sub_header] What's Inside
+
+### [numbered_list] Workflow 1: Build a Prospect List and Research Layer — turn a plain-English ICP into a targeted list with a real reason to reach out to each account.
+
+### [numbered_list] Workflow 2: Write Outreach That Starts Conversations in 60 Seconds — draft low-friction openers a prospect can say yes to fast, not another pitch they ignore.
+
+### [numbered_list] Workflow 3: Turn Competitor Audiences Into Your Pipeline — redirect demand that's already educated and unhappy toward your offer.
+
+### [numbered_list] The One Rule: Precision Over Volume — the review layer that separates a system from a spam cannon.
+
+### [divider] 
+
+### [sub_header] Workflow 1: Build a Prospect List and Research Layer
+
+### [text] After this section you'll be able to hand Claude your ideal client in plain English and get back a targeted account list with a specific "why now" for each name.
+
+### [text] Most outreach fails before a single message goes out, because the list is wrong. People buy a database, blast it, and wonder why replies are flat. The fix isn't more names. It's fewer, better ones, each with a reason you're showing up today.
+
+### [sub_sub_header] Step 1: Define the ICP in plain English
+
+### [text] Don't overthink this. Describe your best client the way you'd describe them to a friend.
+
+### [code] You're my outbound strategist. I sell [your service] to [type of business].My best clients look like this:- Industry: [e.g. B2B marketing agencies]- Size: [e.g. 10-40 staff, £50k-£150k/month revenue]- Role I sell to: [e.g. founder or head of sales]- The pain that makes them buy: [e.g. inconsistent deal flow, over-reliant on referrals]Give me:1. A tight profile of who I should target and who I should skip.2. The 5 firmographic filters I'd use to build this list in a tool like   Apollo, Sales Navigator, or Clay.3. The 3 trigger events that signal a company is in-market right now.Ask me anything you need before you answer.
+
+### [text] That last line matters. Let Claude interrogate your assumptions before it produces anything.
+
+### [sub_sub_header] Step 2: Turn each account into a "why now"
+
+### [text] A list without context is just names. Feed Claude what you know about a specific account and have it draft the angle.
+
+### [code] Here's an account: [company name + 2-3 facts you found: recent hire,job post, funding, a LinkedIn post, a new product, a market they entered].In one line, tell me the most relevant reason to reach out to them THIS week,tied to my service: [your service]. No fluff, no flattery.Write it the way one operator would say it to another.
+
+### [text] Run this per account. You're building a research layer, not a mail merge. The difference shows up in reply rates.
+
+### [sub_sub_header] Step 3: Pressure-test the list before you touch it
+
+### [code] Here's my list of [X] accounts: [paste].Play skeptic. Which of these are a weak fit for [your service] and why?Flag the ones I should cut so I don't waste sends.
+
+### [text] Claude gets you a clean, reasoned list in minutes. Your judgement on which accounts are actually worth your time gets it the rest of the way.
+
+### [quote] Want a second set of eyes on your targeting? Bad targeting is the single most common reason outbound stalls. Book a 30-min call and we'll stress-test your ICP live. Book a call → https://calendly.com/eb-growthcorp/30min
+
+### [divider] 
+
+### [sub_header] Workflow 2: Write Outreach That Starts Conversations in 60 Seconds
+
+### [text] After this section you'll be able to draft openers built around a low-friction offer, the kind a prospect can respond to in under a minute instead of filing under "pitch."
+
+### [text] The goal of a first message is not to close. It's to earn a reply. The best way to earn a reply is a low-friction offer: something a prospect can say yes to in 60 seconds. A small yes is a raised hand. That's what you're fishing for.
+
+### [sub_sub_header] Step 1: Have Claude build the low-friction offer
+
+### [code] I sell [service] to [ICP]. Their core problem is [problem].Help me design a low-friction offer: something valuable I can give orpropose that a busy [role] can say yes to in under 60 seconds.It should require almost no commitment from them but naturally lead intoa conversation about [your paid offer].Give me 5 options, ranked by how easy they are to say yes to.
+
+### [text] Think audits, teardowns, a short custom plan, a relevant benchmark. Something specific, not "hop on a call."
+
+### [sub_sub_header] Step 2: Draft the opener
+
+### [code] Write a cold [LinkedIn DM / email] to [role] at [company].Context on why now: [paste the "why now" from Workflow 1].The offer: [paste the low-friction offer].Rules:- Under 60 words.- Lead with them, not me. No "I hope this finds you well."- One clear, easy yes at the end.- Plain, direct, no agency jargon. Sound like a person, not a template.Give me 3 versions with different angles.
+
+### [sub_sub_header] Step 3: Kill anything that sounds like everyone else
+
+### [text] The inbox is full of AI-written sludge that all reads the same. This step is what keeps you out of that pile.
+
+### [code] Here are my 3 drafts: [paste].Be harsh. Which lines sound like generic AI or a marketing agency?Rewrite each one so it sounds like a specific human who did their homework.Cut every word that isn't earning its place.
+
+### [text] Test three angles against one segment. Keep the winner. That's a system, not a guess.
+
+### [quote] Don't want to write the messaging yourself? We build full outbound systems, offer, scripts, and sequence, for B2B service businesses. Book a 30-min call and we'll show you what it'd look like for your offer. Book a call → https://calendly.com/eb-growthcorp/30min
+
+### [divider] 
+
+### [sub_header] Workflow 3: Turn Competitor Audiences Into Your Pipeline
+
+### [text] After this section you'll be able to point Claude at demand that already exists, audiences your competitors educated but didn't fully satisfy, and redirect it toward your offer.
+
+### [text] You don't have to create demand from scratch. It's already out there. Somebody in your market has spent money educating buyers who are now aware of the problem and unimpressed with their options. That attention is available. The move is to show up with better proof, lower friction, and a faster path to a result. You never attack anyone. You just show up as the obvious alternative.
+
+### [sub_sub_header] Step 1: Map where the demand already gathers
+
+### [code] I sell [service] to [ICP].Help me find where my market's demand already gathers:- The types of companies whose customers overlap with mine.- The communities, comment sections, events, and content my buyers  already follow.- The signals that someone in that audience is unhappy with their  current option.Give me a practical list I can go act on this week.
+
+### [sub_sub_header] Step 2: Build the "better proof" message
+
+### [text] The rule here is simple: show up with a stronger result, not a louder pitch. Never name or knock a competitor.
+
+### [code] I want to reach buyers who already understand [problem] because they'vebeen in [competitor-adjacent] world.Write outreach that shows up with better proof and a lower-friction offer,WITHOUT mentioning or criticising any competitor.My proof point: [a real result you can stand behind].My offer: [your low-friction offer].Make it feel like a stronger option, not a sales pitch. 3 versions.
+
+### [text] Use a proof point you can actually defend. As an example of the shape this takes: we ran this play for Taurus Digital, an agency at $25K MRR. We put a low-friction offer in front of warm competitor audiences, they added $16K MRR in three weeks, then signed Porsche and Berachain. The mechanism is the audience redirect, not the specific numbers, so plug in your own.
+
+### [sub_sub_header] Step 3: Post the results that audience wishes they had
+
+### [text] Outbound and content feed each other. Have Claude turn a win into a handraiser.
+
+### [code] Turn this client result into a short LinkedIn post that would make someonein a competitor's audience stop scrolling: [paste result].No hype, no bragging. Let the specifics do the work.End with a soft line that invites the right person to raise their hand.
+
+### [text] Competitor audience, your offer, your client. That's the loop.
+
+### [divider] 
+
+### [sub_header] The One Rule: Precision Over Volume
+
+### [text] After this section you'll have the review layer that keeps AI-assisted outreach from turning into fast, confident garbage.
+
+### [text] Here's the rule I repeat to every operator I work with: volume is not the same as precision. Claude will happily generate a thousand messages. That's exactly the trap. Speed without judgement just lets you make the wrong move faster.
+
+### [text] Before anything goes out, run these three checks yourself. Not Claude. You.
+
+### [bulleted_list] Check the targeting. Is this the exact buyer, at the exact company, with a real reason to care right now? If you're not sure, cut them.
+
+### [bulleted_list] Pressure-test the offer. Would a busy person say yes to this in 60 seconds? If it takes effort to accept, it's not low-friction yet.
+
+### [bulleted_list] Read every line like the buyer. Does it sound like a specific human did their homework, or like AI filled a template? If it's the second one, rewrite it.
+
+### [text] Claude gets you to 80-90% in minutes. Your judgement as an operator gets it to 100%. That last 10% is the whole game. It's also why this makes you more valuable, not less. The grunt work compresses. The strategy expands.
+
+### [text] If your growth still runs on referrals and hope, this is how you start building a system that signs clients on repeat.
+
+### [divider] 
+
+### [sub_header] What's Next
+
+### [text] You've got the playbook. Two ways forward.
+
+### [text] Run it yourself. Everything you need is above. Bookmark it, build your list, and start testing offers this week.
+
+### [text] Have us build it for you. Growth Corp builds the full client acquisition system, offer, outbound, sales process, and the strategy to make the business sellable later, for B2B service businesses doing £50k/month or more. On a 30-min call we'll map exactly how it would work for you and where your current pipeline is leaking.
+
+### [text] Book a call → https://calendly.com/eb-growthcorp/30min

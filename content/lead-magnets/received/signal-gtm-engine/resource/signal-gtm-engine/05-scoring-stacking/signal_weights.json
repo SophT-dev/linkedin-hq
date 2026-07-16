@@ -1,0 +1,14 @@
+{
+  "_comment": "Stage 05 signal config. base_weight = how much a signal TYPE is worth. half_life_days = optional per-type decay override (falls back to DECAY_HALF_LIFE_DAYS env). TODO: customize these for <YOUR_PRODUCT> and your own signal taxonomy. Re-tune from the source-attribution cohort report after a few weeks of live data.",
+  "default_half_life_days": 30,
+  "signals": {
+    "funding_round":         { "base_weight": 10.0, "half_life_days": 60 },
+    "product_trigger":       { "base_weight": 9.0,  "half_life_days": 21 },
+    "leadership_hire":       { "base_weight": 8.0,  "half_life_days": 45 },
+    "hiring_for_role":       { "base_weight": 7.0,  "half_life_days": 30 },
+    "headcount_growth":      { "base_weight": 6.0,  "half_life_days": 45 },
+    "web_research_activity": { "base_weight": 5.0,  "half_life_days": 14 },
+    "content_interaction":   { "base_weight": 4.0,  "half_life_days": 21 },
+    "social_engagement":     { "base_weight": 3.0,  "half_life_days": 14 }
+  }
+}

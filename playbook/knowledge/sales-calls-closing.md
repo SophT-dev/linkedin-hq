@@ -24,3 +24,19 @@ pre-split now.
   - `sr-campaign-decoded.md`
   - "Sales Triggers" (slug `sales-triggers`) — LeadMagnets sheet row only, no local swipe file
     captured
+  - The LinkedIn Acquisition System — Eva (Growth Corp)
+    (content/lead-magnets/received/the-linkedin-acquisition-system/notes.md, captured 2026-07-16)
+
+## Inbox (unprocessed takeaways)
+(folded in by /lm-intake; synthesize into the main body during the next deliberate synthesis pass)
+
+### The LinkedIn Acquisition System — Eva (Growth Corp)
+- Math hook: 10 qualified calls on a $20K offer — 20% close = $40K vs 40% close = $80K; fix the
+  offer, not lead volume
+- Low-friction offers target 30-40% close ('the 60-second yes')
+- Routing rule: under $10K closes in DMs, above $10K needs a call
+- Cold message: lead with the case study, max 5 sentences, ban 'hope this finds you well', end
+  with a 10-min ask
+- Never name competitors ('Blue doesn't talk about red. It just shows up blue.')
+- Strategy map must reuse the prospect's verbatim language; triage call claims 30-60% close on
+  cold-sourced calls

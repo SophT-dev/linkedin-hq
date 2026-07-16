@@ -39,3 +39,19 @@ the 7 "meaty" domains getting a KB file, likely to stay a single file for a long
   - The new intent stack is modular: RB2B (person-level site deanonymization), Common Room (dark
     social), Trigify (LinkedIn engagement signals) — person-level + fast-decay beats account-level
     Bombora surges. (Source: vendor blog, directional — https://leadiq.com/blog/rb2b)
+  - The Claude for Outreach Playbook: 3 Workflows to Fill Your Pipeline Without Living in Your
+    Inbox — Eva (Growth Corp)
+    (content/lead-magnets/received/claude-for-outreach-playbook/notes.md, captured 2026-07-16)
+
+## Inbox (unprocessed takeaways)
+(folded in by /lm-intake; synthesize into the main body during the next deliberate synthesis pass)
+
+### The Claude for Outreach Playbook: 3 Workflows to Fill Your Pipeline Without Living in Your Inbox — Eva (Growth Corp)
+- Reply rates die at the list stage, not the copy stage — build a per-account 'why now'
+- First-message goal is a low-friction 60-second yes (audit/teardown/benchmark), not a call ask
+- Competitor audiences are pre-educated, pre-unhappy demand — win with stronger proof, never a
+  callout
+- Mandatory manual QA before send: targeting, offer friction, does-this-sound-human — Claude gets
+  80-90%, judgment the rest
+- Openers: under 60 words, no 'hope this finds you well', lead with them not you, 3 versions per
+  angle
