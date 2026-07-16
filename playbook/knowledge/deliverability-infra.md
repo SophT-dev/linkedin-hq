@@ -253,9 +253,10 @@ on? Campaign start times rotating daily, not fixed?
     local swipe file captured
   - Cold Email at Scale: System Overview — Tim Scheuer (Oxygen)
     (content/lead-magnets/received/floxform-cold-email-at-scale/notes.md, captured 2026-07-16)
-  - Cold Email at Scale for SMBs: 1200-1500 leads every month — unconfirmed (likely Smartlead)
+  - Cold Email at Scale for SMBs: 1200-1500 leads every month — Atishay Jain (Hyperke); presented
+    at a Smartlead-hosted ("SL") webinar
     (content/lead-magnets/received/sl-webinar-cold-email-at-scale-smbs/notes.md, captured
-    2026-07-16)
+    2026-07-16, creator confirmed 2026-07-17)
 - **INSIDER-RESEARCH.md items 1-11 folded into §1/§2 above** (retired doc, see `CLAUDE.md`).
 
 ## Inbox (unprocessed takeaways)
@@ -272,7 +273,7 @@ on? Campaign start times rotating daily, not fixed?
   (~$0.0008/msg via OpenRouter BYOK)
 - Monthly at 220 inboxes: ~$660 ZapMail + $99-250 Oxygen platform
 
-### Cold Email at Scale for SMBs: 1200-1500 leads every month — unconfirmed (likely Smartlead)
+### Cold Email at Scale for SMBs: 1200-1500 leads every month — Atishay Jain (Hyperke), Smartlead-hosted webinar
 - PCPL (Prospects Contacted Per Lead) target: 500 or less
 - Minimum reply rate benchmark: 2%; show-up rate goal: 70%
 - 20 emails/day/inbox cap for deliverability

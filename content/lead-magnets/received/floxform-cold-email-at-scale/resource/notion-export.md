@@ -79,7 +79,10 @@ The stack comprises three primary tools: Cloudflare for domain registration, Zap
 - No separate HubSpot seat required
 - Data feeds back into the next campaign cycle
 
-## Six Email Templates/Frameworks (names only — body text not recoverable, see note above)
+## Six Email Templates/Frameworks — BODIES NOW CAPTURED (2026-07-17 browser pass → `resource/email-templates.md`)
+
+Section header on the page: "Swipe file: cold email frameworks that work". The full verbatim
+`{{variable}}` skeletons for all 6 are in `resource/email-templates.md`. Names:
 
 1. Lead magnet + same-industry case study
 2. One-line free-work offer
@@ -88,7 +91,9 @@ The stack comprises three primary tools: Cloudflare for domain registration, Zap
 5. Signal touchpoint, pain, quick fix
 6. Touchpoint + unique market insight
 
-(Page notes these are shown as code-block "skeletons, not finished copy.")
+(Page frames these as "Skeletons, not finished copy" from "a cold-email operator who credits them
+with 10,000+ booked leads.") Also newly surfaced this pass: an outbound starter repo at
+**github.com/OXYGEN-CRO/gtm-vault** ("a skill or workflow for every step").
 
 ## Key Principles Emphasized
 

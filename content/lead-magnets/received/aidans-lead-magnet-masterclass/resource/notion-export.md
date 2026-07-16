@@ -404,11 +404,24 @@ Cheers.
 
 ---
 
-## Creator identity — NOT FOUND
-No page in this Notion workspace (hub or any of the 21 reachable sub-pages) contains a full name, LinkedIn URL, Twitter/X handle, email, or bio for "Aidan." The only attribution signal across the whole masterclass is the first name "Aidan" in the hub page title and first-person claims ("my agency," "$22K/month in revenue with 30+ DFY/DWY clients," "10,000,000+ impressions & 7-figures in pipeline," "my AI Assisted LinkedIn GTM system"). One other creator is name-dropped as a source of inspiration ("I actually stole this packaging from Timothy") — first name only, no identifying link. Attempting to guess the URL slug for "The 1,000-Hour Claude Code Setup Checklist" (same workspace) returned a Notion 404 ("This page couldn't be found") rather than content, so it could not be cross-checked for attribution in this pass — would need the exact URL to try again.
+## Creator identity — RESOLVED (2026-07-17 browser pass): Aidan Collins
+The Section 4.8 "apply to work with us" CTA on the Packaging Kit is a Calendly embed titled
+**"WLG | Strategy Call - Aidan Collins"** → link **https://calendly.com/aidancollins-lbzk/wlg-strategy-call**.
+So the creator's full name is **Aidan Collins** (first name "Aidan" was already in the hub title; the
+surname + booking link were hidden inside the Calendly embed block, invisible to the text proxy). "WLG"
+is his agency's initialism (the DFY LinkedIn funnel agency referenced throughout: content + lead magnets
++ appointment setting for founders/agencies doing $50K+/mo). Still no LinkedIn URL or X handle surfaced
+anywhere in the Notion content — only the Calendly slug `aidancollins-lbzk`. One other creator is
+name-dropped as inspiration ("I actually stole this packaging from Timothy") — first name only, no link.
 
-## Gaps in this archive (for the record)
-1. The 5 prompt bodies in Section 2 (Viral Lead Magnet Prompts) are collapsed Notion toggles — only titles were extractable via the text proxy, not the prompt text itself.
-2. The "PROVEN VIRAL LEAD MAGNETS" bonus database (166 rows) is a live filterable Notion table with pagination ("Load more") — only the description and a sample of ~11 author handles were extractable, not the full 166-row list.
-3. The "apply to work with us" link destination in Section 4.8 did not resolve to a URL via the text proxy.
-4. Two images (a DM-poll screenshot in 3.7, an arrow-emoji graphic in 4.8) are not text-transcribable.
+## Gaps in this archive — ALL FOUR RESOLVED (2026-07-17 browser pass), except non-transcribable images
+1. ✅ The 5 prompt bodies in Section 2 are now captured verbatim in `resource/prompts-full.md` (pulled
+   from Notion's own `loadPageChunk` API since the published site's toggle buttons are `disabled`).
+2. ✅ The "PROVEN VIRAL LEAD MAGNETS" database is now captured in full — all **166 rows** across 8
+   categories (Cold Email, LinkedIn/Twitter, AI, SEO, Facebook Ads, Google Ads, Email Marketing, CRO)
+   in `resource/swipe-file-database.md` (via the `queryCollection` API; the browser's "Load more" only
+   reached row 100). Author handle + verbatim tweet URL + Type for every row.
+3. ✅ The Section 4.8 "apply" link resolves to **https://calendly.com/aidancollins-lbzk/wlg-strategy-call**
+   (Calendly "WLG | Strategy Call - Aidan Collins").
+4. Two images (a DM-poll screenshot in 3.7, an arrow-emoji graphic in 4.8) remain non-text-transcribable
+   — the only genuinely unrecoverable content, and immaterial (both are decorative/example screenshots).

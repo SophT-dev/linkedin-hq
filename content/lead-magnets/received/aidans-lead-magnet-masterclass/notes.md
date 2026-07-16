@@ -1,8 +1,9 @@
 ---
 title: "Aidan's Lead Magnet Masterclass"
 slug: "aidans-lead-magnet-masterclass"
-source_person: "Aidan (surname unknown)"
+source_person: "Aidan Collins"
 source_person_url: ""
+booking_link: "https://calendly.com/aidancollins-lbzk/wlg-strategy-call"
 source_post_url: ""
 post_likes: 0
 post_comments: 0
@@ -22,12 +23,12 @@ visual_files: []
 # --- LEAD MAGNET ---
 lm_form: "notion"
 lm_type: "educational-doc"
-resource_archived: "partial"
+resource_archived: "full"
 resource_link: "https://meadow-leader-47c.notion.site/Aidan-s-Lead-Magnet-Masterclass-30481f7dc52780ec9af0c07bf04f4b84"
 drive_link: ""
 ---
 
-> ⏳ PENDING ARCHIVE: 5 AI prompt bodies are collapsed Notion toggles (titles only captured); 166-row swipe-file DB only sampled; final "apply" link unresolved — needs one browser pass
+> ✅ ARCHIVE COMPLETE (2026-07-17 browser pass): 5 AI prompt bodies captured verbatim (`resource/prompts-full.md`); full 166-row swipe database captured (`resource/swipe-file-database.md`); "apply" CTA resolved to Calendly `aidancollins-lbzk/wlg-strategy-call` (creator = Aidan Collins). Only unrecoverable items are 2 decorative example screenshots.
 
 # Aidan's Lead Magnet Masterclass
 
@@ -43,7 +44,7 @@ None.
 ## LEAD MAGNET breakdown
 - 4-section hub, 21 nested sub-pages: Template Swipe File, Prompts, LinkedIn Post Blueprint, Packaging Kit (5,728 words captured)
 - 9 lead-magnet naming/asset formulas, each with 3 worked examples (cold email, ecom email, Meta ads niches)
-- 166-item swipe database of proven viral lead magnet posts (partially sampled)
+- 166-item swipe database of proven viral lead magnet posts across 8 categories — FULLY captured (`resource/swipe-file-database.md`)
 - 8-part blueprint: why LMs are "the top 1% of posts" algorithmically, 3 fast build methods, packaging, post formula, DM monetization, action plan
 - Packaging mini-course: name formula (Outcome+Topic+Container), 10-point post-scoring rubric, 3 hook patterns, deliverable-stack formula, 3-step CTA + DM template
 - Self-reported proof: 10M+ impressions, 7-figure pipeline, $22K/mo agency (unverified)

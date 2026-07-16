@@ -22,12 +22,12 @@ visual_files: []
 # --- LEAD MAGNET ---
 lm_form: "notion"
 lm_type: "educational-doc"
-resource_archived: "partial"
+resource_archived: "full"
 resource_link: "https://floxform.notion.site/Cold-email-that-gets-results-at-scale-38e2c8bff8c181b5b066f510b974d0dc"
 drive_link: ""
 ---
 
-> ⏳ PENDING ARCHIVE: 6 email template code blocks are Notion lazy-loaded embeds — need a browser pass (Browser MCP connect) or manual copy to capture verbatim
+> ✅ ARCHIVE COMPLETE (2026-07-17 browser pass): all 6 email template code blocks captured verbatim in `resource/email-templates.md`. Also surfaced the outbound starter repo github.com/OXYGEN-CRO/gtm-vault.
 
 # Cold Email at Scale: System Overview
 
@@ -45,7 +45,7 @@ None.
 - Full cost breakdown: one-off setup vs monthly recurring at 220-inbox scale
 - Infra stack: Cloudflare Registrar -> ZapMail inboxes -> Oxygen (sourcing/verification/personalization/sequencing/CRM) orchestrated via Claude Code
 - 6-step process: domain/inbox setup, sourcing, waterfall verification, AI personalization, sequencing/split-testing, CRM/analytics
-- Names of 6 email template skeletons (bodies not captured — pending)
+- 6 email template skeletons — bodies FULLY captured verbatim (`resource/email-templates.md`)
 
 Quality note: COMPETITIVE SIGNAL: Oxygen = "Clay, but for Claude Code", AI-native cold-outbound infra, same buyer audience as Bleed AI (they sell SaaS/CLI, we sell done-for-you) — watch closely. "floxform" subdomain is a hosting slug, NOT the brand.
 
