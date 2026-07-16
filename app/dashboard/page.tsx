@@ -12,12 +12,18 @@ import LastPostHero from "@/components/dashboard/LastPostHero";
 import TrendingFormats from "@/components/dashboard/TrendingFormats";
 import ComboIdeas from "@/components/dashboard/ComboIdeas";
 import NextScheduled from "@/components/dashboard/NextScheduled";
+import { timeAgo } from "@/components/dashboard/time";
 
 // ProfileStats captured_at is Karachi wall-clock ("YYYY-MM-DD HH:MM:SS", no tz).
 // Tag it +05:00 so "ago" is right regardless of the viewer's timezone.
-function syncedAgo(capturedAt: string): string {
+function syncedDate(capturedAt: string): Date | null {
   const d = new Date(capturedAt.replace(" ", "T") + "+05:00");
-  if (isNaN(d.getTime())) return "";
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function syncedAgo(capturedAt: string): string {
+  const d = syncedDate(capturedAt);
+  if (!d) return "";
   const mins = Math.max(0, Math.round((Date.now() - d.getTime()) / 60000));
   if (mins < 1) return "just now";
   if (mins < 60) return `${mins}m ago`;
@@ -32,6 +38,15 @@ function syncedAgo(capturedAt: string): string {
 // resets. Bumping refreshKey is what triggers every child to refetch.
 const WIDGET_COUNT = 4; // LastPostHero, TrendingFormats, ComboIdeas, NextScheduled
 const TOTAL_SOURCES = WIDGET_COUNT + 1; // + this page's own stat bundle
+
+// The dashboard's numbers are pipeline-fed, not live-on-click: profile stats are
+// written by the extension while Sophiya browses LinkedIn, post stats by the daily
+// Apify scrape. A refresh only RE-READS the sheet, so identical data is normal and
+// the numbers often don't move. Hold the spinner for at least this long so the
+// click always visibly responds (+ a "just now" flash) even when nothing changed.
+const MIN_SPIN_MS = 550;
+// Profile stats older than this get a gentle "go browse LinkedIn" nudge.
+const STALE_PROFILE_MS = 12 * 60 * 60 * 1000;
 
 function agoLabel(ts: number | null): string {
   if (ts == null) return "";
@@ -51,17 +66,28 @@ export default function DashboardPage() {
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const [, forceTick] = useState(0); // re-render so "updated Xs ago" stays live
   const doneRef = useRef(0);
+  const refreshStartRef = useRef<number | null>(null); // null = initial load, not a user refresh
 
   const markLoaded = useCallback(() => {
     doneRef.current += 1;
-    if (doneRef.current >= TOTAL_SOURCES) {
+    if (doneRef.current < TOTAL_SOURCES) return;
+
+    const finish = () => {
       setRefreshing(false);
-      setLastUpdated(Date.now());
-    }
+      setLastUpdated(Date.now()); // always flashes "updated just now", even if no numbers moved
+    };
+    // On a user refresh, keep the spinner up for a visible minimum so the click
+    // never feels like "nothing happened". Initial load settles immediately.
+    const started = refreshStartRef.current;
+    refreshStartRef.current = null;
+    const elapsed = started == null ? MIN_SPIN_MS : Date.now() - started;
+    if (elapsed < MIN_SPIN_MS) setTimeout(finish, MIN_SPIN_MS - elapsed);
+    else finish();
   }, []);
 
   const handleRefresh = useCallback(() => {
     doneRef.current = 0;
+    refreshStartRef.current = Date.now();
     setRefreshing(true);
     setRefreshKey((k) => k + 1);
   }, []);
@@ -136,23 +162,56 @@ export default function DashboardPage() {
     ];
   }, [acctPosts, liveFollowers]);
 
+  // Data provenance for the refresh control. Post stats carry an ISO `last_scraped`
+  // per row (daily Apify scrape) — the freshest one is how current the numbers are.
+  const lastScraped = useMemo(() => {
+    if (!acctPosts || acctPosts.length === 0) return null;
+    const latest = acctPosts.reduce((m, p) => (p.last_scraped > m ? p.last_scraped : m), "");
+    return latest || null;
+  }, [acctPosts]);
+
+  // Profile stats come from the extension; if they're stale, nudge her to browse
+  // LinkedIn so the extension pushes a fresh sync (a refetch here can't do it).
+  const profileStatsStale = useMemo(() => {
+    const d = sync?.capturedAt ? syncedDate(sync.capturedAt) : null;
+    return d ? Date.now() - d.getTime() > STALE_PROFILE_MS : false;
+  }, [sync]);
+
   return (
     <div className="max-w-lg lg:max-w-5xl mx-auto px-4 lg:px-6 py-6 space-y-5">
-      {/* Refresh control — re-fetches every widget live */}
-      <div className="flex items-center justify-end gap-3">
-        {lastUpdated && (
-          <span className="text-xs text-muted-foreground" aria-live="polite">{agoLabel(lastUpdated)}</span>
+      {/* Refresh control — re-reads the latest synced data (numbers are pipeline-fed) */}
+      <div className="flex flex-col items-end gap-1.5">
+        <div className="flex items-center gap-3">
+          {lastUpdated && (
+            <span className="text-xs text-muted-foreground" aria-live="polite">{agoLabel(lastUpdated)}</span>
+          )}
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleRefresh}
+            disabled={refreshing}
+            aria-label="Refresh all dashboard data"
+            title="Re-reads the latest synced data. Live LinkedIn numbers update when you browse LinkedIn with the extension (profile stats) and via the daily scrape (post stats)."
+          >
+            <RefreshCw size={14} className={`mr-1 ${refreshing ? "animate-spin" : ""}`} />
+            {refreshing ? "Refreshing…" : "Refresh"}
+          </Button>
+        </div>
+
+        {/* Provenance — why the numbers may not move on refresh */}
+        {(sync?.capturedAt || lastScraped) && (
+          <p className="text-[11px] text-muted-foreground text-right leading-snug max-w-xs">
+            {sync?.capturedAt && <>Profile stats synced {syncedAgo(sync.capturedAt)} via the extension</>}
+            {sync?.capturedAt && lastScraped && " · "}
+            {lastScraped && <>post stats scraped {timeAgo(lastScraped)} (daily)</>}
+          </p>
         )}
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={handleRefresh}
-          disabled={refreshing}
-          aria-label="Refresh all dashboard data"
-        >
-          <RefreshCw size={14} className={`mr-1 ${refreshing ? "animate-spin" : ""}`} />
-          {refreshing ? "Refreshing…" : "Refresh"}
-        </Button>
+
+        {profileStatsStale && (
+          <p className="text-[11px] text-right italic max-w-xs leading-snug" style={{ color: "var(--muted-foreground)" }}>
+            browse linkedin.com with the extension on to refresh live stats
+          </p>
+        )}
       </div>
 
       {/* Live profile snapshot + greeting */}
