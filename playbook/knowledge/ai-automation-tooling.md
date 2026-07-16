@@ -36,6 +36,10 @@ ai-automation-tooling`.
   - Claude Fable 5 is BACK and here's how to book 2-5 meetings a day on LinkedIn with it — Ilan
     Asseo (Kakiyo) (content/lead-magnets/received/kakiyo-claude-fable-5-back/notes.md, captured
     2026-07-16)
+  - 60 Expert Claude Agents for Marketing & Lead Generation — Sai Muttavarapu (shared; PDF
+    authored by Klaym AI)
+    (content/lead-magnets/received/60-claude-agents-marketing-leadgen/notes.md, captured
+    2026-07-17)
 
 ## Inbox (unprocessed takeaways)
 (folded in by /lm-intake; synthesize into the main body during the next deliberate synthesis pass)
@@ -105,3 +109,17 @@ ai-automation-tooling`.
 - Same anti-AI-tell + objection/closing/revival prompt rules as sibling (see
   kakiyo-claude-sonnet-5)
 - Two-CTA structure: product signup with utm per campaign + founder Cal.com call
+
+### 60 Expert Claude Agents for Marketing & Lead Generation — Sai Muttavarapu (shared; PDF authored by Klaym AI)
+- Nine-layer agent architecture is a reusable governance template worth adapting for
+  campaign-master skills
+- The 10-file Business Context Pack aligns with Bleed AI's one-source-of-truth rule (COOKED
+  facts consolidated, never re-derived per-agent)
+- Mandatory self-scoring gate (self-eval 1-10, revise if under 8) is a bolt-on worth stealing for
+  recipe-*/reply generation
+- The "Decisions Allowed vs Requiring Approval" field per agent maps directly onto our
+  "keys, not prompts" rule
+- Cold Email Personalization / Objection Handling / Re-Engagement agents adapt as templates for
+  lm-sales-agent
+- Vendor magnet for Klaym AI (waitlist CTA) — generic B2B content, don't treat as authoritative
+  on our own stack
