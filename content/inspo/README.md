@@ -33,6 +33,7 @@ just downloaded blind.
 | `logo-arrow-calendar-proof.jpg` | "Claude Fable" logo/wordmark + arrow → a packed weekly calendar screenshot as proof |
 | `title-card-funnel-with-dm-proof.jpg` | A funnel title card stacked above a DM/proof screenshot via a down arrow |
 | `formula-with-butterfly-collage-cover.jpg` | "Claude + LinkedIn = 12 meetings in 5 days" equation format with a decorative collage numeral and benefit-icon row |
+| `channel-icons-equation-qualified-calls.jpg` | Light background, Gmail + LinkedIn + phone icons (each with a red notification badge, 999/99/45) joined by plus signs = handwritten "15-20 qualified calls per month" underlined — the channel-stack equation format. Matches Liam Sheridan's "Manual outreach is COOKED" post (Template Library row 191, added same capture) almost certainly as its attached visual: the post's teaser line is literally "15-20 qualified calls a month" and its core pitch is running email + LinkedIn + calling together |
 
 ## Photo-real
 | File | What it is |
