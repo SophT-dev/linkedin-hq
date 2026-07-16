@@ -45,10 +45,11 @@ function pickLatest(posts: AccountPost[]): AccountPost | null {
   return [...posts].sort(byDate)[0];
 }
 
-export default function LastPostHero() {
+export default function LastPostHero({ refreshKey = 0, onLoaded }: { refreshKey?: number; onLoaded?: () => void }) {
   const [data, setData] = useState<HeroData | null | "empty">(null);
 
   useEffect(() => {
+    setData(null);
     (async () => {
       try {
         const [posts, postsTab] = await Promise.all([
@@ -67,9 +68,12 @@ export default function LastPostHero() {
         setData({ post, statsSyncedAt });
       } catch {
         setData("empty");
+      } finally {
+        onLoaded?.();
       }
     })();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refreshKey]);
 
   if (data === null) {
     return <div className="rounded-2xl border h-[168px] animate-pulse" style={{ background: "var(--surface-pulse)", borderColor: "var(--border-subtle)" }} />;

@@ -19,10 +19,11 @@ interface Starred {
   key: string;
 }
 
-export default function TrendingFormats() {
+export default function TrendingFormats({ refreshKey = 0, onLoaded }: { refreshKey?: number; onLoaded?: () => void }) {
   const [rows, setRows] = useState<Starred[] | null>(null);
 
   useEffect(() => {
+    setRows(null);
     (async () => {
       try {
         const res = await fetch(`/api/sheets?tab=${encodeURIComponent("Template Library")}&range=A:L`);
@@ -52,9 +53,12 @@ export default function TrendingFormats() {
         setRows(starred);
       } catch {
         setRows([]);
+      } finally {
+        onLoaded?.();
       }
     })();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refreshKey]);
 
   return (
     <section className="space-y-3">

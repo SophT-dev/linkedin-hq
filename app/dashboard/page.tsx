@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Link from "next/link";
-import { Users, BarChart3, Heart, MessageCircle, TrendingUp } from "lucide-react";
+import { Users, BarChart3, Heart, MessageCircle, TrendingUp, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProfileHeader from "@/components/ProfileHeader";
 import StatCards, { type StatCard } from "@/components/analytics/StatCards";
@@ -26,30 +26,103 @@ function syncedAgo(capturedAt: string): string {
   return `${Math.round(hrs / 24)}d ago`;
 }
 
-export default function DashboardPage() {
-  // --- Profile stats (Taha's own account posts) --------------------------
-  const [acctPosts, setAcctPosts] = useState<AccountPost[] | null>(null);
-  useEffect(() => { fetchAccountPosts().then(setAcctPosts); }, []);
+// One dashboard-wide "refresh" re-fetches every widget live. Each data source
+// (the 4 dashboard widgets + this page's own stat bundle) reports back via
+// onLoaded; once all have reported, the spinner stops and "updated Xs ago"
+// resets. Bumping refreshKey is what triggers every child to refetch.
+const WIDGET_COUNT = 4; // LastPostHero, TrendingFormats, ComboIdeas, NextScheduled
+const TOTAL_SOURCES = WIDGET_COUNT + 1; // + this page's own stat bundle
 
-  // Live stats synced by the browser extension (falls back to the manual
-  // lib/profile.ts snapshot until the first sync lands).
+function agoLabel(ts: number | null): string {
+  if (ts == null) return "";
+  const secs = Math.max(0, Math.round((Date.now() - ts) / 1000));
+  if (secs < 5) return "updated just now";
+  if (secs < 60) return `updated ${secs}s ago`;
+  const mins = Math.round(secs / 60);
+  if (mins < 60) return `updated ${mins}m ago`;
+  const hrs = Math.round(mins / 60);
+  return `updated ${hrs}h ago`;
+}
+
+export default function DashboardPage() {
+  // --- Live refresh wiring -----------------------------------------------
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<number | null>(null);
+  const [, forceTick] = useState(0); // re-render so "updated Xs ago" stays live
+  const doneRef = useRef(0);
+
+  const markLoaded = useCallback(() => {
+    doneRef.current += 1;
+    if (doneRef.current >= TOTAL_SOURCES) {
+      setRefreshing(false);
+      setLastUpdated(Date.now());
+    }
+  }, []);
+
+  const handleRefresh = useCallback(() => {
+    doneRef.current = 0;
+    setRefreshing(true);
+    setRefreshKey((k) => k + 1);
+  }, []);
+
+  useEffect(() => {
+    const id = setInterval(() => forceTick((t) => t + 1), 15000);
+    return () => clearInterval(id);
+  }, []);
+
+  // --- Profile stats bundle (account posts + live sync + weekly target) ---
+  // Grouped into one effect so we can report a single "loaded" once the whole
+  // page-level bundle settles, and so a refresh re-runs all three together.
+  const [acctPosts, setAcctPosts] = useState<AccountPost[] | null>(null);
   const [liveFollowers, setLiveFollowers] = useState<string | null>(null);
   const [sync, setSync] = useState<{ capturedAt: string; profileViews: string; postImpressions: string } | null>(null);
+  const [weeklyTarget, setWeeklyTarget] = useState<number | null>(null);
+
   useEffect(() => {
-    fetch("/api/linkedin/sync")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d?.stats?.followers) setLiveFollowers(Number(d.stats.followers).toLocaleString());
-        if (d?.stats?.captured_at) {
-          setSync({
-            capturedAt: d.stats.captured_at,
-            profileViews: d.stats.profile_views_90d || "",
-            postImpressions: d.stats.post_impressions_7d || "",
-          });
-        }
-      })
-      .catch(() => {});
-  }, []);
+    let cancelled = false;
+
+    (async () => {
+      // Reset visible state so a refresh shows the loading skeletons again.
+      setAcctPosts(null);
+      setLiveFollowers(null);
+      setSync(null);
+      setWeeklyTarget(null);
+
+      await Promise.allSettled([
+        fetchAccountPosts().then((d) => { if (!cancelled) setAcctPosts(d); }).catch(() => {}),
+        fetch("/api/linkedin/sync")
+          .then((r) => r.json())
+          .then((d) => {
+            if (cancelled) return;
+            if (d?.stats?.followers) setLiveFollowers(Number(d.stats.followers).toLocaleString());
+            if (d?.stats?.captured_at) {
+              setSync({
+                capturedAt: d.stats.captured_at,
+                profileViews: d.stats.profile_views_90d || "",
+                postImpressions: d.stats.post_impressions_7d || "",
+              });
+            }
+          })
+          .catch(() => {}),
+        (async () => {
+          try {
+            const res = await fetch("/api/sheets?tab=Config&range=A:B");
+            if (!res.ok) { if (!cancelled) setWeeklyTarget(5 * 7); return; }
+            const { rows } = await res.json();
+            const row = (rows as string[][]).slice(1).find((r) => r[0] === "comments_daily_cap");
+            const dailyCap = parseInt(row?.[1] || "5", 10) || 5;
+            if (!cancelled) setWeeklyTarget(dailyCap * 7);
+          } catch {
+            if (!cancelled) setWeeklyTarget(5 * 7);
+          }
+        })(),
+      ]);
+      if (!cancelled) markLoaded();
+    })();
+
+    return () => { cancelled = true; };
+  }, [refreshKey, markLoaded]);
 
   const profileStats: StatCard[] | null = useMemo(() => {
     if (!acctPosts) return null;
@@ -63,22 +136,25 @@ export default function DashboardPage() {
     ];
   }, [acctPosts, liveFollowers]);
 
-  // --- Engagement Hub weekly target --------------------------------------
-  const [weeklyTarget, setWeeklyTarget] = useState<number | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      const res = await fetch("/api/sheets?tab=Config&range=A:B");
-      if (!res.ok) { setWeeklyTarget(5 * 7); return; }
-      const { rows } = await res.json();
-      const row = (rows as string[][]).slice(1).find((r) => r[0] === "comments_daily_cap");
-      const dailyCap = parseInt(row?.[1] || "5", 10) || 5;
-      setWeeklyTarget(dailyCap * 7);
-    })();
-  }, []);
-
   return (
     <div className="max-w-lg lg:max-w-5xl mx-auto px-4 lg:px-6 py-6 space-y-5">
+      {/* Refresh control — re-fetches every widget live */}
+      <div className="flex items-center justify-end gap-3">
+        {lastUpdated && (
+          <span className="text-xs text-muted-foreground" aria-live="polite">{agoLabel(lastUpdated)}</span>
+        )}
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={handleRefresh}
+          disabled={refreshing}
+          aria-label="Refresh all dashboard data"
+        >
+          <RefreshCw size={14} className={`mr-1 ${refreshing ? "animate-spin" : ""}`} />
+          {refreshing ? "Refreshing…" : "Refresh"}
+        </Button>
+      </div>
+
       {/* Live profile snapshot + greeting */}
       <ProfileHeader />
 
@@ -125,16 +201,16 @@ export default function DashboardPage() {
       </div>
 
       {/* 2. Last post hero */}
-      <LastPostHero />
+      <LastPostHero refreshKey={refreshKey} onLoaded={markLoaded} />
 
       {/* 3. ⭐ Trending formats you starred */}
-      <TrendingFormats />
+      <TrendingFormats refreshKey={refreshKey} onLoaded={markLoaded} />
 
       {/* 4. Ready-to-post combo ideas */}
-      <ComboIdeas />
+      <ComboIdeas refreshKey={refreshKey} onLoaded={markLoaded} />
 
       {/* 5. Next scheduled post */}
-      <NextScheduled />
+      <NextScheduled refreshKey={refreshKey} onLoaded={markLoaded} />
 
       {/* 6. Engagement Hub widget */}
       <div className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>

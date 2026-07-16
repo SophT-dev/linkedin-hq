@@ -6,8 +6,18 @@ import { CalendarClock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { safeDate } from "./time";
 
-// The next upcoming slot from the Content Calendar (date >= today, still
-// planned/swapped). One glanceable card so Sophiya always knows what's next.
+// The next upcoming slot from the Content Calendar (date >= today) that Sophiya
+// has actually COMMITTED to — never a raw seeded placeholder.
+//
+// Why the status gate matters: `scripts/setup-content-calendar-tab.mjs` seeds
+// the tab with example rows whose status is "planned". Those are suggestions
+// the system wrote, not posts Sophiya approved — showing them made the widget
+// claim a post was "scheduled Friday" that she never signed off on (the phantom
+// bug). So a bare "planned" row is treated as a placeholder and hidden. A slot
+// only surfaces once a human moves it into a committed status (swapped a real
+// angle in, or a future calendar UI marks it scheduled/approved). If nothing
+// qualifies we show an honest empty state instead of a seed.
+const COMMITTED_STATUSES = new Set(["scheduled", "approved", "swapped", "confirmed", "ready"]);
 
 interface Slot {
   date: string;
@@ -18,10 +28,11 @@ interface Slot {
   angle_theme: string;
 }
 
-export default function NextScheduled() {
+export default function NextScheduled({ refreshKey = 0, onLoaded }: { refreshKey?: number; onLoaded?: () => void }) {
   const [slot, setSlot] = useState<Slot | null | "empty">(null);
 
   useEffect(() => {
+    setSlot(null);
     (async () => {
       try {
         const res = await fetch(`/api/sheets?tab=${encodeURIComponent("Content Calendar")}&range=A:H`);
@@ -42,7 +53,8 @@ export default function NextScheduled() {
             status: (r[7] || "").trim().toLowerCase(),
             _d: safeDate(r[0] || ""),
           }))
-          .filter((r) => r._d && r._d.getTime() >= today.getTime() && (r.status === "planned" || r.status === "swapped"))
+          // date >= today AND a real, human-committed status (never seeded "planned")
+          .filter((r) => r._d && r._d.getTime() >= today.getTime() && COMMITTED_STATUSES.has(r.status))
           .sort((a, b) => a._d!.getTime() - b._d!.getTime());
 
         const next = upcoming[0];
@@ -52,9 +64,12 @@ export default function NextScheduled() {
         setSlot(rest);
       } catch {
         setSlot("empty");
+      } finally {
+        onLoaded?.();
       }
     })();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refreshKey]);
 
   return (
     <section className="rounded-2xl p-4 border space-y-3" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
@@ -73,7 +88,7 @@ export default function NextScheduled() {
 
       {slot === "empty" && (
         <div className="rounded-2xl border border-dashed p-6 text-center text-sm text-muted-foreground" style={{ borderColor: "var(--border-subtle)" }}>
-          Nothing scheduled ahead. <Link href="/calendar" className="font-medium hover:underline" style={{ color: "var(--primary)" }}>Plan your next slot →</Link>
+          No approved post scheduled — <Link href="/calendar" className="font-medium hover:underline" style={{ color: "var(--primary)" }}>plan one →</Link>
         </div>
       )}
 
