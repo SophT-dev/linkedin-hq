@@ -15,7 +15,7 @@ posts in the corpus under `domain_primary: offers-lead-magnets`.
   - `price-based-on-value-not-cost.md`
   - `sell-based-on-value-not-volume.md`
   - `identify-the-real-problems.md`
-  - Aidan's Lead Magnet Masterclass — Aidan (surname unknown)
+  - Aidan's Lead Magnet Masterclass — Aidan Collins
     (content/lead-magnets/received/aidans-lead-magnet-masterclass/notes.md, captured 2026-07-16)
   - Lead Magnet Library — Tribe Digital (likely Matthew Brown — medium confidence, inferred not
     bylined; linkedin.com/in/mcovbrown)
@@ -45,7 +45,7 @@ posts in the corpus under `domain_primary: offers-lead-magnets`.
 - Creator attribution had to be inferred (cover-image branding + a self-referential entry +
   external agency-site/LinkedIn cross-check) — no explicit byline anywhere on the page itself
 
-### Aidan's Lead Magnet Masterclass — Aidan (surname unknown)
+### Aidan's Lead Magnet Masterclass — Aidan Collins
 - Naming: Desired Outcome + Topic + Container Word (Blueprint/Playbook/Kit/Vault/System), 3-5
   words — 'sounds like something you'd pay $50 for'
 - 10-point post rubric (curiosity-gap hook, number in opener, 4-6 checkmark deliverables, single
