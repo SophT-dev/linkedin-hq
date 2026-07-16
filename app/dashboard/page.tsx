@@ -14,10 +14,16 @@ import ComboIdeas from "@/components/dashboard/ComboIdeas";
 import NextScheduled from "@/components/dashboard/NextScheduled";
 import { timeAgo } from "@/components/dashboard/time";
 
-// ProfileStats captured_at is Karachi wall-clock ("YYYY-MM-DD HH:MM:SS", no tz).
-// Tag it +05:00 so "ago" is right regardless of the viewer's timezone.
+// ProfileStats captured_at comes back in one of two shapes: a bare Karachi
+// wall-clock ("YYYY-MM-DD HH:MM:SS", no tz) or a full ISO string that already
+// carries an offset ("2026-07-17T00:56:29+05:00"). Only the bare form needs the
+// +05:00 tag — appending it to an already-offset string yields "...+05:00+05:00",
+// an invalid date that silently blanked the "synced Xm ago" labels.
 function syncedDate(capturedAt: string): Date | null {
-  const d = new Date(capturedAt.replace(" ", "T") + "+05:00");
+  if (!capturedAt) return null;
+  const s = capturedAt.trim().replace(" ", "T");
+  const hasTz = /[zZ]$|[+-]\d{2}:?\d{2}$/.test(s);
+  const d = new Date(hasTz ? s : s + "+05:00");
   return isNaN(d.getTime()) ? null : d;
 }
 
