@@ -48,7 +48,7 @@ const TAB = "Template Library";
 // data source. comment_to_like_ratio is a real Sheets formula (recalculates
 // if a row is hand-edited) -- Sophiya's ask, 2026-07-08: distinguish real
 // engagement (people compelled to respond) from vanity likes.
-const HEADERS = ["hook", "suggested_format", "expert", "domain", "likes", "comments", "shares", "comment_to_like_ratio", "engagement_tier", "url", "date_added"];
+const HEADERS = ["hook", "suggested_format", "expert", "domain", "likes", "comments", "shares", "comment_to_like_ratio", "engagement_tier", "url", "date_added", "starred"];
 
 function extractHook(content) {
   if (!content) return "";
@@ -158,6 +158,7 @@ async function main() {
         tierById.get(p.post_id),
         p.url,
         today,
+        "FALSE", // starred — corpus-built rows default unstarred; hand-star in the Sheet
       ];
     });
 
@@ -187,7 +188,7 @@ async function main() {
   } else {
     // Idempotent re-run: pull out manual-add rows before clearing, so they
     // can be re-appended after the corpus rewrite instead of being wiped.
-    const existingRes = await sheets.spreadsheets.values.get({ spreadsheetId: SHEET_ID, range: `${TAB}!A2:K` });
+    const existingRes = await sheets.spreadsheets.values.get({ spreadsheetId: SHEET_ID, range: `${TAB}!A2:L` });
     const existingRows = existingRes.data.values || [];
     preservedManualRows = existingRows.filter((r) => r[8] === "manual-add");
     const existingRowCount = existingRows.length + 1; // +1 for header row

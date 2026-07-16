@@ -70,6 +70,11 @@ async function main() {
   const leadMagnetsOursId = await findOrCreateFolder("Lead Magnets (Ours)", linkedinId);
   const visualSwipeId = await findOrCreateFolder("Visual Swipe", linkedinId);
   const proofScreenshotsId = await findOrCreateFolder("Proof Screenshots", linkedinId);
+  // Lead Magnet Vault MVP (2026-07-16): where large files for RECEIVED lead
+  // magnets overflow to once they're too big to commit to the repo (see
+  // content/lead-magnets/received/TEMPLATE.md's drive_link field) -- separate
+  // from "Lead Magnets (Ours)" above, which is only for magnets we built.
+  const leadMagnetVaultId = await findOrCreateFolder("Lead Magnet Vault", linkedinId);
 
   console.log("\nLinkedIn Drive folder structure:");
   console.log(`  LinkedIn/                    https://drive.google.com/drive/folders/${linkedinId}`);
@@ -78,6 +83,7 @@ async function main() {
   console.log(`    Lead Magnets (Ours)/        https://drive.google.com/drive/folders/${leadMagnetsOursId}`);
   console.log(`    Visual Swipe/               https://drive.google.com/drive/folders/${visualSwipeId}`);
   console.log(`    Proof Screenshots/          https://drive.google.com/drive/folders/${proofScreenshotsId}`);
+  console.log(`    Lead Magnet Vault/          https://drive.google.com/drive/folders/${leadMagnetVaultId}`);
   console.log(`\nPROOF (canonical, general company proof): https://drive.google.com/drive/folders/${PROOF_FOLDER_ID}`);
 }
 

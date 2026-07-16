@@ -2,7 +2,7 @@
 // else who needs one Sheet tab as JSON without writing a one-off script.
 // Deliberately dumb: one tab in, array of row-objects out (keyed by header).
 //
-// Usage: node scripts/read-tab.mjs --tab "Template Library" [--range A1:Z300]
+// Usage: node scripts/read-tab.mjs --tab "Template Library" [--range A1:AZ300]
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -29,9 +29,9 @@ const get = (flag, def) => {
   return i !== -1 ? args[i + 1] : def;
 };
 const tab = get("--tab");
-const range = get("--range", "A1:Z1000");
+const range = get("--range", "A1:AZ1000");
 if (!tab) {
-  console.error("Usage: node scripts/read-tab.mjs --tab <tab name> [--range A1:Z1000]");
+  console.error("Usage: node scripts/read-tab.mjs --tab <tab name> [--range A1:AZ1000]");
   process.exit(1);
 }
 

@@ -16,7 +16,7 @@
 // Usage:
 //   node scripts/add-template-library-entry.mjs --hook "<hook text>" \
 //     --expert "<name>" --domain "<domain>" --url "<post url>" \
-//     [--format "<F1-F12 label>"] [--likes N] [--comments N] [--shares N]
+//     [--format "<F1-F12 label>"] [--likes N] [--comments N] [--shares N] [--starred]
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -44,6 +44,7 @@ const get = (flag, def = "") => {
   const i = args.indexOf(flag);
   return i !== -1 ? args[i + 1] : def;
 };
+const has = (flag) => args.includes(flag);
 
 async function main() {
   const hook = get("--hook");
@@ -54,6 +55,7 @@ async function main() {
   const likes = get("--likes", "");
   const comments = get("--comments", "");
   const shares = get("--shares", "");
+  const starred = has("--starred");
 
   if (!hook || !expert || !url) {
     console.error("Usage: --hook <text> --expert <name> --domain <domain> --url <post url> [--format ...] [--likes N] [--comments N] [--shares N]");
@@ -91,6 +93,7 @@ async function main() {
     "manual-add",
     url,
     today,
+    starred ? "TRUE" : "FALSE",
   ];
 
   await sheets.spreadsheets.values.append({

@@ -95,6 +95,36 @@ chrome.action.onClicked.addListener((tab) => {
   });
 });
 
+// ⭐ Favorite a feed post — content.js scrapes a LinkedIn post Sophiya starred
+// and forwards it here; we POST it to linkedin-hq, which appends a starred
+// Template Library row (token-guarded, same x-sync-token as the stats sync).
+chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+  if (msg && msg.type === "BLEED_FAVORITE") {
+    const headers = { "Content-Type": "application/json" };
+    if (CONFIG.SYNC_TOKEN) headers["x-sync-token"] = CONFIG.SYNC_TOKEN;
+    fetch(`${CONFIG.API_BASE}/api/posts/favorite`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(msg.payload || {}),
+    })
+      .then(async (r) => sendResponse({ ok: r.ok, status: r.status, body: await r.json().catch(() => null) }))
+      .catch((e) => sendResponse({ ok: false, error: String((e && e.message) || e) }));
+    return true; // async response
+  }
+
+  // Prime the skip-list: content.js asks for the post URLs already starred so
+  // it renders those stars pre-filled (server also dedups on write).
+  if (msg && msg.type === "BLEED_FAVS_KNOWN") {
+    fetch(`${CONFIG.API_BASE}/api/posts/favorite`, { method: "GET" })
+      .then(async (r) => {
+        const data = await r.json().catch(() => null);
+        sendResponse({ ok: r.ok, urls: (data && data.urls) || [] });
+      })
+      .catch((e) => sendResponse({ ok: false, urls: [], error: String((e && e.message) || e) }));
+    return true;
+  }
+});
+
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   if (msg && msg.type === "BLEED_SUGGEST") {
     const headers = { "Content-Type": "application/json" };

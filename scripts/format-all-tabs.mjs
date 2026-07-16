@@ -34,6 +34,15 @@ loadEnvLocal();
 const SHEET_ID = process.env.GOOGLE_SHEETS_ID;
 const BRAND_RED = { red: 0.69, green: 0.07, blue: 0.06 };
 
+// --tab <name> — format just one tab instead of every tab in TAB_CONFIGS.
+// Usage: node scripts/format-all-tabs.mjs --tab LeadMagnets
+const args = process.argv.slice(2);
+const get = (flag, def = "") => {
+  const i = args.indexOf(flag);
+  return i !== -1 ? args[i + 1] : def;
+};
+const onlyTab = get("--tab", "");
+
 // One shared palette — same word, same color, on every tab in the sheet.
 const STATUS_COLORS = {
   // Sources-tab statuses
@@ -63,6 +72,7 @@ const STATUS_COLORS = {
   // LeadMagnets-tab status, received-magnet values (Stage 8)
   unreviewed: { red: 0.98, green: 0.89, blue: 0.75 },
   reviewed: { red: 0.80, green: 0.93, blue: 0.80 },
+  queued: { red: 0.80, green: 0.87, blue: 0.98 },
   // Posts-tab status
   draft: { red: 0.93, green: 0.96, blue: 0.78 },
   approved: { red: 0.80, green: 0.87, blue: 0.98 },
@@ -105,10 +115,12 @@ const TAB_CONFIGS = {
     statusCol: 10,
   },
   LeadMagnets: {
-    // source_person(=Source Creator)|id|post_id|slug|status|title|hero_text|value_props|cta_text|outline_md|body_md|notion_url|landing_url|gif_url|created_at|clicks|conversions|kind|source_post_url|key_takeaway|used_in_post|domain
+    // source_person(=Source Creator)|id|post_id|slug|status|title|hero_text|value_props|cta_text|outline_md|body_md|notion_url|landing_url|gif_url|created_at|clicks|conversions|kind|source_post_url|key_takeaway|used_in_post|domain|post_likes|post_comments|cta_keyword|contents_desc|content_style|format_tag|visual_type|lm_form|lm_type|vault_path|starred|source_person_url
     // 2026-07-11: source_person moved to the FIRST column; app reads by header name so order is free to change.
-    widths: [200, 100, 100, 150, 120, 200, 220, 220, 220, 220, 220, 220, 220, 200, 130, 80, 100, 90, 240, 260, 100, 120],
+    // 2026-07-16: 12 Lead Magnet Vault columns appended (post_likes..source_person_url).
+    widths: [200, 100, 100, 150, 120, 200, 220, 220, 220, 220, 220, 220, 220, 200, 130, 80, 100, 90, 240, 260, 100, 120, 70, 90, 110, 300, 110, 80, 110, 100, 130, 260, 70, 240],
     statusCol: 4,
+    rowHeight: 21,
   },
   DailyReports: {
     // date|category|headline|summary|source_type|source_name|url  (revamped 2026-07-08, one row per item)
@@ -116,8 +128,8 @@ const TAB_CONFIGS = {
   },
   Flags: { widths: [110, 180, 260, 420, 100], statusCol: 4 },
   "Template Library": {
-    // hook|suggested_format|expert|domain|likes|comments|shares|comment_to_like_ratio|engagement_tier|url|date_added
-    widths: [380, 170, 140, 160, 80, 90, 80, 150, 140, 260, 100],
+    // hook|suggested_format|expert|domain|likes|comments|shares|comment_to_like_ratio|engagement_tier|url|date_added|starred
+    widths: [380, 170, 140, 160, 80, 90, 80, 150, 140, 260, 100, 70],
   },
   "Visual Swipe": {
     // date|visual_type|source_person|source_url|notes|our_version_adaptation|drive_link|status
@@ -144,7 +156,7 @@ const TAB_CONFIGS = {
 async function formatTab(sheets, sheetId, tabName, config) {
   const dataRes = await sheets.spreadsheets.values.get({
     spreadsheetId: SHEET_ID,
-    range: `${tabName}!A:Z`,
+    range: `${tabName}!A:AZ`,
   });
   const rows = dataRes.data.values || [];
   const rowCount = Math.max(rows.length, 1);
@@ -188,6 +200,13 @@ async function formatTab(sheets, sheetId, tabName, config) {
         fields: "userEnteredFormat(wrapStrategy,verticalAlignment)",
       },
     });
+  }
+
+  if (config.rowHeight && rowCount > 1) {
+    requests.push({ updateDimensionProperties: {
+      range: { sheetId, dimension: "ROWS", startIndex: 1, endIndex: rowCount },
+      properties: { pixelSize: config.rowHeight }, fields: "pixelSize",
+    }});
   }
 
   if (config.statusCol !== undefined) {
@@ -246,7 +265,15 @@ async function main() {
   const meta = await sheets.spreadsheets.get({ spreadsheetId: SHEET_ID });
   const tabsByName = new Map((meta.data.sheets || []).map((s) => [s.properties.title, s.properties.sheetId]));
 
-  for (const [tabName, config] of Object.entries(TAB_CONFIGS)) {
+  const configEntries = onlyTab
+    ? Object.entries(TAB_CONFIGS).filter(([tabName]) => tabName === onlyTab)
+    : Object.entries(TAB_CONFIGS);
+  if (onlyTab && configEntries.length === 0) {
+    console.log(`No TAB_CONFIGS entry named "${onlyTab}".`);
+    return;
+  }
+
+  for (const [tabName, config] of configEntries) {
     const sheetId = tabsByName.get(tabName);
     if (sheetId === undefined) {
       console.log(`Skipping "${tabName}" — tab doesn't exist.`);

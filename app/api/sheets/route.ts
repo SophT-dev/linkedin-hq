@@ -4,7 +4,7 @@ import { readSheet, appendRow, updateRow, deleteRow } from "@/lib/sheets";
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const tab = searchParams.get("tab");
-  const range = searchParams.get("range") || "A:Z";
+  const range = searchParams.get("range") || "A:AZ";
 
   if (!tab) return NextResponse.json({ error: "Missing tab" }, { status: 400 });
 

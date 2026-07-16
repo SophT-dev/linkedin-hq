@@ -33,7 +33,7 @@ loadEnvLocal();
 
 const SHEET_ID = process.env.GOOGLE_SHEETS_ID;
 
-async function readTab(sheets, tab, range = "A1:Z1000") {
+async function readTab(sheets, tab, range = "A1:AZ1000") {
   const res = await sheets.spreadsheets.values.get({ spreadsheetId: SHEET_ID, range: `${tab}!${range}` });
   const rows = res.data.values || [];
   if (!rows.length) return [];

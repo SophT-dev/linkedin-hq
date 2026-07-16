@@ -14,7 +14,7 @@ function getAuth() {
   });
 }
 
-export async function readSheet(tab: string, range = "A:Z") {
+export async function readSheet(tab: string, range = "A:AZ") {
   const auth = getAuth();
   const sheets = google.sheets({ version: "v4", auth });
   const res = await sheets.spreadsheets.values.get({
@@ -844,7 +844,7 @@ const LEAD_MAGNETS_TAB = "LeadMagnets";
 // so the columns can be reordered in the Sheet without breaking the app.
 // (2026-07-11: moved source_person to the front + made this order-independent.)
 async function readLeadMagnetSheet(): Promise<{ headers: string[]; rows: string[][]; idx: Record<string, number> }> {
-  const all = await readSheet(LEAD_MAGNETS_TAB, "A:Z");
+  const all = await readSheet(LEAD_MAGNETS_TAB, "A:AZ");
   const headers = (all[0] || []).map((h) => String(h || "").trim());
   const idx: Record<string, number> = {};
   headers.forEach((h, i) => { if (h && idx[h] === undefined) idx[h] = i; });

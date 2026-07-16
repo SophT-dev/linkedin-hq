@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Calendar, Gift, Lightbulb, PenLine, LayoutDashboard, Flame, MessageCircle, BarChart2, Users2, Menu, X } from "lucide-react";
+import { Calendar, Gift, Lightbulb, PenLine, LayoutDashboard, Flame, MessageCircle, BarChart2, Users2, Menu, X, Inbox } from "lucide-react";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -13,6 +13,7 @@ const NAV = [
   { href: "/analytics", label: "Analytics", icon: BarChart2 },
   { href: "/networking", label: "Networking", icon: Users2 },
   { href: "/lead-magnets", label: "Lead Magnets", icon: Gift },
+  { href: "/intake", label: "Quick intake", icon: Inbox },
   { href: "/ideas", label: "Post Ideas", icon: Lightbulb },
 ];
 
