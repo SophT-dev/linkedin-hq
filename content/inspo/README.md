@@ -34,6 +34,8 @@ just downloaded blind.
 | `title-card-funnel-with-dm-proof.jpg` | A funnel title card stacked above a DM/proof screenshot via a down arrow |
 | `formula-with-butterfly-collage-cover.jpg` | "Claude + LinkedIn = 12 meetings in 5 days" equation format with a decorative collage numeral and benefit-icon row |
 | `channel-icons-equation-qualified-calls.jpg` | Light background, Gmail + LinkedIn + phone icons (each with a red notification badge, 999/99/45) joined by plus signs = handwritten "15-20 qualified calls per month" underlined — the channel-stack equation format. Matches Liam Sheridan's "Manual outreach is COOKED" post (Template Library row 191, added same capture) almost certainly as its attached visual: the post's teaser line is literally "15-20 qualified calls a month" and its core pitch is running email + LinkedIn + calling together |
+| `claude-plus-linkedin-equation-one-client-a-day.jpg` | **Eva Banzeraite** — off-white background, Claude wordmark (orange asterisk) `+` LinkedIn icon (red "10" notification badge) `=` bold blue "**1 NEW CLIENT A DAY**". The two-logo equation format, minimal. Attached to her "R.I.P. the content-first LinkedIn strategy" post (P1) — the badge visually promises inbound-style volume from a system, not content |
+| `gmail-plus-linkedin-equation-100-meetings-quarter.jpg` | **Eva Banzeraite** — same off-white two-channel equation as the Liam Sheridan one above: Gmail icon (red "999" badge) `+` LinkedIn icon (red "99" badge) `=` "**100 meetings per quarter**" (blue hand-underlined). Attached to her "Bye bye manual outreach" post (P2) — email + LinkedIn stacked, the overflowing badges = pipeline-on-autopilot promise |
 
 ## Photo-real
 | File | What it is |
@@ -79,6 +81,7 @@ in progress, see `linkedin-hq/playbook/RESOURCES.md` or ask for status).
 | `playbook-toc-two-column.jpg` | "The 2026 Cold Email Playbook" — icon + title + two-column categorized resource list |
 | `lead-magnet-toc-four-quadrant-platform-logos.jpg` | "The $10M eCom Ads Playbook" (Cory Dobbin) — light cover with Shopify logo + 2×2 quadrant TOC (Meta/Google/Programmatic/Email), each quadrant a platform logo + emoji-bulleted contents |
 | `lead-magnet-cover-icon-grid-10-skills.jpg` | "Claude · 10 Skills for Paid Ads" (Ira Bodnar) — cream cover, serif title + Claude asterisk, 2×5 line-icon grid (one icon+label per skill), Google Ads + Meta Ads logos at bottom |
+| `claude-for-outreach-3d-book-cover-mockup.jpg` | **Eva Banzeraite** — photoreal **3D book mockup** floating on a coral/peach gradient: dark-green circuit-board cover with a glowing orange Claude asterisk chip, big title "**CLAUDE FOR OUTREACH**" (green/white), subtitle "Practical AI Workflows for Client Acquisition", "by Eva Banzeraite" byline, a floating Claude-asterisk app-icon tile beside it, and a green pill footer "👉 Comment 'Outreach' to get your copy!". Attached to her "You're using maybe 5% of what Claude can…" post (P3) — the lead-magnet-as-a-real-book cover device (makes a Notion doc feel like a product) |
 
 ---
 Note: `media.licdn.com` links are signed and expire (the `e=` query param is a Unix timestamp) —
