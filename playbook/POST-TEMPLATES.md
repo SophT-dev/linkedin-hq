@@ -161,3 +161,108 @@ Repost to help a founder still writing these by hand.
 *(Evidence: modeled on the kill-the-old-way declaration → system → resource → comment-gate format
 that recurs across the tracked cold-outbound creators; captured as our own reusable skeleton, filled
 with our own substance and magnets.)*
+
+---
+
+## T2 — "Big-Number Result → The Stack" (proof hook → the system → volume × quality → gate)
+
+**Archetype:** a big quantified client result → the two- or three-part stack that produced it (often
+shown as an equation) → how a *volume engine* and a *quality layer* split the work → a one-line
+formula → a comment-keyword gate. Maps to **F1 (big number) × F3 (comment giveaway)**, usually with
+an equation card + results/inbox proof screenshot. The engine is the gap between a jaw-dropping number
+and "here's exactly how" — the reader comments to close it. Reference example ran a ~5.7 comment-to-like
+ratio (a hard-firing gate). **Funnel:** TOFU capture. **Visual:** equation + proof screenshot
+(see `content/inspo/claude-plus-100-vsrs-equation-inbox-proof.jpg`).
+
+### The template
+
+```
+{BIG_RESULT} for {WHO}. {STACK_EQUATION} just fixed {PROBLEM}.
+
+Most {AUDIENCE} try to fix {PROBLEM} by {WRONG_LEVER}. It doesn't scale.
+
+Here's what actually did it:
+
+{VOLUME_ENGINE} handles reach — {VOLUME_DETAIL}.
+
+But volume on its own {VOLUME_FAILURE}. So {QUALITY_LAYER} handles the part that converts:
+
+→ {QUALITY_FUNCTION_1}
+
+→ {QUALITY_FUNCTION_2}
+
+→ {QUALITY_FUNCTION_3}
+
+→ {QUALITY_FUNCTION_4}
+
+The formula: {VOLUME_SIDE} for volume. {QUALITY_SIDE} for quality.
+
+{ONE_LINE_REFRAME}
+
+I broke the whole thing down in one {RESOURCE_TYPE}.
+
+Comment "{KEYWORD}" and I'll send it over.
+
+(We need to be connected for me to DM you.)
+```
+
+### Variable key
+
+| Variable | What goes here |
+|---|---|
+| `{BIG_RESULT}` | the headline number — **real result only, never invented** |
+| `{WHO}` | who you got it for (a client) |
+| `{STACK_EQUATION}` | the stack that did it, equation-style (e.g. "A clean list + Claude") |
+| `{PROBLEM}` | the thing it fixed (cold outreach) |
+| `{AUDIENCE}` | who you call out (founders) |
+| `{WRONG_LEVER}` | the lever they wrongly pull (buying a bigger list) |
+| `{VOLUME_ENGINE}` / `{VOLUME_DETAIL}` | what drives reach + one detail |
+| `{VOLUME_FAILURE}` | why volume alone fails (lands in spam) |
+| `{QUALITY_LAYER}` | what makes it convert (Claude) |
+| `{QUALITY_FUNCTION_1–4}` | 4 concrete things the quality layer does — **must be real magnet contents** |
+| `{VOLUME_SIDE}` / `{QUALITY_SIDE}` | the two halves of the one-line formula |
+| `{ONE_LINE_REFRAME}` | the takeaway line |
+| `{RESOURCE_TYPE}` / `{KEYWORD}` | magnet container word + its ALL-CAPS gate |
+
+### Rules
+- Same as T1: fixed lines stay, `{BIG_RESULT}` is real or cut, `{QUALITY_FUNCTION_*}` list only what
+  the gated magnet actually contains, `{KEYWORD}` agrees with the magnet.
+- The "volume vs quality" split is the load-bearing idea — keep both halves.
+
+### Worked example — filled for cold email (gating the Cold Email Operating System, keyword SYSTEM)
+
+```
+We turned a tiny list into $106K in pipeline for one client. A clean list + Claude running the pipeline just fixed cold outreach.
+
+Most founders try to fix outbound by buying a bigger list. It doesn't scale.
+
+Here's what actually did it:
+
+Warmed inboxes handle reach — sane daily volume spread across many inboxes, never one domain hammered to death.
+
+But volume on its own lands you in spam. So Claude handles the part that converts:
+
+→ Finds the accounts already showing a buying signal
+
+→ Opens on the real trigger, not "hoping this finds you well"
+
+→ Runs the 4 to 7 follow-ups so nothing slips
+
+→ Scores every campaign on positive replies, not opens
+
+The formula: warmed inboxes for volume. Claude for quality.
+
+You're not sending more. You're sending the right ones.
+
+I broke the whole system down in one guide.
+
+Comment "SYSTEM" and I'll send it over.
+
+(We need to be connected for me to DM you.)
+```
+
+*(Evidence: format observed on Ryan Diamond's "I booked 951 meetings in 30 days" post — 50 likes /
+284 comments, comment "PLAYBOOK", Template Library row 195. The equation + volume×quality + gate
+shape is a recurring cold-outbound archetype; captured here as our own generic skeleton and filled
+with our own result, substance, and magnet.)*
+
