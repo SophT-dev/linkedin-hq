@@ -1,4 +1,4 @@
-# The Cold Email Operating System
+# 10 Claude Skills for Cold Outbound
 
 **Ten Claude skills that run your cold outbound end to end — from ICP to logged win — as one repeatable pipeline you can install in two minutes.**
 
@@ -22,7 +22,7 @@ You do **not** need to be technical. If you can copy a folder, you can install t
 
 ```bash
 # 1. Clone the repo (or download the ZIP and unzip it)
-git clone https://github.com/your-org/cold-email-operating-system.git
+git clone https://github.com/bleedailabs/cold-email-operating-system.git
 cd cold-email-operating-system
 
 # 2. Copy the ten skill folders into your Claude skills directory

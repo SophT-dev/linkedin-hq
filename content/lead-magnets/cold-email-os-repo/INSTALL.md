@@ -15,7 +15,7 @@ This takes about two minutes. You're copying ten small folders into the place Cl
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/your-org/cold-email-operating-system.git
+git clone https://github.com/bleedailabs/cold-email-operating-system.git
 cd cold-email-operating-system
 
 # 2. Make sure your Claude skills directory exists
@@ -30,7 +30,7 @@ cp -r skills/* ~/.claude/skills/
 ### Windows (PowerShell)
 
 ```powershell
-git clone https://github.com/your-org/cold-email-operating-system.git
+git clone https://github.com/bleedailabs/cold-email-operating-system.git
 cd cold-email-operating-system
 
 # Create the skills directory if it doesn't exist

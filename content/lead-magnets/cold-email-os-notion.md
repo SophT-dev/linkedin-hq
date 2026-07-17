@@ -1,8 +1,8 @@
-# The Cold Email Operating System
+# 10 Claude Skills for Cold Outbound
 
 ### Ten Claude skills that run your outbound end to end — from ICP to logged win — as one pipeline you install in two minutes.
 
-> **📦 Get the repo:** `[GET THE REPO — github.com/…]`  ·  **⬇️ Download the skills:** `[DOWNLOAD THE ZIP — cold-email-os-skills.zip]`
+> **📦 Get the repo:** https://github.com/bleedailabs/cold-email-operating-system  ·  **⬇️ Download the skills:** https://github.com/bleedailabs/cold-email-operating-system/raw/master/cold-email-os-skills.zip
 >
 > *Clone it, drop ten folders into `~/.claude/skills/`, restart Claude. No code. No new paid tool. No lock-in.*
 
@@ -84,7 +84,7 @@ Run a campaign through those two, then add the next once the first has earned it
 
 ## Get the system
 
-> **📦 Get the repo:** `[GET THE REPO — github.com/…]`  ·  **⬇️ Download the skills:** `[DOWNLOAD THE ZIP — cold-email-os-skills.zip]`
+> **📦 Get the repo:** https://github.com/bleedailabs/cold-email-operating-system  ·  **⬇️ Download the skills:** https://github.com/bleedailabs/cold-email-operating-system/raw/master/cold-email-os-skills.zip
 >
 > Clone it, copy the ten folders into `~/.claude/skills/`, restart Claude. Two minutes and the whole pipeline runs. Start with the ICP Definer and the Deliverability Sentinel.
 
