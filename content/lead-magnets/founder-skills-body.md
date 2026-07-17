@@ -1,6 +1,6 @@
 # The Founder OS: 10 Claude Skills That Run Your Business
 
-*A skill is just a saved instruction file. Here are the ten we actually run every week to keep an agency moving without hiring for every gap.*
+*A skill is just a saved instruction file. Here are ten every founder can build this week to run the business without hiring for every gap.*
 
 **Status: DRAFT for human review. Not published anywhere. No Notion page created, no API called.**
 
@@ -21,17 +21,17 @@ A Claude skill is not a feature you buy. It is a plain text file, usually named 
 
 The reason this matters for a founder is simple. You are the bottleneck on maybe twenty small jobs a week. Writing the proposal. Prepping for the call. Categorizing the expenses. Reminding yourself what actually matters today. None of those need a full-time hire. They need a written-down process and something to run it. That's what the ten below are.
 
-Everything here comes from a real setup we run to operate an AI agency: daily planning, proposals, finances, reporting, content, delegation, and a memory vault that ties it all together. Nothing invented for a slide. Let's go.
+None of these are theory. Each one is a pattern working operators use every day, distilled to the version any founder can build in an afternoon with nothing but a text file and a clear description of how you already work. Let's go.
 
 ## The 10 skills
 
 ### 1. The Morning Coach
 
-**What it does:** Runs a five-minute daily check-in. It reads yesterday's notes, looks at what's due, and tells you the two or three things that actually move money today, not the twenty that feel urgent.
+**What it does:** Runs a five-minute morning planning session. It reads yesterday's notes, looks at what's due, and tells you the two or three things that actually move money today, not the twenty that feel urgent.
 
 **The outcome:** You stop starting the day in your inbox reacting to other people's priorities. You start it with a plan you can defend. Ten minutes of drift saved every morning is roughly an hour a week back.
 
-**Build it in 15 minutes:** Open Claude and say, "I want a daily check-in skill. Each morning ask me what I got done, then look at my goals and my calendar, then give me the top three priorities and push back if I'm avoiding the hard one." Ask it to save that as a skill. Now `/check-in` runs your exact routine.
+**Build it in 15 minutes:** Open Claude and say, "I want a morning planning skill. Each morning ask me what I got done, then look at my goals and my calendar, then give me the top three priorities and push back if I'm avoiding the hard one." Ask it to save that as a skill. Now one command runs your exact routine.
 
 ### 2. The Proposal Writer
 
